@@ -1,0 +1,81 @@
+{
+    "POS": {
+        "permission": {
+            "1": {
+                "title": "Inicio",
+                "link": "dashboard.php",
+                "icon": "fa-solid fa-gauge-high",
+                "permission": "view_dashboard",
+                "id": "menu_inicio"
+            },
+            "2": {
+                "title": "Productos",
+                "link": "product.php",
+                "icon": "fa-brands fa-slack",
+                "permission": "view_products",
+                "id": "menu_productos"
+            },
+            "3": {
+                "title": "Categorías",
+                "link": "category.php",
+                "icon": "bx bx-category",
+                "permission": "view_categories",
+                "id": "menu_categorias"
+            },
+            "4": {
+                "title": "Compras",
+                "link": "purchase.php",
+                "icon": "fa-solid fa-bag-shopping me-1",
+                "permission": "view_purchases",
+                "id": "menu_compras"
+            },
+            "5": {
+                "title": "Cajas",
+                "link": "cashbox.php",
+                "icon": "fa-solid fa-cash-register me-1",
+                "permission": "view_cashboxes",
+                "id": "menu_cajas"
+            },
+            "6": {
+                "title": "Ventas",
+                "link": "sales.php",
+                "icon": "bx bx-cart",
+                "permission": "view_sales",
+                "id": "menu_ventas"
+            },
+            "7": {
+                "title": "Usuarios",
+                "link": "user.php",
+                "icon": "bx bx-user",
+                "permission": "view_users",
+                "id": "menu_usuarios"
+            },
+            "8": {
+                "title": "Reportes",
+                "icon": "fa-solid fa-chart-column me-1",
+                "permission": "view_reports",
+                "id": "menu_reportes",
+                "subsections": [
+                    {
+                        "title": "Compras",
+                        "link": "reports/reportPurchases.php",
+                        "permission": "view_purchase_reports",
+                        "id": "submenu_compras"
+                    },
+                    {
+                        "title": "Ventas",
+                        "link": "reports/reportSales.php",
+                        "permission": "view_sales_reports",
+                        "id": "submenu_ventas"
+                    },
+                    {
+                        "title": "Productos Más Vendidos",
+                        "link": "reports/reportBestSelling.php",
+                        "permission": "view_best_selling_reports",
+                        "id": "submenu_productos_vendidos"
+                    }
+                ]
+            }
+        }
+    }
+}

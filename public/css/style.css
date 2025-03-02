@@ -1,0 +1,223 @@
+.simplebar-content-wrapper {
+   background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf);
+}
+
+.sidebar-wrapper {
+   background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf); 
+}
+
+.sidebar-wrapper .metismenu ul {
+   background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf);
+   color: white;
+   border: none;
+}
+
+.topbar .navbar {
+   background-color: #7B3CA6;
+}
+
+.daterangepicker .ranges li.active {
+   background-color: #9a3fbc !important;
+}
+
+.daterangepicker td.active {
+   background-color: #9a3fbc !important;
+   color: #fff !important;
+}
+
+.applyBtn {
+   background-color: #9a3fbc !important;
+   border: 1px solid #9a3fbc !important;
+}
+
+.cancelBtn {
+   background-color: #e00000 !important;
+   border: 1px solid #e00000 !important;
+   color: #fff !important;
+}
+
+.logo-text,
+.sidebar-wrapper .metismenu a,
+.sidebar-wrapper .metismenu a .parent-icon,
+.sidebar-wrapper .metismenu a .menu-title,
+.toggle-icon,
+.user-info .user-name {
+   color: white;
+}
+
+.sidebar-wrapper .metismenu .mm-active > a,
+.sidebar-wrapper .metismenu a:active,
+.sidebar-wrapper .metismenu a:hover {
+   color: white;
+   text-decoration: none;
+   background: rgba(178, 211, 194, 0.12); /* Verde menta con opacidad */
+}
+
+.metismenu .has-arrow:after {
+   color: white;
+}
+
+/* [ ------------------------------------- ] */
+/* [ ----------- T I T U L O S ----------- ] */
+/* [ ------------------------------------- ] */
+.view-title {
+   /* color: #7128a3; */
+   font-size: 20px;
+   font-weight: normal !important;
+}
+
+.view-text {
+   color: #7128a3;
+}
+
+html.dark-theme .view-text {
+   color: #f24bf8;
+}
+
+.view-border {
+	border-color: #8d41bf !important
+}
+
+.view-bg {
+   background-color: #8d41bf !important;
+}
+
+.view-bg-light {
+   background-color: rgba(141, 65, 191, 0.22) !important;
+}
+
+
+.bg-primary {
+   background-color: #c697e8 !important;
+}
+
+.btn-success {
+   color: #fff;
+   background-color: #3bdb3b;
+   border-color: #3bdb3b;
+}
+
+.bg-secondary {
+   background-color: #6c757dda !important;
+}
+
+.bg-success {
+   background-color: #3bdb3b;
+}
+
+.modal-title {
+   font-size: 18px;
+}
+
+.view-form {
+   margin: 6.8px 0px;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+   color: #fff;
+   text-decoration: none;
+   background-color: #8d41bf;
+}
+
+/* [ ------------------------------------- ] */
+/* [ --------- D A T A T A B L E --------- ] */
+/* [ ------------------------------------- ] */
+.top {
+   display: flex;
+   justify-content: space-between;
+   margin: 28px 0 14px 0;
+}
+
+button.btn.btn-secondary.buttons-excel.buttons-html5,
+button.btn.btn-secondary.buttons-pdf.buttons-html5 {
+   padding: 0 16px;
+}
+
+/** Botones de acción DATATABLE */
+button.btn.btn-secondary {
+   background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf);
+   font-size: 17px !important;
+   border: none;
+}
+
+/* button.btn.btn-secondary.buttons-colvis:hover {
+   background-color: #4586bc;
+   border-color: #3180c5;
+} */
+
+/* .view-table > thead {
+   background-color: rgba(0, 140, 255, 0.12);
+} */
+
+.view-table > thead > tr > th {
+   padding: 12px 0;
+}
+
+.bottom {
+   display: flex;
+   justify-content: space-between;
+   margin: 12px 0 0px 0;
+}
+
+.page-item.active .page-link {
+   background-color: #8d41bf;
+   border-color: #8d41bf;
+}
+
+.page-link {
+   color: #8d41bf;
+}
+
+.page-link:hover {
+   color: #8d41bf;
+   background-color: #e9ecef;
+   border-color: #dee2e6;
+}
+
+/* [ -------------------------------------- ] */
+/* [ --------- S W A L  A L E R T --------- ] */
+/* [ -------------------------------------- ] */
+button.swal2-cancel.swal2-styled {
+   background-color: #d33;
+}
+button.swal2-confirm.swal2-styled {
+   background-color: #008cff;
+}
+
+label {
+   font-size: 14.8px;
+}
+
+/* [ ------------------------------------- ] */
+/* [ ---------- S E L E C T   2 ---------- ] */
+/* [ ------------------------------------- ] */
+.select2-container--default .select2-selection--single {
+   border: 1px solid #ced4da !important;
+}
+
+.select2-container .select2-selection--single {
+   height: 40px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+   line-height: 36px !important;
+}
+
+.lobibox-notify-msg {
+   max-height: 40px !important;
+}
+
+.shadow-0 {
+   box-shadow: none !important;
+}
+
+@media (max-width: 766px) {
+   .bottom > .dataTables_info,
+   .top > .dt-buttons {
+      display: none;
+   }
+}
+
+
+
+
