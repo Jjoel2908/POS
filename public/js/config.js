@@ -1,20 +1,17 @@
 const TextDelete = '<i class="bx bx-eraser me-1"></i> Sí, Eliminar';
+const TextConfirm = '<i class="bx bx-check-circle me-1"></i> Sí, Proceder';
 const TextCancel = '<i class="bx bx-arrow-back me-1"></i> No, Salir';
+const TextBack = '<i class="bx bx-arrow-back me-1"></i> Regresar';
 
-$(document).ready(function() {
-  $('.select').each(function() {
+$(document).ready(function () {
+  $(".select").each(function () {
     var $select = $(this);
-    var $modal = $select.closest('.modal');
-
-    var modalId = $modal.attr('id');
+    var $modal = $select.closest(".modal");
 
     var placeholderText = "Selecciona una opción";
 
-    if (modalId === 'modalAddPurchase') placeholderText = "Buscar Producto..."
-    else if (modalId === 'modalAddSale') placeholderText = "Seleccionar Cliente..."
-
     if ($modal.length) {
-      $select.css('width', '100%').select2({
+      $select.css("width", "100%").select2({
         dropdownParent: $modal,
         placeholder: placeholderText,
         allowClear: true,
@@ -296,52 +293,93 @@ const initTable = () => {
         text: '<i class="fa-solid fa-file-excel"></i>',
       },
       {
-        	extend: "pdfHtml5",
-        	text: '<i class="fa-solid fa-file-pdf"></i>',
+        extend: "pdfHtml5",
+        text: '<i class="fa-solid fa-file-pdf"></i>',
       },
       {
         extend: "colvis",
         text: '<i class="fa-solid fa-eye"></i>',
       },
     ],
-    headerCallback: function(thead, data, start, end, display) {
-      $(thead).find('th').addClass('text-center');
-    }
+    headerCallback: function (thead, data, start, end, display) {
+      $(thead).find("th").addClass("text-center");
+    },
   };
 };
-
-/**
- * Convertir a mayúsculas todos los inputs que se ingresen
- */
-let formularios = $('form#formAddCashbox, form#formAddCategory');
-formularios.each(function() {
-    var camposTexto = $(this).find('input[type="text"]');
-    camposTexto.on('input', function() {
-        // Convertir a mayúsculas
-        var valor = $(this).val().toUpperCase();
-        
-        // Filtrar solo caracteres alfanuméricos
-        valor = valor.replace(/[^A-Z0-9]/g, '');
-          
-        // Asignar el valor filtrado de nuevo al campo
-        $(this).val(valor);
-    });
-});
 
 const validateInt = (event) => {
   // Obtenemos el valor actual del campo de entrada
   const valor = event.target.value;
   // Usamos una expresión regular para reemplazar cualquier carácter que no sea un dígito
-  event.target.value = valor.replace(/[^0-9]/g, '');
-}
+  event.target.value = valor.replace(/[^0-9]/g, "");
+};
+
+/** Función para validar la entrada de texto en un campo de entrada HTML.
+ * Permite únicamente letras y espacios, eliminando números y caracteres especiales.
+ *
+ * @param {Event} event - El evento de entrada asociado al campo de texto.
+ */
+const validateInputText = (event) => {
+  /** Obtiene el valor actual del campo de entrada.
+   * Este valor será procesado para eliminar caracteres no deseados.
+   */
+  const valor = event.target.value;
+
+  /** Reemplaza cualquier carácter que no sea una letra o un espacio.
+   * - \p{L}: Permite letras de cualquier idioma (compatibles con Unicode).
+   * - Espacio ( ): Permite espacios entre palabras.
+   * - El modificador 'u' habilita soporte para Unicode.
+   */
+  event.target.value = valor.replace(/[^\p{L} ]/gu, "");
+};
+
+/** Función para validar la entrada de un campo numérico y eliminar caracteres no deseados.
+ * Permite solo números, un punto decimal y restringe símbolos como '+' o '-'.
+ * 
+ * @param {Event} event - El evento de entrada asociado al campo numérico.
+ */
+const validateInputNumber = (event) => {
+  /** Obtiene el valor actual del campo de entrada */
+  const valor = event.target.value;
+
+  /** Reemplaza cualquier carácter que no sea un dígito o un punto decimal.
+   * - \d: Permite dígitos (0-9).
+   * - .: Permite el punto decimal.
+   * - ^[^0-9.]: Elimina cualquier carácter que no coincida con números o el punto.
+   */
+  event.target.value = valor.replace(/[^0-9.]/g, "");
+};
+
 
 const validateString = (event) => {
+  // Esta función se ejecuta cada vez que el usuario ingresa un valor en un campo de entrada.
+  // Utiliza una expresión regular para filtrar y eliminar cualquier carácter que no sea una letra, un número o un espacio.
+  // Los caracteres no permitidos se reemplazan por una cadena vacía, asegurando que solo se ingresen letras, números y espacios.
+
   // Obtenemos el valor actual del campo de entrada
   const valor = event.target.value;
   // Usamos una expresión regular para reemplazar cualquier carácter que no sea un dígito
   // replace(/[^A-Za-z0-9 ]/g, '');
-  event.target.value = valor.replace(/[^\p{L}\p{N} ]/gu, '');
-}
+  event.target.value = valor.replace(/[^\p{L}\p{N} ]/gu, "");
+};
+
+const validateAndConvertToUppercase = (event) => {
+  let valor = event.target.value;
+  // Convertir a mayúsculas y permitir letras con acentos, Ñ, números y espacios
+  event.target.value = valor.toUpperCase().replace(/[^A-ZÁÉÍÓÚÑ0-9 ]/g, "");
+};
+
+const validateAndConvertToLowercase = (event) => {
+  let valor = event.target.value;
+  // Convertir a minúsculas y filtrar solo letras minúsculas y números
+  event.target.value = valor.toLowerCase().replace(/[^a-z0-9]/g, "");
+};
+
+const validateWithCommasAndDots = (event) => {
+  const valor = event.target.value;
+  // Expresión regular para mantener letras, números, espacios, comas y puntos
+  event.target.value = valor.replace(/[^\p{L}\p{N} ,.]/gu, "");
+};
 
 const validateLength = (event) => {
   // Obtenemos el valor actual del campo de entrada
@@ -353,4 +391,45 @@ const validateLength = (event) => {
   } else {
     return false;
   }
+};
+
+/** Función para validar un número de teléfono.
+ * Permite ingresar únicamente números y limita el máximo a 10 dígitos.
+ * No se permiten letras, símbolos o caracteres especiales.
+ *
+ * @param {Event} event - El evento de entrada asociado al campo de texto.
+ */
+const validatePhoneNumber = (event) => {
+  /** Remover caracteres no numéricos */
+  let value = event.target.value.replace(/\D/g, "");
+
+  /** Limitar a 10 caracteres */
+  if (value.length > 10) {
+    value = value.slice(0, 10);
+  }
+
+  event.target.value = value;
+};
+
+  
+function getFechaActualLetras(fecha = new Date()) {
+  return fecha.toLocaleDateString("es-ES", { 
+      weekday: "long",   // Nombre del día (lunes, martes, etc.)
+      day: "numeric",    // Día del mes
+      month: "long",     // Nombre del mes (enero, febrero, etc.)
+      year: "numeric"    // Año completo
+  });
+}
+
+// Función para cambiar el formato de la fecha
+function formatearFecha (fecha) {
+  if (!fecha) return ""; // Verifica si la fecha está vacía
+  let partes = fecha.split("-"); // Divide la fecha en partes
+  return `${partes[2]}/${partes[1]}/${partes[0]}`; // Reordena a DD/MM/YYYY
+};
+
+function formatCurrency(value) {
+  return value > 0 
+      ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value)
+      : "PENDIENTE";
 }

@@ -9,7 +9,7 @@
    <meta name="author" content="Joel Alvarado">
 
    <!--favicon-->
-   <link rel="shortcut icon" type="image/x-icon" href="../../public/images/favicon.ico">
+   <!-- <link rel="shortcut icon" type="image/x-icon" href="../../public/images/favicon.ico"> -->
    <link href="../../public/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
    <link href="../../public/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
    <link href="../../public/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />

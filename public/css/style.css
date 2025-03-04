@@ -109,6 +109,10 @@ html.dark-theme .view-text {
    font-size: 18px;
 }
 
+.modal-content {
+	border-radius: .5rem;
+}
+
 .view-form {
    margin: 6.8px 0px;
 }
