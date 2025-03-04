@@ -1,60 +1,19 @@
-<?php 
-session_start();
+<?php
+require_once 'layout/TemplateView.php';
 
-if ( empty($_SESSION['user']) || !in_array(10, $_SESSION['permisos']) ) header('Location: index.php');
-else {
-   /** ### [ H E A D E R ] ### */
-   require_once 'layout/header.php';
-?>
+$config = [
+   'permission'   => 10,
+   'title'        => 'Usuarios',
+   'icon'         => 'fa-solid fa-users',
+   'addAction'    => "openModal('Usuario')",
+   'addLabel'     => 'Usuario',
+   'modals'       => [
+      'modal/user/modalAddUser.php',
+      'modal/user/modalUpdatePassword.php',
+      'modal/user/modalUserPermissions.php'
+   ],
+   'moduleScript' => 'moduleUser',
+];
 
-<!-- # [ M O D U L E  |  U S E R ] # -->
-<div class="card">
-   <div class="card-body p-4">
-
-      <!-- # [ T I T L E ] # -->
-      <div class="row">
-         <div class="col-sm-12">
-            <h5 class="view-title">
-               <i class="fa-solid fa-users me-1"></i>
-               Usuarios
-            </h5>
-         </div>
-      </div>
-
-      <!-- # [ A C T I O N S ] # -->
-      <div class="row">
-         <div class="col-sm-12">
-            <div class="d-flex justify-content-end">
-               <button class="btn btn-success radius-30 px-4 fs-14" onclick="moduleUser.modalAddUser()">
-                  <i class="fa-solid fa-user-plus me-1"></i>
-                  Usuario
-               </button>
-            </div>
-         </div>
-      </div>
-
-      <!-- # [ C O N T E N T ] # -->
-      <div class="row">
-         <table class="table table-striped view-table" id="table-users">
-         </table>
-      </div>
-      
-      <!-- # [ M O D A L S ] # -->
-      <?php require 'modal/user/modalAddUser.php' ?>
-      <?php require 'modal/user/modalUpdatePassword.php' ?>
-      <?php require 'modal/user/modalUserPermissions.php' ?>
-
-   </div>
-</div>
-
-<?php 
-   /** ### [ F O O T E R ] ### */
-   require_once 'layout/footer.php'; 
-?>
-
-<!-- # [ S C R I P T ] # -->
-<script src="../public/js/export/classPOS.js"></script>
-<script src="../public/js/modules/moduleUser.js"></script>
-
-<?php } ?>
-
+$view = new TemplateView($config);
+$view->render();

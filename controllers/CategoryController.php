@@ -13,18 +13,6 @@ class CategoryController
         "update_failed" => "Error al actualizar la categoría",
         "delete_success" => "Categoría eliminada correctamente.",
         "delete_failed" => "Error al eliminar la categoría, intente más tarde.",
-
-
-
-        "validation_error" => "Existen errores de validación en el formulario.",
-        "action_not_allowed" => "Acción no permitida, por favor revise sus permisos.",
-        "operation_success" => "Operación realizada con éxito.",
-        "operation_failed" => "Hubo un error al realizar la operación, por favor intente nuevamente.",
-        "record_exists" => "El registro ya existe.",
-        "record_not_found" => "El registro no fue encontrado.",
-        "login_failed" => "Las credenciales son incorrectas. Intente nuevamente.",
-        "access_denied" => "Acceso denegado a esta sección.",
-        "unauthorized_action" => "No tiene autorización para realizar esta acción."
     ];
 
     public function __construct()
