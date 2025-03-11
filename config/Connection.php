@@ -98,7 +98,7 @@ class Connection {
     
     public static function delete(string $table, int $id): bool {
         $conexion = self::conectionMySQL();
-        if ($table == "detalle_compra" || $table == "detalle_venta") {
+        if ($table === "detalle_compra" || $table === "detalle_venta") {
             $sql = "DELETE FROM $table WHERE id=?";
         } else {
             $sql = "UPDATE $table SET estado = 0 WHERE id=?";
@@ -113,7 +113,7 @@ class Connection {
     
     public static function select(string $table, int $id): array|null {
         $conexion = self::conectionMySQL();
-        $sql = "SELECT * FROM $table WHERE id=? AND estado = 1";
+        $sql = "SELECT * FROM $table WHERE id= ? AND estado = 1";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -127,6 +127,19 @@ class Connection {
     public static function selectAll(string $table): array|null {
         $conexion = self::conectionMySQL();
         $sql = "SELECT * FROM $table WHERE estado = 1";
+        $result = $conexion->query($sql);
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        self::closeConection();
+        return $rows;
+    }
+
+    public static function selectAllBySucursal(string $table, int $idSucursal): array|null
+    {
+        $conexion = self::conectionMySQL();
+        $sql = "SELECT * FROM $table WHERE estado = 1 AND id_sucursal = $idSucursal ORDER BY id DESC";
         $result = $conexion->query($sql);
         $rows = [];
         while ($row = $result->fetch_assoc()) {
@@ -152,7 +165,8 @@ class Connection {
         }
     }
 
-    public static function exists(string $table, string $field, string $value): bool {
+    public static function exists(string $table, string $field, string $value): bool
+    {
         $conexion = self::conectionMySQL();
         $sql = "SELECT COUNT(*) as count FROM $table WHERE $field = ? AND estado = 1";
         $stmt = $conexion->prepare($sql);
@@ -162,6 +176,33 @@ class Connection {
         $row = $result->fetch_assoc();
         $stmt->close();
         self::closeConection();
+        return $row['count'] > 0;
+    }
+
+    /** Verifica si existe un registro en una tabla específica con un valor en un campo específico, en la columna 'id_sucursal', 
+     * y con estado activo (estado = 1).
+     *
+     * @param string $table El nombre de la tabla donde buscar el registro.
+     * @param string $field El nombre del campo en el cual se buscará el valor.
+     * @param mixed $value El valor que se busca en el campo especificado.
+     * @param int $idSucursal El valor de 'id_sucursal' que se busca.
+     * @return bool Retorna true si el registro existe y tiene estado activo, false en caso contrario.
+     */
+    public static function existsByFieldAndSucursal(string $table, string $field, $value, int $idSucursal): bool
+    {
+        $conexion = self::conectionMySQL();
+        $sql = "SELECT COUNT(*) as count FROM $table WHERE $field = ? AND id_sucursal = ? AND estado = 1";
+        $stmt = $conexion->prepare($sql);
+        
+        $type = (is_int($value)) ? 'i' : 's';
+        $stmt->bind_param($type . 'i', $value, $idSucursal);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        self::closeConection();
+        
         return $row['count'] > 0;
     }
 

@@ -10,7 +10,7 @@ if ($module === null)
     exit;
 
 switch ($module) {
-    case 'Category':
+    case 'Categoría':
         require_once 'CategoryController.php';
         $controller = new CategoryController();
         break;

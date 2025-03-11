@@ -123,6 +123,10 @@ html.dark-theme .view-text {
    background-color: #8d41bf;
 }
 
+td.text-start.dtr-control {
+   padding-left: 16px;
+}
+
 /* [ ------------------------------------- ] */
 /* [ --------- D A T A T A B L E --------- ] */
 /* [ ------------------------------------- ] */

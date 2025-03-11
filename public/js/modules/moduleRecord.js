@@ -1,14 +1,20 @@
 const urlController = "../../../controllers/";
-$(() =>  { 
+let modalId;
+$(() => {
+    loadDataTable("#module-table", "Categoría");
+
     $("form").submit(async function (event) {
         event.preventDefault();
 
         if (validateForm(event, this)) {
-            /** Obtenemos el módulo desde el atributo data-module */
-            const module = $(this).data("module");
+        /** Obtenemos el módulo desde el atributo data-module */
+        const module = $(this).data("module");
 
-            /** Llamamos a submitForm pasando el módulo dinámicamente */
-            await submitForm(this, "save", module, () => POS.loadTable('#module-table'));
+        /** Llamamos a submitForm pasando el módulo dinámicamente */
+        await submitForm(this, "save", module, () => {
+            loadDataTable("#module-table", "Categoría");
+            $("#modalRegister").modal("toggle");
+        });
         }
     });
 });
@@ -19,14 +25,11 @@ $(() =>  {
  * @param {boolean} isUpdate - Indica si es un registro nuevo (false) o una actualización (true).
  */
 const openModal = (title, isUpdate = false, idModal = "") => {
-
     /** Si no se especifica un modal, se usa 'modalRegister' */
-    const modalId = idModal == "" ? "#modalRegister" : idModal;
+    modalId = idModal == "" ? "#modalRegister" : idModal;
 
     /** Determina si el texto es "Nueva" o "Nuevo" dependiendo del módulo */
-    let textNew = ["Categoría", "Caja"].includes(title)
-        ? "Nueva "
-        : "Nuevo ";
+    let textNew = ["Categoría", "Caja"].includes(title) ? "Nueva " : "Nuevo ";
 
     /** Define el texto de acción: "Actualizar" o "Nuevo/Nueva". */
     let actionText = isUpdate ? "Actualizar " : textNew;
@@ -50,10 +53,10 @@ const openModal = (title, isUpdate = false, idModal = "") => {
 
 /** Limpia el formulario dentro de un modal específico.
  * Restablece todos los campos de entrada y selects, y elimina cualquier validación previa.
- * 
+ *
  * @param {string} modalId - El ID o selector del modal que contiene el formulario.
  */
-const clearForm = modalId => {
+const clearForm = (modalId) => {
     $(`${modalId} form`).get(0).reset();
     $(`${modalId} input`).val("");
     $(`${modalId} select`).val("").trigger("change");
@@ -62,55 +65,61 @@ const clearForm = modalId => {
 
 /** Valida un formulario antes de enviarlo.
  * Si faltan campos obligatorios, muestra una alerta y evita el envío.
- * 
+ *
  * @param {Event} event - El evento submit o click que dispara la validación.
  * @param {HTMLFormElement} form - El formulario que se va a validar.
  * @returns {boolean} - Retorna true si el formulario es válido, false si hay errores.
  */
 const validateForm = (event, form) => {
-    if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-        showAlert(false, "Debe completar la información obligatoria");
-        form.classList.add("was-validated");
-        return false;
-    }
-    return true;
-}
+  if (!form.checkValidity()) {
+    event.preventDefault();
+    event.stopPropagation();
+    showAlert(false, "Debe completar la información obligatoria");
+    form.classList.add("was-validated");
+    return false;
+  }
+  return true;
+};
 
 /** Envía el formulario al servidor usando async/await y FormData.
  * Muestra una alerta con el resultado y ejecuta un callback opcional en caso de éxito.
- * 
+ *
  * @param {HTMLFormElement} form - El formulario a enviar.
  * @param {string} operation - Nombre de la operación que se va a realizar (crear, actualizar, etc.).
  * @param {function} callback - Función opcional que se ejecuta tras un envío exitoso.
  */
-const submitForm = async (form, operation, view, callback) => {
+const submitForm = async (form, operation, view, callback, showAlertResponse = true) => {
     try {
-        let formData = new FormData(form);
-        formData.append('operation', operation);
-        formData.append('module', view);
+        let formData;
 
-        const response = await fetch(urlController, { method: 'POST', body: formData });
+        if (form instanceof FormData)
+            formData = form;
+        else 
+            formData = new FormData(form)
 
-        if (!response.ok)
-            throw new Error(`HTTP error! status: ${response.status}`);
+        formData.append("operation", operation);
+        formData.append("module", view);
+
+        const response = await fetch(urlController, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const result = await response.json();
 
-        showAlert(result.success, result.message);
+        if (showAlertResponse || !result.success) showAlert(result.success, result.message);
 
-        if (result.success && callback)
-            callback();
-
+        if (result.success && callback) callback(result?.data);
     } catch (error) {
-        console.error('Error en la función submitForm del archivo moduleRecord:', error);
+        console.error("Error en la función submitForm del archivo moduleRecord:", error);
     }
 };
 
 /** Muestra una notificación en pantalla indicando el resultado de una acción.
  * Utiliza la librería Lobibox para mostrar mensajes tipo toast.
- * 
+ *
  * @param {boolean} success - Indica si la operación fue exitosa (true) o fallida (false).
  * @param {string} message - Mensaje que se mostrará al usuario.
  */
@@ -121,6 +130,109 @@ const showAlert = (success, message) => {
         icon: success ? "bx bx-check-circle" : "bx bx-x-circle",
         position: "bottom right",
         msg: `<p class="my-1">${message}</p>`,
-        sound: false
+        sound: false,
     });
-}
+};
+
+/** Carga datos en una tabla DataTable de manera dinámica.
+ * Obtiene los datos desde el servidor usando `fetch` y renderiza las columnas automáticamente.
+ *
+ * @param {string} tableId - Selector de la tabla donde se mostrarán los datos.
+ * @param {string} module - Nombre del módulo para la solicitud al controlador.
+ */
+const loadDataTable = async (tableId, module) => {
+    try {
+        /** Creamos un objeto FormData para enviar la solicitud */
+        let formData = new FormData();
+        formData.append("module", module);
+        formData.append("operation", "dataTable");
+
+        /** Enviamos la solicitud al servidor */
+        const response = await fetch(urlController, {
+        method: "POST",
+        body: formData,
+        });
+
+        /** Verificamos si la respuesta es válida */
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        /** Convertimos la respuesta a JSON */
+        const data = await response.json();
+
+        if (data.length === 0) {
+        showAlert(false, "No hay datos disponibles.");
+        return;
+        }
+
+        /** Generamos dinámicamente las columnas basadas en las claves del primer objeto */
+        let columns = Object.keys(data[0]).map((key) => ({
+        data: key,
+        title: key,
+        }));
+
+        let content = initTable();
+        content.columns = columns;
+        content.data = data;
+
+        /** Aplica alineaciones dinámicas a las filas */
+        content.createdRow = (row, rowData) => {
+        Object.keys(rowData).forEach((key, index) => {
+            if (["FECHA DE CREACIÓN", "ACCIONES", "ESTADO"].includes(key)) {
+            $(`td:eq(${index})`, row).addClass("text-center");
+            } else {
+            $(`td:eq(${index})`, row).addClass("text-start");
+            }
+        });
+        };
+
+        showTable(tableId, content);
+    } catch (error) {
+        console.error("Error en la función loadDataTable del archivo moduleRecord:", error);
+    }
+};
+
+const updateRegister = async (module, id, idModal = "") => {
+    let formdata = new FormData();
+    formdata.append("id", id);
+
+    /** Llamamos a submitForm pasando el módulo dinámicamente */
+    await submitForm(formdata, "update", module, (data) => {
+        if (data) {
+            $.each(data, (key, value) => {
+                console.log(key)
+                console.log(value)
+                $(`#${key}`).val(value);
+            });
+        }
+
+        openModal(module, true, idModal);
+    }, false);
+};
+
+const deleteRegister = async (module, id, nombre) => {
+    try {
+        /** Determina si el texto es "la" o "el" dependiendo del módulo */
+        let text = ["Categoría", "Caja"].includes(module) ? "la" : "el";
+
+        Swal.fire({
+            title: '<h3 class="mt-3">Eliminar ' + module + "</h3>",
+            html: '<p class="font-size-20 mb-2">¿Estás seguro de eliminar ' +
+            text + " siguiente " + module.toLowerCase() + "?</p> <b>" + nombre + "</b>",
+            confirmButtonText: TextDelete,
+            cancelButtonText: TextCancel,
+            showCancelButton: true,
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                let formdata = new FormData();
+                formdata.append("id", id);
+
+                /** Llamamos a submitForm pasando el módulo dinámicamente */
+                await submitForm(formdata, "delete", module, () => {
+                    loadDataTable("#module-table", module);
+                });
+            }
+        });
+    } catch (error) {
+        console.error("Error en la función deleteRegister del archivo moduleRecord:", error);
+    }
+};

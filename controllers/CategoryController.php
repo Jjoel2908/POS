@@ -7,12 +7,13 @@ class CategoryController
     private $model;
 
     private $messages = [
-        "save_success" => "Categoría registrada correctamente",
-        "save_failed" => "Error al registrar la categoría",
-        "update_success" => "Categoría actualizada correctamente",
-        "update_failed" => "Error al actualizar la categoría",
+        "save_success" => "Categoría registrada correctamente.",
+        "save_failed" => "Error al registrar la categoría.",
+        "update_success" => "Categoría actualizada correctamente.",
+        "update_failed" => "Error al actualizar la categoría.",
         "delete_success" => "Categoría eliminada correctamente.",
-        "delete_failed" => "Error al eliminar la categoría, intente más tarde.",
+        "delete_failed" => "Error al eliminar la categoría.",
+        "required" => "Debe completar la información obligatoria"
     ];
 
     public function __construct()
@@ -22,23 +23,35 @@ class CategoryController
 
     public function save()
     {
-        $data = [
-            'categoria' => $_POST['categoria'] ?? NULL,
-        ];
+        /** Sucursal */
+        $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
+
+        /** Información a registrar o actualizar */
+        $data = ['nombre' => $_POST['nombre']];
 
         /** Valida campos requeridos */
-        if (!$this->model::validateData(['categoria'], $_POST)) {
-            echo json_encode(['success' => false, 'message' => 'Debe completar la información obligatoria']);
+        if (!$this->model::validateData(['nombre'], $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
         }
 
-        /** Valida el nombre */
-        if ($this->model::exists($this->table, 'categoria', $_POST['categoria'])) {
-            echo json_encode(['success' => false, 'message' => "La categoría " . $_POST['categoria'] .  " ya existe"]);
+        /** Valida que no exista un registro similar al entrante */
+        if($this->model::existsByFieldAndSucursal($this->table, 'nombre', $_POST['nombre'], $idSucursal)) {
+            echo json_encode(['success' => false, 'message' => "La categoría " . $_POST['nombre'] .  " ya existe"]);
             return;
         }
 
         if (empty($_POST['id'])) {
+
+            /** Agregamos la fecha de creación */
+            $data['fecha'] = date('Y-m-d H:i:s');
+
+            /** Agregamos sucursal */
+            $data['id_sucursal'] = $idSucursal;
+
+            /** Agregamos el usuario */
+            $data['creado_por'] = $_SESSION['id'];
+
             $save = $this->model::insert($this->table, $data);
 
             echo json_encode(
@@ -85,19 +98,26 @@ class CategoryController
 
     public function dataTable()
     {
-        $response = $this->model::selectAll($this->table);
+        $response = $this->model::selectAllBySucursal($this->table, $_SESSION['sucursal']);
         $data = array();
 
         if (count($response) > 0) {
+
             foreach ($response as $row) {
-                $estado = $row['estado'] ? "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Activa</span>" : "";
-                $btn = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"moduleCategory.updateCategory('{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"moduleCategory.delete('{$row['id']}', '{$row['categoria']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+                list($day, $hour) = explode(" ", $row['fecha']);
+                $date  = date("d/m/Y", strtotime($day));
+
+                $estado = $row['estado'] 
+                    ? "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Activa</span>" 
+                    : "";
+                    
+                $btn = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Categoría', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
+                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Categoría', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
                 $data[] = [
-                    "id" => $row['id'],
-                    "categoria" => $row['categoria'],
-                    "estado" => $estado,
-                    "btn" => $btn
+                    "CATEGORÍA" => $row['nombre'],
+                    "FECHA DE CREACIÓN" => $date,
+                    "ESTADO"    => $estado,
+                    "ACCIONES"  => $btn
                 ];
             }
         }

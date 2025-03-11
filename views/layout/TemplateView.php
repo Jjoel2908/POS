@@ -72,7 +72,7 @@ class TemplateView
         require_once 'layout/header.php';
 ?>
 
-        <div class="card">
+        <div class="card radius-10">
             <div class="card-body p-4">
 
                 <!-- # [ T I T L E ] # -->

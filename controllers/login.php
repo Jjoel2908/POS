@@ -15,6 +15,7 @@ if ($validate) {
    $_SESSION['user']      = $validate['user'];
    $_SESSION['user_name'] = $validate['nombre'];
    $_SESSION['permisos']  = explode(",", $validate['permisos']);
+   $_SESSION['sucursal']  = $validate['id_sucursal'];
 
    $response->success = true;
    $response->url     = '/views/dashboard.php';
