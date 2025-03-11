@@ -8,14 +8,20 @@ class Cashbox extends Connection
    {
    }
 
+   public function selectOne($idRegister)
+   {
+      return $this::queryMySQL("SELECT id, nombre FROM cajas WHERE id = $idRegister AND estado = 1");
+   }
+
+
+
+
+
+   
+
    public function dataTable(): array
    {
       return $this->selectAll('cajas');
-   }
-
-   public function selectCashbox(int $id): array
-   {
-      return $this->select('cajas', $id);
    }
 
    public function insertCashbox(array $data): bool

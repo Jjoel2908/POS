@@ -13,7 +13,7 @@ class CategoryController
         "update_failed" => "Error al actualizar la categoría.",
         "delete_success" => "Categoría eliminada correctamente.",
         "delete_failed" => "Error al eliminar la categoría.",
-        "required" => "Debe completar la información obligatoria"
+        "required" => "Debe completar la información obligatoria."
     ];
 
     public function __construct()

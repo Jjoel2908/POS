@@ -14,6 +14,10 @@ switch ($module) {
         require_once 'CategoryController.php';
         $controller = new CategoryController();
         break;
+    case 'Cliente':
+        require_once 'CustomerController.php';
+        $controller = new CustomerController();
+        break;
     default:
         exit;
 }
