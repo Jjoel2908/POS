@@ -72,11 +72,11 @@ class CategoryController
 
     public function update()
     {
-        $recoverRegister = $this->model::select($this->table, $_POST['id']);
+        $recoverRegister = $this->model->selectOne($_POST['id']);
 
         echo json_encode(
             count($recoverRegister) > 0     
-                ? ['success' => true, 'message' => '', 'data' => $recoverRegister] 
+                ? ['success' => true, 'message' => '', 'data' => $recoverRegister[0]] 
                 : ['success' => false, 'message' => 'No se encontró el registro de la categoría']
         );
     }

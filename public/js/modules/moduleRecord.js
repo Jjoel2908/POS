@@ -1,18 +1,17 @@
 const urlController = "../../../controllers/";
+const module = $(".card").data("module");
 let modalId;
 $(() => {
-    loadDataTable("#module-table", "Categoría");
+    loadDataTable("#module-table", module);
 
     $("form").submit(async function (event) {
         event.preventDefault();
 
         if (validateForm(event, this)) {
-        /** Obtenemos el módulo desde el atributo data-module */
-        const module = $(this).data("module");
-
+        const moduleRecord = $(this).data("module");
         /** Llamamos a submitForm pasando el módulo dinámicamente */
-        await submitForm(this, "save", module, () => {
-            loadDataTable("#module-table", "Categoría");
+        await submitForm(this, "save", moduleRecord, () => {
+            loadDataTable("#module-table", module);
             $("#modalRegister").modal("toggle");
         });
         }
@@ -24,7 +23,7 @@ $(() => {
  * @param {string} title - Título del modal (actualmente no se usa directamente).
  * @param {boolean} isUpdate - Indica si es un registro nuevo (false) o una actualización (true).
  */
-const openModal = (title, isUpdate = false, idModal = "") => {
+const openModal = (title, isUpdate = false, idModal = "", data = null) => {
     /** Si no se especifica un modal, se usa 'modalRegister' */
     modalId = idModal == "" ? "#modalRegister" : idModal;
 
@@ -46,6 +45,13 @@ const openModal = (title, isUpdate = false, idModal = "") => {
 
     /** Limpia los campos del formulario */
     clearForm(modalId);
+
+    if (data != null) {
+        $.each(data, (key, value) => {
+            $(`select#${key}`).val(value).trigger('change');
+            $(`#${key}`).val(value);
+        });
+    }
 
     /** Muestra u oculta el modal */
     $(modalId).modal("toggle");
@@ -191,24 +197,32 @@ const loadDataTable = async (tableId, module) => {
     }
 };
 
+/** Carga los datos de un registro en un formulario para su edición.
+ * Realiza una solicitud al servidor para obtener la información del registro y llena los campos del formulario.
+ *
+ * @param {string} module - Nombre del módulo para la solicitud al controlador.
+ * @param {number} id - ID del registro que se desea actualizar.
+ * @param {string} [idModal=""] - ID del modal que se abrirá (opcional).
+ */
 const updateRegister = async (module, id, idModal = "") => {
     let formdata = new FormData();
     formdata.append("id", id);
 
     /** Llamamos a submitForm pasando el módulo dinámicamente */
     await submitForm(formdata, "update", module, (data) => {
-        if (data) {
-            $.each(data, (key, value) => {
-                console.log(key)
-                console.log(value)
-                $(`#${key}`).val(value);
-            });
-        }
+     
 
-        openModal(module, true, idModal);
+        openModal(module, true, idModal, data);
     }, false);
 };
 
+/** Elimina un registro tras la confirmación del usuario.
+ * Muestra una alerta de confirmación con SweetAlert antes de proceder con la eliminación.
+ *
+ * @param {string} module - Nombre del módulo para la solicitud al controlador.
+ * @param {number} id - ID del registro que se desea eliminar.
+ * @param {string} nombre - Nombre del registro para mostrar en la alerta.
+ */
 const deleteRegister = async (module, id, nombre) => {
     try {
         /** Determina si el texto es "la" o "el" dependiendo del módulo */

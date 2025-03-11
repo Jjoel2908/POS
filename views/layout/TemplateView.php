@@ -3,6 +3,9 @@
 /** Clase para generar las vistas del sistema dinámicamente */
 class TemplateView
 {
+    /** @var string $module Módulo de la vista que se mostrará en la interfaz */
+    private string $module;
+
     /** @var string $title Título de la vista que se mostrará en la interfaz */
     private string $title;
 
@@ -40,16 +43,17 @@ class TemplateView
      */
     public function __construct(array $config)
     {
-        $this->title = $config['title'] ?? 'Módulo';
-        $this->icon = $config['icon'] ?? '';
-        $this->permission = $config['permission'] ?? 0;
+        $this->module        = $config['module'] ?? '';
+        $this->title         = $config['title'] ?? 'Módulo';
+        $this->icon          = $config['icon'] ?? '';
+        $this->permission    = $config['permission'] ?? 0;
         $this->showAddButton = $config['showAddButton'] ?? true;
-        $this->addAction = $config['addAction'] ?? '';
-        $this->addIcon = $config['addIcon'] ?? 'fa-solid fa-plus';
-        $this->addLabel = $config['addLabel'] ?? '';
-        $this->tableId = $config['tableId'] ?? 'module-table';
-        $this->modals = $config['modals'] ?? [];
-        $this->moduleScript = $config['moduleScript'] ?? '';
+        $this->addAction     = $config['addAction'] ?? '';
+        $this->addIcon       = $config['addIcon'] ?? 'fa-solid fa-plus';
+        $this->addLabel      = $config['addLabel'] ?? $config['module'];
+        $this->tableId       = $config['tableId'] ?? 'module-table';
+        $this->modals        = $config['modals'] ?? [];
+        $this->moduleScript  = $config['moduleScript'] ?? '';
     }
 
     /** Renderiza la vista utilizando los atributos de la clase.
@@ -72,7 +76,7 @@ class TemplateView
         require_once 'layout/header.php';
 ?>
 
-        <div class="card radius-10">
+        <div class="card radius-10" data-module="<?= $this->module ?>">
             <div class="card-body p-4">
 
                 <!-- # [ T I T L E ] # -->
@@ -117,7 +121,10 @@ class TemplateView
 
         <!-- # [ S C R I P T ] # -->
         <script src="../public/js/modules/moduleRecord.js"></script>
-        <script src="../public/js/modules/<?= $this->moduleScript ?>.js"></script>
+        <?php if (!empty($this->moduleScript)): ?>
+            <script src="../public/js/modules/<?= $this->moduleScript ?>.js"></script>
+        <?php endif; ?>
+
 
 <?php
     }

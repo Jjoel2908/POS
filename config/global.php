@@ -10,7 +10,7 @@ define("DB_HOST", 'localhost');
  * Nombre de la base de datos
  * Esta constante define el nombre de la base de datos a la que se conectará la aplicación.
  */
-define("DB_NAME", "pos");
+define("DB_NAME", "ventas");
 
 /** 
  * Nombre del usuario de la base de datos
