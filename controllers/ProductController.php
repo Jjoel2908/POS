@@ -3,85 +3,124 @@ session_start();
 require '../models/Product.php';
 
 class ProductController {
-    private $Product;
+    /** @var string Nombre de la tabla en la base de datos */
+    private $table = "productos";
+    private $model;
+
+    private $messages = [
+        "save_success" => "Producto registrado correctamente.",
+        "save_failed" => "Error al registrar el producto.",
+        "update_success" => "Producto actualizado correctamente.",
+        "update_failed" => "Error al actualizar el producto.",
+        "delete_success" => "Producto eliminado correctamente.",
+        "delete_failed" => "Error al eliminar el producto.",
+        "required" => "Debe completar la información obligatoria."
+    ];
 
     public function __construct() {
-        $this->Product = new Product();
+        $this->model = new Product();
     }
 
     public function save() {
-        if ($this->Product::validateData(['nombre', 'stock_minimo', 'codigo', 'id_categoria', 'precio_compra', 'precio_venta'], $_POST)) {
-            if (empty($_POST['id'])) {
-                if ($this->Product::exists('productos', 'codigo', $_POST['codigo'])) {
-                    echo json_encode(['success' => false, 'message' => "El código {$_POST['codigo']} ya existe"]);
-                    return;
-                }
+        /** Sucursal */
+        $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
+
+        /** Información a registrar o actualizar */
+        $data = [
+            'id'             => isset($_POST['id']) ? (int) $_POST['id'] : null,
+            'nombre'         => ucwords(strtolower(trim($_POST['nombre']))),
+            'codigo'         => strtoupper(trim($_POST['codigo'])), 
+            'id_categoria'   => isset($_POST['id_categoria']) ? (int) $_POST['id_categoria'] : null,
+            'stock_minimo'   => isset($_POST['stock_minimo']) ? max(0, (int) $_POST['stock_minimo']) : 0,
+            'precio_compra'  => isset($_POST['precio_compra']) ? max(0, (float) $_POST['precio_compra']) : 0.00,
+            'precio_venta'   => isset($_POST['precio_venta']) ? max(0, (float) $_POST['precio_venta']) : 0.00,
+        ];
+
+        /** Valida campos requeridos */
+        $validateData = ['nombre', 'stock_minimo', 'codigo', 'id_categoria', 'precio_compra', 'precio_venta'];
+        if (!$this->model::validateData($validateData, $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
+            return;
+        }
+
+        if (empty($_POST['id'])) {
+            /** Valida que no exista un registro similar al entrante */
+            if($this->model::exists($this->table, 'codigo', $_POST['codigo'])) {
+                echo json_encode(['success' => false, 'message' => "El código " . $_POST['codigo'] .  " ya existe"]);
+                return;
             }
 
-            $imagen = $_POST["imagenactual"] ?? NULL;
-            $updateImage = false;
-            
-            if (isset($_FILES['imagen']['tmp_name']) && is_uploaded_file($_FILES['imagen']['tmp_name'])) {
-                $ext = pathinfo($_FILES["imagen"]["name"], PATHINFO_EXTENSION);
-                $allowed_types = ["jpg", "jpeg", "png"];
+            /** Agregamos la fecha de creación */
+            $data['fecha'] = date('Y-m-d H:i:s');
 
-                if (in_array($ext, $allowed_types) && exif_imagetype($_FILES["imagen"]["tmp_name"])) {
-                    $imagen = round(microtime(true)) . '.' . $ext;
-                    $ruta_destino = "../media/products/" . $imagen;
-                    if (move_uploaded_file($_FILES["imagen"]["tmp_name"], $ruta_destino)) $updateImage = true;
-                }
-            }
-            
-            if ($updateImage && $_POST['imagenactual']) {
-                $imageRoute = "../media/products/" . $_POST['imagenactual'];
-                if (file_exists($imageRoute)) unlink($imageRoute);
-            }
-            
-            $data = array_merge($_POST, ['imagen' => $imagen]);
-            
-            $result = empty($_POST['id']) 
-                ? $this->Product->insertProduct($data)
-                : $this->Product->updateProduct($data, $_POST['id']);
-            
-            echo json_encode(['success' => $result, 'message' => $result ? 'Producto guardado correctamente' : 'Error al guardar producto']);
+            /** Agregamos sucursal */
+            $data['id_sucursal'] = $idSucursal;
+
+            /** Agregamos el usuario */
+            $data['creado_por'] = $_SESSION['id'];
+
+            $save = $this->model::insert($this->table, $data);
+
+            echo json_encode(
+                $save 
+                    ? ['success' => true, 'message' => $this->messages['save_success']] 
+                    : ['success' => false, 'message' => $this->messages['save_failed']]
+                );
+
         } else {
-            echo json_encode(['success' => false, 'message' => "Complete los campos requeridos"]);
+            $save = $this->model::update($this->table, $_POST['id'], $data);
+            echo json_encode(
+                $save 
+                    ? ['success' => true, 'message' => $this->messages['update_success']] 
+                    : ['success' => false, 'message' => $this->messages['update_failed']]
+                );
         }
     }
 
     public function update() {
-        $updateProduct = $this->Product->selectProduct($_POST['id']);
-        echo json_encode([ 'success' => count($updateProduct) > 0, 'message' => count($updateProduct) > 0 ? 'Producto Encontrado' : 'No se encontró el registro del producto', 'data' => $updateProduct ]);
+        $recoverRegister = $this->model->select($this->table, $_POST['id']);
+
+        echo json_encode(
+            count($recoverRegister) > 0     
+                ? ['success' => true, 'message' => '', 'data' => $recoverRegister] 
+                : ['success' => false, 'message' => 'No se encontró el registro.']
+        ); 
     }
 
     public function delete() {
-        $dataProduct = $this->Product->selectProduct($_POST['id']);
-        if ($dataProduct['stock'] == 0) {
-            $result = $this->Product->deleteProduct($_POST['id']);
-            echo json_encode(['success' => $result, 'message' => $result ? 'Producto eliminado correctamente' : 'Error al eliminar producto']);
-        } else {
+        $dataProduct = $this->model->select($this->table, $_POST['id']);
+
+        if ($dataProduct['stock'] > 0) {
             echo json_encode(['success' => false, 'message' => "Producto con {$dataProduct['stock']} unidades disponibles"]);
+            return;
         }
+
+        $delete = $this->model::delete($this->table, $_POST['id']);
+
+        echo json_encode(
+            $delete 
+                ? ['success' => true, 'message' => $this->messages['delete_success']] 
+                : ['success' => false, 'message' => $this->messages['delete_failed']]
+        );
     }
 
-    public function dataTable() {
+    public function dataTable() 
+    {
         $response = $this->Product->dataTable();
         $data = [];
 
         foreach ($response as $row) {
-            $img = !empty($row['imagen']) ? "<img src='../media/products/{$row['imagen']}' height='48px' width='48px'>" : "<img src='../media/products/default.png' height='48px' width='48px'>";
             $btn = "<button type='button' class='btn btn-inverse-primary mx-1' onclick='moduleProduct.updateProduct({$row['id']})'><i class='bx bx-edit-alt m-0'></i></button>";
             $btn .= "<button type='button' class='btn btn-inverse-danger mx-1' onclick='moduleProduct.deleteProduct({$row['id']}, `{$row['nombre']}`)'><i class='bx bx-trash m-0'></i></button>";
 
             $data[] = [
-                "nombre" => $row['nombre'],
-                "codigo" => $row['codigo'],
-                "id_categoria" => $row['nombre_categoria'],
-                "precio_compra" => $row['precio_compra'],
-                "precio_venta" => $row['precio_venta'],
-                "stock" => $row['stock'],
-                "imagen" => $img,
-                "btn" => $btn
+                "PRODUCTO" => $row['nombre'],
+                "CÓDIGO" => $row['codigo'],
+                "CATEGORÍA" => $row['nombre_categoria'],
+                "COMPRA" => $row['precio_compra'],
+                "VENTA" => $row['precio_venta'],
+                "STOCK" => $row['stock'],
+                "ACCIONES" => $btn
             ];
         }
         echo json_encode($data);
@@ -93,12 +132,4 @@ class ProductController {
             echo '<option value="' . $category['id'] . '">' . $category['categoria'] . '</option>';
         }
     }
-}
-
-$controller = new ProductController();
-
-if (isset($_GET['op']) && method_exists($controller, $_GET['op'])) {
-    $controller->{$_GET['op']}();
-} else {
-    echo json_encode(['success' => false, 'message' => 'Operación no válida']);
 }

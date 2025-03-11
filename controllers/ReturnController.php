@@ -3,35 +3,25 @@ session_start();
 require '../models/ReturnProduct.php';
 
 class ReturnController {
-    private $return;
+    /** @var string Nombre de la tabla en la base de datos */
+    private $table = "devoluciones";
+    private $model;
+
+    private $messages = [
+        "save_success" => "Devolución registrada correctamente.",
+        "save_failed" => "Error al registrar la devolución.",
+        "update_success" => "Devolución actualizada correctamente.",
+        "update_failed" => "Error al actualizar la devolución.",
+        "delete_success" => "Devolución eliminada correctamente.",
+        "delete_failed" => "Error al eliminar la devolución.",
+        "required" => "Debe completar la información obligatoria."
+    ];
 
     public function __construct() {
-        $this->return = new ReturnProduct();
+        $this->model = new ReturnProduct();
     }
 
-    public function handleRequest($operation) {
-        switch ($operation) {
-            case 'saveReturn':
-                $this->saveReturn();
-                break;
-            case 'selectSales':
-                $this->selectSales();
-                break;
-            case 'selectProducts':
-                $this->selectProducts();
-                break;
-            case 'selectQuantity':
-                $this->selectQuantity();
-                break;
-            case 'dataTable':
-                $this->dataTable();
-                break;
-            default:
-                echo json_encode(['success' => false, 'message' => 'Operación no válida']);
-        }
-    }
-
-    private function saveReturn() {
+    private function save() {
         if (!$this->return::validateData(['id_venta', 'id_detail', 'id_producto', 'cantidad', 'motivo', 'precio'], $_POST)) {
             echo json_encode(['success' => false, 'message' => 'Complete los campos requeridos']);
             return;
@@ -117,6 +107,3 @@ class ReturnController {
         echo json_encode($data);
     }
 }
-
-$controller = new ReturnController();
-$controller->handleRequest($_GET['op']);
