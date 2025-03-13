@@ -109,9 +109,9 @@ class CustomerController
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Cliente', '{$row['id']}', '{$customerName}')\"><i class=\"bx bx-trash m-0\"></i></button>";
 
                 $data[] = [
-                    "NOMBRE"   => $customerName,
-                    "TELÉFONO" => $row['telefono'],
-                    "EMAIL"   => $row['correo'],
+                    "NOMBRE"        => $customerName,
+                    "TELÉFONO"      => $row['telefono'],
+                    "EMAIL"         => $row['correo'] ?? "PENDIENTE",
                     "FECHA DE ALTA" => $date,
                     "ACCIONES"      => $btn
                 ];

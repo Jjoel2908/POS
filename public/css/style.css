@@ -226,6 +226,8 @@ label {
    }
 }
 
-
-
-
+@media (min-width:992px) {
+	.view-modal {
+		max-width: 600px;
+	}
+}

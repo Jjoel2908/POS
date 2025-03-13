@@ -83,7 +83,7 @@ class TemplateView
                 <div class="row">
                     <div class="col-sm-12">
                         <h5 class="view-title">
-                            <i class="<?= $this->icon ?>"></i>
+                            <i class="<?= $this->icon ?> me-1"></i>
                             <?= $this->title ?>
                         </h5>
                     </div>

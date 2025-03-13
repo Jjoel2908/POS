@@ -183,7 +183,7 @@ const loadDataTable = async (tableId, module) => {
         /** Aplica alineaciones dinámicas a las filas */
         content.createdRow = (row, rowData) => {
         Object.keys(rowData).forEach((key, index) => {
-            if (["FECHA DE CREACIÓN", "ACCIONES", "ESTADO"].includes(key)) {
+            if (["FECHA DE CREACIÓN", "FECHA DE ALTA", "TELÉFONO", "ACCIONES", "ESTADO"].includes(key)) {
             $(`td:eq(${index})`, row).addClass("text-center");
             } else {
             $(`td:eq(${index})`, row).addClass("text-start");

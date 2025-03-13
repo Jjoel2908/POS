@@ -2,6 +2,7 @@ const TextDelete = '<i class="bx bx-eraser me-1"></i> Sí, Eliminar';
 const TextConfirm = '<i class="bx bx-check-circle me-1"></i> Sí, Proceder';
 const TextCancel = '<i class="bx bx-arrow-back me-1"></i> No, Salir';
 const TextBack = '<i class="bx bx-arrow-back me-1"></i> Regresar';
+const colorColumns = "#7128a3";
 
 $(document).ready(function () {
   $(".select").each(function () {
@@ -295,6 +296,50 @@ const initTable = () => {
       {
         extend: "pdfHtml5",
         text: '<i class="fa-solid fa-file-pdf"></i>',
+        customize: function (doc) {
+          /** Recorrer las tablas en el documento y hacer las modificaciones necesarias */
+          doc.content.forEach(function (contentItem) {
+            if (contentItem.table) {
+              /** Eliminar la última columna de cada fila */
+              contentItem.table.body = contentItem.table.body.map(row => row.slice(0, -1));
+
+              /** Asegurarse de que cada tabla ocupe el 100% del ancho */
+              contentItem.table.widths = Array(contentItem.table.body[0].length).fill("*"); // Establecer todos los anchos de las columnas al 100% de la página
+
+              /** Cambiar el color de fondo del encabezado de la tabla */
+              contentItem.table.headerRows = 1;
+              contentItem.table.body[0].forEach(function (cell) {
+                cell.fillColor = colorColumns; // Color de fondo del encabezado
+              });
+
+              contentItem.table.body.forEach(function (row, rowIndex) {
+                if (rowIndex > 0) {
+                  /** No modificar el encabezado, solo las filas de datos */
+                  row.forEach(function (cell) {
+                    cell.fontSize = 12; // Ajustar tamaño de fuente para las celdas de datos
+                  });
+                }
+              });
+            }
+          });
+
+          doc.content = [
+            {
+              text: module,
+              style: "tableTitle",
+              margin: [0, 0, 0, 10], // Espaciado antes de la tabla
+            },
+            ...doc.content,
+          ];
+
+          /** Estilo para los títulos de las tablas */
+          doc.styles.tableTitle = {
+            fontSize: 16,
+            bold: true,
+            alignment: "center",
+            color: colorColumns,
+          };
+        },
       },
       {
         extend: "colvis",
@@ -335,7 +380,7 @@ const validateInputText = (event) => {
 
 /** Función para validar la entrada de un campo numérico y eliminar caracteres no deseados.
  * Permite solo números, un punto decimal y restringe símbolos como '+' o '-'.
- * 
+ *
  * @param {Event} event - El evento de entrada asociado al campo numérico.
  */
 const validateInputNumber = (event) => {
@@ -349,7 +394,6 @@ const validateInputNumber = (event) => {
    */
   event.target.value = valor.replace(/[^0-9.]/g, "");
 };
-
 
 const validateString = (event) => {
   // Esta función se ejecuta cada vez que el usuario ingresa un valor en un campo de entrada.
@@ -411,30 +455,27 @@ const validatePhoneNumber = (event) => {
   event.target.value = value;
 };
 
-  
 function getFechaActualLetras(fecha = new Date()) {
-  return fecha.toLocaleDateString("es-ES", { 
-      weekday: "long",   // Nombre del día (lunes, martes, etc.)
-      day: "numeric",    // Día del mes
-      month: "long",     // Nombre del mes (enero, febrero, etc.)
-      year: "numeric"    // Año completo
+  return fecha.toLocaleDateString("es-ES", {
+    weekday: "long", // Nombre del día (lunes, martes, etc.)
+    day: "numeric", // Día del mes
+    month: "long", // Nombre del mes (enero, febrero, etc.)
+    year: "numeric", // Año completo
   });
 }
 
 // Función para cambiar el formato de la fecha
-function formatearFecha (fecha) {
+function formatearFecha(fecha) {
   if (!fecha) return ""; // Verifica si la fecha está vacía
   let partes = fecha.split("-"); // Divide la fecha en partes
   return `${partes[2]}/${partes[1]}/${partes[0]}`; // Reordena a DD/MM/YYYY
-};
-
-function formatCurrency(value) {
-  return value > 0 
-      ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value)
-      : "PENDIENTE";
 }
 
-
-
-
-
+function formatCurrency(value) {
+  return value > 0
+    ? new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN",
+      }).format(value)
+    : "PENDIENTE";
+}
