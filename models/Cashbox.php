@@ -3,7 +3,6 @@ require '../config/Connection.php';
 
 class Cashbox extends Connection
 {
-
    public function __construct()
    {
    }
@@ -12,12 +11,6 @@ class Cashbox extends Connection
    {
       return $this::queryMySQL("SELECT id, nombre FROM cajas WHERE id = $idRegister AND estado = 1");
    }
-
-
-
-
-
-   
 
    public function dataTable(): array
    {

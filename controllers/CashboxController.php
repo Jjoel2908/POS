@@ -116,9 +116,9 @@ class CashboxController
                 $invisible = "";
                 if ($existPurchaseOpen) $invisible = "invisible";
 
-                $btn  = "<button type=\"button\" class=\"btn btn-inverse-success mx-1 $invisible\" onclick=\"moduleCashbox.openCashbox('{$row['id']}', '{$row['caja']}')\"><i class=\"bx bx-box m-0\"></i></button>";
+                $btn  = "<button type=\"button\" class=\"btn btn-inverse-success mx-1 $invisible\" onclick=\"moduleCashbox.openCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-box m-0\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"moduleCashbox.updateCashbox('{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"moduleCashbox.deleteCashbox('{$row['id']}', '{$row['caja']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"moduleCashbox.deleteCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
 
                 $data[] = [
                     "CAJA" => $row['nombre'],

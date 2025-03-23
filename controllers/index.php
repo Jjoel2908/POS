@@ -18,6 +18,10 @@ switch ($module) {
         require_once 'CustomerController.php';
         $controller = new CustomerController();
         break;
+    case 'Caja':
+        require_once 'CashboxController.php';
+        $controller = new CashboxController();
+        break;
     default:
         exit;
 }
