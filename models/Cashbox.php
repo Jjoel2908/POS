@@ -12,6 +12,18 @@ class Cashbox extends Connection
       return $this::queryMySQL("SELECT id, nombre FROM cajas WHERE id = $idRegister AND estado = 1");
    }
 
+
+
+
+
+
+
+
+
+
+
+   
+
    public function dataTable(): array
    {
       return $this->selectAll('cajas');

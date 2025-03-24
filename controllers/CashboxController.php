@@ -3,8 +3,11 @@ require '../models/Cashbox.php';
 
 class CashboxController
 {
+    /** @var string Nombre de la tabla en la base de datos */
     private $table = "cajas";
     private $model;
+    private $id;
+
     private $messages = [
         "save_success" => "Caja registrada correctamente.",
         "save_failed" => "Error al registrar caja.",
@@ -16,18 +19,22 @@ class CashboxController
         "box_open_error" => "Es necesario cerrar la caja para eliminar."
     ];
 
-    public function __construct()
+    public function __construct($id = null)
     {
         $this->model = new Cashbox();
+        $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
     public function save()
     {
+        /** Nombre */
+        $name = $this->model::sanitizeInput('nombre', 'text');;
+
         /** Sucursal */
         $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
 
         /** Información a registrar o actualizar */
-        $data = ['nombre' => $_POST['nombre']];
+        $data = ['nombre' => $name];
 
         /** Valida campos requeridos */
         if (!$this->model::validateData(['nombre'], $_POST)) {
@@ -36,54 +43,46 @@ class CashboxController
         }
 
         /** Valida que no exista un registro similar al entrante */
-        if($this->model::existsByFieldAndSucursal($this->table, 'nombre', $_POST['nombre'], $idSucursal)) {
-            echo json_encode(['success' => false, 'message' => "La caja {$_POST['nombre']} ya existe"]);
+        if ($this->model::existsByFieldAndSucursal($this->table, 'nombre', $name, $idSucursal)) {
+            echo json_encode(['success' => false, 'message' => "La caja " . $name .  " ya existe"]);
             return;
         }
 
-        if (empty($_POST['id'])) {
-
-            /** Agregamos la fecha de creación */
-            $data['fecha'] = date('Y-m-d H:i:s');
-
+        if (!$this->id) {
             /** Agregamos sucursal */
             $data['id_sucursal'] = $idSucursal;
-
-            /** Agregamos el usuario */
-            $data['creado_por'] = $_SESSION['id'];
 
             $save = $this->model::insert($this->table, $data);
 
             echo json_encode(
-                $save 
-                    ? ['success' => true, 'message' => $this->messages['save_success']] 
+                $save
+                    ? ['success' => true, 'message' => $this->messages['save_success']]
                     : ['success' => false, 'message' => $this->messages['save_failed']]
-                );
-
+            );
         } else {
-            $save = $this->model::update($this->table, $_POST['id'], $data);
+            $save = $this->model::update($this->table, $this->id, $data);
             echo json_encode(
-                $save 
-                    ? ['success' => true, 'message' => $this->messages['update_success']] 
+                $save
+                    ? ['success' => true, 'message' => $this->messages['update_success']]
                     : ['success' => false, 'message' => $this->messages['update_failed']]
-                );
-        }    
+            );
+        }
     }
 
     public function update()
     {
-        $recoverRegister = $this->model->selectOne($_POST['id']);
+        $recoverRegister = $this->model->selectOne($this->id);
 
         echo json_encode(
-            count($recoverRegister) > 0     
-                ? ['success' => true, 'message' => '', 'data' => $recoverRegister[0]] 
+            count($recoverRegister) > 0
+                ? ['success' => true, 'message' => '', 'data' => $recoverRegister[0]]
                 : ['success' => false, 'message' => 'No se encontró el registro']
         );
     }
 
     public function delete()
     {
-        $stateCashbox = $this->model->select($this->table, $_POST['id']);
+        $stateCashbox = $this->model->select($this->table, $this->id);
         $isOpen = $stateCashbox['abierta'];
 
         if ($isOpen == 1) {
@@ -91,7 +90,7 @@ class CashboxController
             return;
         }
 
-        $delete = $this->model::delete($this->table, $_POST['id']);
+        $delete = $this->model::delete($this->table, $this->id);
         echo json_encode(
             $delete
                 ? ['success' => true, 'message' => $this->messages['delete_success']]
@@ -101,7 +100,8 @@ class CashboxController
 
     public function dataTable()
     {
-        $response = $this->model::selectAllBySucursal($this->table, $_SESSION['sucursal']);
+        $idSucursal = filter_var($_SESSION['sucursal'], FILTER_VALIDATE_INT) ?: 0;
+        $response = $this->model::selectAllBySucursal($this->table, $idSucursal);
         $existPurchaseOpen = $this->model::exists($this->table, 'abierta', 1);
         $data = array();
 
@@ -117,14 +117,14 @@ class CashboxController
                 if ($existPurchaseOpen) $invisible = "invisible";
 
                 $btn  = "<button type=\"button\" class=\"btn btn-inverse-success mx-1 $invisible\" onclick=\"moduleCashbox.openCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-box m-0\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"moduleCashbox.updateCashbox('{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"moduleCashbox.deleteCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
-
+                $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Caja', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
+                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Caja', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+                
                 $data[] = [
-                    "CAJA" => $row['nombre'],
-                    "FECHA DE CREACIÓN" => $date,
-                    "ESTADO"    => $estado,
-                    "ACCIONES"  => $btn
+                    "Caja"          => $row['nombre'],
+                    "Fecha de Alta" => $date,
+                    "Estado"        => $estado,
+                    "Acciones"      => $btn
                 ];
             }
         }

@@ -2,8 +2,9 @@
 session_start();
 
 /** Obtenemos el módulo y la operación a realizar */
-$module = $_POST['module'] ?? null;
+$module    = $_POST['module'] ?? null;
 $operation = $_POST['operation'] ?? null;
+$id        = $_POST['id'] ?? null;
 
 /** Verificamos que se haya enviado el módulo */
 if ($module === null)
@@ -12,15 +13,19 @@ if ($module === null)
 switch ($module) {
     case 'Categoría':
         require_once 'CategoryController.php';
-        $controller = new CategoryController();
+        $controller = new CategoryController($id);
+        break;
+    case 'Marca':
+        require_once 'BrandController.php';
+        $controller = new BrandController($id);
         break;
     case 'Cliente':
         require_once 'CustomerController.php';
-        $controller = new CustomerController();
+        $controller = new CustomerController($id);
         break;
     case 'Caja':
         require_once 'CashboxController.php';
-        $controller = new CashboxController();
+        $controller = new CashboxController($id);
         break;
     default:
         exit;

@@ -5,6 +5,7 @@ class CategoryController
     /** @var string Nombre de la tabla en la base de datos */
     private $table = "categorias";
     private $model;
+    private $id;
 
     private $messages = [
         "save_success" => "Categoría registrada correctamente.",
@@ -16,18 +17,22 @@ class CategoryController
         "required" => "Debe completar la información obligatoria."
     ];
 
-    public function __construct()
+    public function __construct($id = null)
     {
         $this->model = new Category();
+        $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
     public function save()
     {
+        /** Nombre */
+        $name = $this->model::sanitizeInput('nombre', 'text');
+        
         /** Sucursal */
         $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
 
         /** Información a registrar o actualizar */
-        $data = ['nombre' => $_POST['nombre']];
+        $data = ['nombre' => $name];
 
         /** Valida campos requeridos */
         if (!$this->model::validateData(['nombre'], $_POST)) {
@@ -36,22 +41,15 @@ class CategoryController
         }
 
         /** Valida que no exista un registro similar al entrante */
-        if($this->model::existsByFieldAndSucursal($this->table, 'nombre', $_POST['nombre'], $idSucursal)) {
-            echo json_encode(['success' => false, 'message' => "La categoría " . $_POST['nombre'] .  " ya existe"]);
+        if($this->model::existsByFieldAndSucursal($this->table, 'nombre', $name, $idSucursal)) {
+            echo json_encode(['success' => false, 'message' => "La categoría " . $name .  " ya existe"]);
             return;
         }
 
-        if (empty($_POST['id'])) {
-
-            /** Agregamos la fecha de creación */
-            $data['fecha'] = date('Y-m-d H:i:s');
-
+        if (!$this->id) {
             /** Agregamos sucursal */
             $data['id_sucursal'] = $idSucursal;
-
-            /** Agregamos el usuario */
-            $data['creado_por'] = $_SESSION['id'];
-
+            
             $save = $this->model::insert($this->table, $data);
 
             echo json_encode(
@@ -61,10 +59,10 @@ class CategoryController
                 );
 
         } else {
-            $save = $this->model::update($this->table, $_POST['id'], $data);
+            $save = $this->model::update($this->table, $this->id, $data);
             echo json_encode(
                 $save 
-                    ? ['success' => true, 'message' => $this->messages['update_success']] 
+                    ? ['success' => true, 'message' => $this->messages['update_success'] . $this->id] 
                     : ['success' => false, 'message' => $this->messages['update_failed']]
                 );
         }
@@ -72,7 +70,7 @@ class CategoryController
 
     public function update()
     {
-        $recoverRegister = $this->model->selectOne($_POST['id']);
+        $recoverRegister = $this->model->selectOne($this->id);
 
         echo json_encode(
             count($recoverRegister) > 0     
@@ -83,10 +81,10 @@ class CategoryController
 
     public function delete()
     {
-        $validateProducts = $this->model::exists('productos', 'id_categoria', $_POST['id']);
+        $validateProducts = $this->model::exists('productos', 'id_categoria', $this->id);
 
         if (!$validateProducts) {
-            $delete = $this->model::delete($this->table, $_POST['id']);
+            $delete = $this->model::delete($this->table, $this->id);
             echo json_encode(
                 $delete 
                     ? ['success' => true, 'message' => $this->messages['delete_success']] 
@@ -98,7 +96,7 @@ class CategoryController
 
     public function dataTable()
     {
-        $response = $this->model::selectAllBySucursal($this->table, $_SESSION['sucursal']);
+        $response = $this->model->selectAll($this->table);
         $data = array();
 
         if (count($response) > 0) {
@@ -108,16 +106,16 @@ class CategoryController
                 $date  = date("d/m/Y", strtotime($day));
 
                 $estado = $row['estado'] 
-                    ? "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Activa</span>" 
+                    ? "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Activo</span>" 
                     : "";
                     
                 $btn = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Categoría', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Categoría', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
                 $data[] = [
-                    "CATEGORÍA" => $row['nombre'],
-                    "FECHA DE CREACIÓN" => $date,
-                    "ESTADO"    => $estado,
-                    "ACCIONES"  => $btn
+                    "Categoría"     => $row['nombre'],
+                    "Fecha de Alta" => $date,
+                    "Estado"        => $estado,
+                    "Acciones"      => $btn
                 ];
             }
         }

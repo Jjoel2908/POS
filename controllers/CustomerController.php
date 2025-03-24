@@ -6,33 +6,34 @@ class CustomerController
     /** @var string Nombre de la tabla en la base de datos */
     private $table = "clientes";
     private $model;
+    private $id;
 
     private $messages = [
-        "save_success" => "Cliente registrado correctamente.",
-        "save_failed" => "Error al registrar el cliente.",
+        "save_success"   => "Cliente registrado correctamente.",
+        "save_failed"    => "Error al registrar el cliente.",
         "update_success" => "Cliente actualizado correctamente.",
-        "update_failed" => "Error al actualizar el cliente.",
+        "update_failed"  => "Error al actualizar el cliente.",
         "delete_success" => "Cliente eliminado correctamente.",
-        "delete_failed" => "Error al eliminar el cliente.",
-        "required" => "Debe completar la información obligatoria."
+        "delete_failed"  => "Error al eliminar el cliente.",
+        "required"       => "Debe completar la información obligatoria."
     ];
 
-    public function __construct()
+    public function __construct($id = null)
     {
         $this->model = new Customer();
+        $this->id    = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
     public function save()
     {
-        /** Valida el correo electrónico */
-        $validateEmail = !empty($_POST['correo']) ? filter_var($_POST['correo'], FILTER_VALIDATE_EMAIL) : NULL;
+        $phone = $this->model::sanitizeInput('telefono', 'phone');
 
         /** Información a registrar o actualizar */
         $data = [
-            'nombre'        => ucwords(strtolower(trim($_POST['nombre']))),
-            'apellidos'     => ucwords(strtolower(trim($_POST['apellidos']))),
-            'telefono'      => preg_replace('/\D/', '', $_POST['telefono']),
-            'correo'        => $validateEmail,
+            'nombre'    => $this->model::sanitizeInput('nombre', 'name'),
+            'apellidos' => $this->model::sanitizeInput('apellidos', 'name'),
+            'telefono'  => $phone,
+            'correo'    => $this->model::sanitizeInput('correo', 'email'),
         ];
 
         /** Valida campos requeridos */
@@ -41,18 +42,12 @@ class CustomerController
             return;
         }
 
-        /** Valida que no exista un registro similar al entrante */
-        if($this->model::exists($this->table, 'telefono', $_POST['telefono'])) {
-            echo json_encode(['success' => false, 'message' => "El número de teléfono ya existe"]);
-            return;
-        }
-
-        if (empty($_POST['id'])) {
+        if (!$this->id) {
             /** Agregamos la fecha de creación */
             $data['fecha'] = date('Y-m-d H:i:s');
 
             /** Agregamos el usuario */
-            $data['creado_por'] = $_SESSION['id'];
+            $data['creado_por'] = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
 
             $save = $this->model::insert($this->table, $data);
 
@@ -62,7 +57,7 @@ class CustomerController
                     : ['success' => false, 'message' => $this->messages['save_failed']]
                 );
         } else {
-            $save = $this->model::update($this->table, $_POST['id'], $data);
+            $save = $this->model::update($this->table, $this->id, $data);
             echo json_encode(
                 $save 
                     ? ['success' => true, 'message' => $this->messages['update_success']] 
@@ -73,7 +68,7 @@ class CustomerController
 
     public function update()
     {
-        $recoverRegister = $this->model->select($this->table, $_POST['id']);
+        $recoverRegister = $this->model->select($this->table, $this->id);
 
         echo json_encode(
             count($recoverRegister) > 0     
@@ -84,7 +79,7 @@ class CustomerController
 
     public function delete()
     {
-        $delete = $this->model::delete($this->table, $_POST['id']);
+        $delete = $this->model::delete($this->table, $this->id);
         
         echo json_encode(
                 $delete 
@@ -102,18 +97,18 @@ class CustomerController
             foreach ($response as $row) {
 
                 list($day, $hour) = explode(" ", $row['fecha']);
-                $date  = date("d/m/Y", strtotime($day));
-                $customerName = $row['nombre'] . " " . $row['apellidos'];
+                $date             = date("d/m/Y", strtotime($day));
+                $customerName     = $row['nombre'] . " " . $row['apellidos'];
 
                 $btn  = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Cliente', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Cliente', '{$row['id']}', '{$customerName}')\"><i class=\"bx bx-trash m-0\"></i></button>";
 
                 $data[] = [
-                    "NOMBRE"        => $customerName,
-                    "TELÉFONO"      => $row['telefono'],
-                    "EMAIL"         => $row['correo'] ?? "PENDIENTE",
-                    "FECHA DE ALTA" => $date,
-                    "ACCIONES"      => $btn
+                    "Nombre"        => $customerName,
+                    "Teléfono"      => $row['telefono'],
+                    "Correo"        => $row['correo'] ?? "PENDIENTE",
+                    "Fecha de Alta" => $date,
+                    "Acciones"      => $btn
                 ];
             }
         }

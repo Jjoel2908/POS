@@ -28,7 +28,7 @@ const openModal = (title, isUpdate = false, idModal = "", data = null) => {
     modalId = idModal == "" ? "#modalRegister" : idModal;
 
     /** Determina si el texto es "Nueva" o "Nuevo" dependiendo del módulo */
-    let textNew = ["Categoría", "Caja"].includes(title) ? "Nueva " : "Nuevo ";
+    let textNew = ["Categoría", "Marca", "Caja"].includes(title) ? "Nueva " : "Nuevo ";
 
     /** Define el texto de acción: "Actualizar" o "Nuevo/Nueva". */
     let actionText = isUpdate ? "Actualizar " : textNew;
@@ -166,14 +166,14 @@ const loadDataTable = async (tableId, module) => {
         const data = await response.json();
 
         if (data.length === 0) {
-        showAlert(false, "No hay datos disponibles.");
-        return;
+            showAlert(false, "No hay datos disponibles.");
+            return;
         }
 
         /** Generamos dinámicamente las columnas basadas en las claves del primer objeto */
         let columns = Object.keys(data[0]).map((key) => ({
-        data: key,
-        title: key,
+            data: key,
+            title: key,
         }));
 
         let content = initTable();
@@ -183,7 +183,7 @@ const loadDataTable = async (tableId, module) => {
         /** Aplica alineaciones dinámicas a las filas */
         content.createdRow = (row, rowData) => {
         Object.keys(rowData).forEach((key, index) => {
-            if (["FECHA DE CREACIÓN", "FECHA DE ALTA", "TELÉFONO", "ACCIONES", "ESTADO"].includes(key)) {
+            if (["Fecha de Creación", "Fecha de Alta", "Teléfono", "Acciones", "Estado"].includes(key)) {
             $(`td:eq(${index})`, row).addClass("text-center");
             } else {
             $(`td:eq(${index})`, row).addClass("text-start");
@@ -226,7 +226,7 @@ const updateRegister = async (module, id, idModal = "") => {
 const deleteRegister = async (module, id, nombre) => {
     try {
         /** Determina si el texto es "la" o "el" dependiendo del módulo */
-        let text = ["Categoría", "Caja"].includes(module) ? "la" : "el";
+        let text = ["Categoría", "Marca", "Caja"].includes(module) ? "la" : "el";
 
         Swal.fire({
             title: '<h3 class="mt-3">Eliminar ' + module + "</h3>",

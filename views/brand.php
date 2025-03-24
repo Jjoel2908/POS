@@ -2,10 +2,10 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 5,
+   'permission'   => 3,
    'module'        => 'Marca',
    'title'        => 'Marcas',
-   'icon'         => 'fa-solid fa-cash-register',
+   'icon'         => 'fa-solid fa-layer-group',
    'addAction'  => "openModal('Marca')",
    'modals'     => [
       'modal/modalBrand.php'

@@ -105,7 +105,7 @@ class TemplateView
 
                 <!-- # [ C O N T E N T ] # -->
                 <div class="row">
-                    <table class="table table-striped view-table" id="<?= $this->tableId ?>">
+                    <table class="table table-striped table-bordered view-table" id="<?= $this->tableId ?>">
                     </table>
                 </div>
 
