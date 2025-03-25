@@ -212,8 +212,6 @@ const updateRegister = async (module, id, idModal = "") => {
 
     /** Llamamos a submitForm pasando el módulo dinámicamente */
     await submitForm(formdata, "update", module, (data) => {
-     
-
         openModal(module, true, idModal, data);
     }, false);
 };

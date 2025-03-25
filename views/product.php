@@ -6,7 +6,7 @@ $config = [
    'module'        => 'Producto',
    'title'        => 'Productos',
    'icon'         => 'fa-solid fa-chevron-right',
-   'addAction'    => "openModal('Producto')",
+   'addAction'    => "addProduct()",
    'modals'       => [
       'modal/modalProduct.php',
    ],

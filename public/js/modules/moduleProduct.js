@@ -41,39 +41,8 @@ let moduleProduct = {
 
    /** M O D A L  A D D  P R O D U C T */
    modalAddProduct: () => {
-      if ( $('#formAddProduct #codigo').attr('readonly') ) $('#formAddProduct #codigo').removeAttr('readonly');
-      POS.viewModal();
+     
    },
-
-   /** T A B L E  P R O D U C T S */
-   tableProduct: () => {
-      $.ajax({
-         url: URL_PRODUCT + "op=dataTable",
-         type: "GET",
-         dataType: "JSON",
-         success: (data) => {
-   
-            let content = initTable();
-            content.columns =    [  { data: 'nombre',        title: 'Nombre' },
-                                    { data: 'codigo',        title: 'Código' },
-                                    { data: 'id_categoria',  title: 'Categoría' },
-                                    { data: 'precio_compra', title: 'Precio Compra' },
-                                    { data: 'precio_venta',  title: 'Precio Venta' },
-                                    { data: 'stock',         title: 'Stock' },
-                                    { data: 'imagen',        title: 'Imagen' },
-                                    { data: 'btn',           title: 'Acciones' } ];
-            content.data = data;
-            content.createdRow = (row, data) => {
-   
-               $(`td:eq(0), td:eq(1), td:eq(2)`, row).addClass("text-start");
-               (data.stock == 0) ? $('td:eq(5)', row).addClass("bg-light-danger") : "";
-            
-            };
-   
-            showTable("#table-products", content);
-         }
-      });
-	},
 
    /** U P D A T E  P R O D U C T */
    updateProduct: (id) => {
@@ -81,10 +50,9 @@ let moduleProduct = {
       $('#modalAddProduct #codigo').prop('readonly', true);
       POS.update(id, url);
    },
+}
 
-   /** D E L E T E  P R O D U C T */
-   deleteProduct: (id, nombre) => {
-      let url = URL_PRODUCT + "op=deleteProduct";
-      POS.delete(id, nombre, url, moduleProduct.tableProduct);
-   }
+const addProduct = () => {
+   openModal('Producto');
+   if ( $('#formAddProduct #codigo').attr('readonly') ) $('#formAddProduct #codigo').removeAttr('readonly');
 }
