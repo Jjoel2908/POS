@@ -7,6 +7,7 @@ class CustomerController
     private $table = "clientes";
     private $model;
     private $id;
+    private $idSucursal;
 
     private $messages = [
         "save_success"   => "Cliente registrado correctamente.",
@@ -18,10 +19,11 @@ class CustomerController
         "required"       => "Debe completar la información obligatoria."
     ];
 
-    public function __construct($id = null)
+    public function __construct($id = null, $idSucursal = null)
     {
         $this->model = new Customer();
         $this->id    = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
     public function save()

@@ -6,6 +6,8 @@ class ProductController {
     /** @var string Nombre de la tabla en la base de datos */
     private $table = "productos";
     private $model;
+    private $id;
+    private $idSucursal;
 
     private $messages = [
         "save_success" => "Producto registrado correctamente.",
@@ -17,21 +19,22 @@ class ProductController {
         "required" => "Debe completar la información obligatoria."
     ];
 
-    public function __construct() {
+    public function __construct($id = null, $idSucursal = null)
+    {
         $this->model = new Product();
+        $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
     public function save() {
-        /** Sucursal */
-        $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
-
         /** Información a registrar o actualizar */
         $data = [
-            'id'             => isset($_POST['id']) ? (int) $_POST['id'] : null,
-            'nombre'         => ucwords(strtolower(trim($_POST['nombre']))),
-            'codigo'         => strtoupper(trim($_POST['codigo'])), 
-            'id_categoria'   => isset($_POST['id_categoria']) ? (int) $_POST['id_categoria'] : null,
-            'stock_minimo'   => isset($_POST['stock_minimo']) ? max(0, (int) $_POST['stock_minimo']) : 0,
+            'nombre'    => $this->model::sanitizeInput('nombre', 'text'),
+            'codigo'    => $this->model::sanitizeInput('codigo', 'text'),
+            'id_categoria'    => $this->model::sanitizeInput('id_categoria', 'int'),
+
+
+            
             'precio_compra'  => isset($_POST['precio_compra']) ? max(0, (float) $_POST['precio_compra']) : 0.00,
             'precio_venta'   => isset($_POST['precio_venta']) ? max(0, (float) $_POST['precio_venta']) : 0.00,
         ];

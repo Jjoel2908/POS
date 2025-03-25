@@ -6,6 +6,7 @@ class CategoryController
     private $table = "categorias";
     private $model;
     private $id;
+    private $idSucursal;
 
     private $messages = [
         "save_success" => "Categoría registrada correctamente.",
@@ -17,19 +18,17 @@ class CategoryController
         "required" => "Debe completar la información obligatoria."
     ];
 
-    public function __construct($id = null)
+    public function __construct($id = null, $idSucursal = null)
     {
         $this->model = new Category();
         $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
     public function save()
     {
         /** Nombre */
         $name = $this->model::sanitizeInput('nombre', 'text');
-        
-        /** Sucursal */
-        $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
 
         /** Información a registrar o actualizar */
         $data = ['nombre' => $name];
@@ -41,14 +40,14 @@ class CategoryController
         }
 
         /** Valida que no exista un registro similar al entrante */
-        if($this->model::existsByFieldAndSucursal($this->table, 'nombre', $name, $idSucursal)) {
+        if($this->model::existsByFieldAndSucursal($this->table, 'nombre', $name, $this->idSucursal)) {
             echo json_encode(['success' => false, 'message' => "La categoría " . $name .  " ya existe"]);
             return;
         }
 
         if (!$this->id) {
             /** Agregamos sucursal */
-            $data['id_sucursal'] = $idSucursal;
+            $data['id_sucursal'] = $this->idSucursal;
             
             $save = $this->model::insert($this->table, $data);
 
