@@ -11,47 +11,26 @@ $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
 if ($module === null)
     exit;
 
-switch ($module) {
-    case 'Categoría':
-        require_once 'CategoryController.php';
-        $controller = new CategoryController($id, $idSucursal);
-        break;
-    case 'Marca':
-        require_once 'BrandController.php';
-        $controller = new BrandController($id, $idSucursal);
-        break;
-    case 'Producto':
-        require_once 'ProductController.php';
-        $controller = new ProductController($id, $idSucursal);
-        break;
-    case 'Cliente':
-        require_once 'CustomerController.php';
-        $controller = new CustomerController($id, $idSucursal);
-        break;
-    case 'Caja':
-        require_once 'CashboxController.php';
-        $controller = new CashboxController($id, $idSucursal);
-        break;
-    default:
-        exit;
-}
+/** Mapeo de módulos con sus controladores */
+$controllers = [
+    'Categoría' => 'CategoryController.php',
+    'Marca'     => 'BrandController.php',
+    'Producto'  => 'ProductController.php',
+    'Cliente'   => 'CustomerController.php',
+    'Caja'      => 'CashboxController.php',
+];
 
-/** Manejamos las operaciones para cada módulo */
-if ($operation) {
-    switch ($operation) {
-        case 'save':
-            $controller->save();
-            break;
-        case 'update':
-            $controller->update();
-            break;
-        case 'delete':
-            $controller->delete();
-            break;
-        case 'dataTable':
-            $controller->dataTable();
-            break;
-        default:
-            break;
-    }
-}
+/** Verificamos si el módulo existe en la lista */
+if (!isset($controllers[$module]))
+    exit;
+
+/** Cargamos el controlador correspondiente */
+require_once $controllers[$module];
+$controllerClass = str_replace('.php', '', $controllers[$module]);
+$controller = new $controllerClass($id, $idSucursal);
+
+/** Verificamos si el método existe antes de ejecutarlo */
+if ($operation && method_exists($controller, $operation))
+    $controller->$operation();
+else
+    echo json_encode(["success" => false, "message" => "Operación no válida"]);
