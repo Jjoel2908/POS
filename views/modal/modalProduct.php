@@ -30,6 +30,12 @@ $module = "Producto";
     </select>
 </div>
 
+<div class="col-md-12 view-form">
+    <label class="mb-1" for="id_marca">Marca</label>
+    <select name="id_marca" id="id_marca" class="form-control select" required>
+    </select>
+</div>
+
 <div class="col-md-6 view-form">
     <label class="mb-1" for="precio_compra">Precio Compra</label>
     <div class="position-relative input-icon">

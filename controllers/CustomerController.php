@@ -45,11 +45,8 @@ class CustomerController
         }
 
         if (!$this->id) {
-            /** Agregamos la fecha de creación */
-            $data['fecha'] = date('Y-m-d H:i:s');
-
-            /** Agregamos el usuario */
-            $data['creado_por'] = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
+            /** Agregamos sucursal */
+            $data['id_sucursal'] = $this->idSucursal;
 
             $save = $this->model::insert($this->table, $data);
 

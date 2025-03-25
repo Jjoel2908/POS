@@ -296,6 +296,16 @@ class Connection
                 return filter_var($value, FILTER_VALIDATE_EMAIL) ?: null;
             case 'int':
                 return filter_var($value, FILTER_VALIDATE_INT) ?: 0;
+            case 'float':
+                $value = preg_replace('/[^0-9\.]/', '', $value);
+
+                if (substr_count($value, '.') > 1)
+                    $value = substr($value, 0, strrpos($value, '.'));
+
+                if ($value === '' || $value === '.')
+                    return 0.00;
+
+                return number_format((float)$value, 2, '.', '');
         }
 
         return $value;

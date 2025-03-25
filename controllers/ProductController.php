@@ -27,40 +27,32 @@ class ProductController {
     }
 
     public function save() {
+        $code = $this->model::sanitizeInput('codigo', 'text');
         /** Información a registrar o actualizar */
         $data = [
             'nombre'    => $this->model::sanitizeInput('nombre', 'text'),
-            'codigo'    => $this->model::sanitizeInput('codigo', 'text'),
+            'codigo'    => $code,
             'id_categoria'    => $this->model::sanitizeInput('id_categoria', 'int'),
-
-
-            
-            'precio_compra'  => isset($_POST['precio_compra']) ? max(0, (float) $_POST['precio_compra']) : 0.00,
-            'precio_venta'   => isset($_POST['precio_venta']) ? max(0, (float) $_POST['precio_venta']) : 0.00,
+            'precio_compra'    => $this->model::sanitizeInput('precio_compra', 'float'),
+            'precio_venta'    => $this->model::sanitizeInput('precio_venta', 'float')
         ];
 
         /** Valida campos requeridos */
-        $validateData = ['nombre', 'stock_minimo', 'codigo', 'id_categoria', 'precio_compra', 'precio_venta'];
+        $validateData = ['nombre', 'codigo', 'id_categoria', 'precio_compra', 'precio_venta'];
         if (!$this->model::validateData($validateData, $_POST)) {
             echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
         }
 
-        if (empty($_POST['id'])) {
+        if (!$this->id) {
             /** Valida que no exista un registro similar al entrante */
-            if($this->model::exists($this->table, 'codigo', $_POST['codigo'])) {
-                echo json_encode(['success' => false, 'message' => "El código " . $_POST['codigo'] .  " ya existe"]);
+            if($this->model::exists($this->table, 'codigo', $code)) {
+                echo json_encode(['success' => false, 'message' => "El código " . $name .  " ya existe"]);
                 return;
             }
 
-            /** Agregamos la fecha de creación */
-            $data['fecha'] = date('Y-m-d H:i:s');
-
             /** Agregamos sucursal */
-            $data['id_sucursal'] = $idSucursal;
-
-            /** Agregamos el usuario */
-            $data['creado_por'] = $_SESSION['id'];
+            $data['id_sucursal'] = $this->idSucursal;
 
             $save = $this->model::insert($this->table, $data);
 
@@ -71,7 +63,7 @@ class ProductController {
                 );
 
         } else {
-            $save = $this->model::update($this->table, $_POST['id'], $data);
+            $save = $this->model::update($this->table, $this->id, $data);
             echo json_encode(
                 $save 
                     ? ['success' => true, 'message' => $this->messages['update_success']] 
@@ -81,7 +73,7 @@ class ProductController {
     }
 
     public function update() {
-        $recoverRegister = $this->model->select($this->table, $_POST['id']);
+        $recoverRegister = $this->model->select($this->table, $this->id);
 
         echo json_encode(
             count($recoverRegister) > 0     
@@ -91,14 +83,14 @@ class ProductController {
     }
 
     public function delete() {
-        $dataProduct = $this->model->select($this->table, $_POST['id']);
+        $dataProduct = $this->model->select($this->table, $this->id);
 
         if ($dataProduct['stock'] > 0) {
             echo json_encode(['success' => false, 'message' => "Producto con {$dataProduct['stock']} unidades disponibles"]);
             return;
         }
 
-        $delete = $this->model::delete($this->table, $_POST['id']);
+        $delete = $this->model::delete($this->table, $this->id);
 
         echo json_encode(
             $delete 
@@ -113,26 +105,20 @@ class ProductController {
         $data = [];
 
         foreach ($response as $row) {
-            $btn = "<button type='button' class='btn btn-inverse-primary mx-1' onclick='moduleProduct.updateProduct({$row['id']})'><i class='bx bx-edit-alt m-0'></i></button>";
-            $btn .= "<button type='button' class='btn btn-inverse-danger mx-1' onclick='moduleProduct.deleteProduct({$row['id']}, `{$row['nombre']}`)'><i class='bx bx-trash m-0'></i></button>";
+            
+            $btn  = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Producto', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
+            $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Producto', '{$row['id']}', `{$row['nombre']})\"><i class=\"bx bx-trash m-0\"></i></button>";
 
             $data[] = [
-                "PRODUCTO" => $row['nombre'],
-                "CÓDIGO" => $row['codigo'],
-                "CATEGORÍA" => $row['nombre_categoria'],
-                "COMPRA" => $row['precio_compra'],
-                "VENTA" => $row['precio_venta'],
-                "STOCK" => $row['stock'],
-                "ACCIONES" => $btn
+                "Producto" => $row['nombre'],
+                "Código" => $row['codigo'],
+                "Categoría" => $row['categoria'],
+                "Precio Compra" => $row['precio_compra'],
+                "Precio Venta" => $row['precio_venta'],
+                "Cantidad" => $row['stock'],
+                "Acciones" => $btn
             ];
         }
         echo json_encode($data);
-    }
-
-    public function selectCategory() {
-        $categories = $this->Product->selectAll('categorias');
-        foreach ($categories as $category) {
-            echo '<option value="' . $category['id'] . '">' . $category['categoria'] . '</option>';
-        }
     }
 }

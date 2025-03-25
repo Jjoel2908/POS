@@ -183,10 +183,12 @@ const loadDataTable = async (tableId, module) => {
         /** Aplica alineaciones dinámicas a las filas */
         content.createdRow = (row, rowData) => {
         Object.keys(rowData).forEach((key, index) => {
-            if (["Fecha de Creación", "Fecha de Alta", "Teléfono", "Acciones", "Estado"].includes(key)) {
-            $(`td:eq(${index})`, row).addClass("text-center");
+            if (["Fecha de Creación", "Fecha de Alta", "Teléfono", "Código", "Cantidad", "Acciones", "Estado"].includes(key)) {
+                $(`td:eq(${index})`, row).addClass("text-center");
+            } else if (["Precio Compra", "Precio Venta"].includes(key)) {
+                $(`td:eq(${index})`, row).addClass("text-end");
             } else {
-            $(`td:eq(${index})`, row).addClass("text-start");
+                $(`td:eq(${index})`, row).addClass("text-start");
             }
         });
         };
