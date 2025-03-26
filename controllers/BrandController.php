@@ -122,9 +122,12 @@ class BrandController
     }
 
     public function droplist() {
+        $listRegister = "";
         $list = $this->model->selectAll($this->table);
         foreach ($list as $item) {
-            echo '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
+            $listRegister .= '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
         }
+
+        echo json_encode(['success' => true, 'data' => $listRegister]);
     }
 }

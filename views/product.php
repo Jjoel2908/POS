@@ -10,6 +10,7 @@ $config = [
    'modals'       => [
       'modal/modalProduct.php',
    ],
+   'moduleScript' => 'moduleProduct',
 ];
 
 $view = new TemplateView($config);

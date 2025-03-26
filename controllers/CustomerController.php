@@ -45,9 +45,6 @@ class CustomerController
         }
 
         if (!$this->id) {
-            /** Agregamos sucursal */
-            $data['id_sucursal'] = $this->idSucursal;
-
             $save = $this->model::insert($this->table, $data);
 
             echo json_encode(

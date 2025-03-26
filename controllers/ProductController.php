@@ -1,5 +1,4 @@
 <?php
-session_start();
 require '../models/Product.php';
 
 class ProductController {
@@ -28,17 +27,19 @@ class ProductController {
 
     public function save() {
         $code = $this->model::sanitizeInput('codigo', 'text');
+        
         /** Información a registrar o actualizar */
         $data = [
-            'nombre'    => $this->model::sanitizeInput('nombre', 'text'),
-            'codigo'    => $code,
-            'id_categoria'    => $this->model::sanitizeInput('id_categoria', 'int'),
-            'precio_compra'    => $this->model::sanitizeInput('precio_compra', 'float'),
-            'precio_venta'    => $this->model::sanitizeInput('precio_venta', 'float')
+            'nombre'        => $this->model::sanitizeInput('nombre', 'text'),
+            'codigo'        => $code,
+            'id_categoria'  => $this->model::sanitizeInput('id_categoria', 'int'),
+            'id_marca'      => $this->model::sanitizeInput('id_marca', 'int'),
+            'precio_compra' => $this->model::sanitizeInput('precio_compra', 'float'),
+            'precio_venta'  => $this->model::sanitizeInput('precio_venta', 'float')
         ];
 
         /** Valida campos requeridos */
-        $validateData = ['nombre', 'codigo', 'id_categoria', 'precio_compra', 'precio_venta'];
+        $validateData = ['nombre', 'codigo', 'id_categoria', 'id_marca', 'precio_compra', 'precio_venta'];
         if (!$this->model::validateData($validateData, $_POST)) {
             echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
@@ -47,7 +48,7 @@ class ProductController {
         if (!$this->id) {
             /** Valida que no exista un registro similar al entrante */
             if($this->model::exists($this->table, 'codigo', $code)) {
-                echo json_encode(['success' => false, 'message' => "El código " . $name .  " ya existe"]);
+                echo json_encode(['success' => false, 'message' => "El código " . $code .  " ya existe"]);
                 return;
             }
 
@@ -101,7 +102,7 @@ class ProductController {
 
     public function dataTable() 
     {
-        $response = $this->Product->dataTable();
+        $response = $this->model->dataTable();
         $data = [];
 
         foreach ($response as $row) {
