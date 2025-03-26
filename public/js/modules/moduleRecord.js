@@ -225,6 +225,11 @@ const updateRegister = async (module, id, idModal = "") => {
  */
 const deleteRegister = async (module, id, nombre) => {
     try {
+        if (module === "DetalleCompra" || module === "DetalleVenta") {
+            await processDelete(module, id);
+            return;
+        }
+
         /** Determina si el texto es "la" o "el" dependiendo del módulo */
         let text = ["Categoría", "Marca", "Caja"].includes(module) ? "la" : "el";
 
@@ -237,16 +242,88 @@ const deleteRegister = async (module, id, nombre) => {
             showCancelButton: true,
         }).then(async (result) => {
             if (result.isConfirmed) {
-                let formdata = new FormData();
-                formdata.append("id", id);
-
-                /** Llamamos a submitForm pasando el módulo dinámicamente */
-                await submitForm(formdata, "delete", module, () => {
-                    loadDataTable("#module-table", module);
-                });
+                await processDelete(module, id);
             }
         });
     } catch (error) {
         console.error("Error en la función deleteRegister del archivo moduleRecord:", error);
+    }
+};
+
+/** Elimina un registro del módulo especificado enviando una solicitud al servidor.
+ * Tras la eliminación, recarga la tabla de datos correspondiente.
+ *
+ * @param {string} module - Nombre del módulo donde se encuentra el registro a eliminar.
+ * @param {number} id - ID del registro que se desea eliminar.
+ */
+const processDelete = async (module, id) => {
+    try {
+        let formdata = new FormData();
+        formdata.append("id", id);
+
+        /** Llamamos a submitForm pasando el módulo dinámicamente */
+        await submitForm(formdata, "delete", module, () => {
+            loadDataTable("#module-table", module);
+        });
+    } catch (error) {
+        console.error("Error en processDelete:", error);
+    }
+};
+
+/** Calcula el total de una compra o venta multiplicando el precio unitario por la cantidad.
+ * Si los valores ingresados no son números válidos, retorna 0.
+ *
+ * @param {number} price - Precio unitario del producto (puede ser un número decimal).
+ * @param {number} quantity - Cantidad de productos (debe ser un número entero).
+ * @returns {number} - Total calculado (precio * cantidad) con dos decimales.
+ */
+const calculateTotal = (price, quantity) => {
+    /** Validar que el precio y la cantidad sean números válidos */
+    if (isNaN(price) || isNaN(quantity) || quantity < 0 || price < 0)
+        return 0.00;
+
+    /** Multiplicar el precio por la cantidad y redondear a 2 decimales */
+    return parseFloat((price * quantity).toFixed(2));
+};
+
+/** Maneja el evento de presionar "Enter" en formularios dinámicos.
+ * Evita el envío automático, obtiene los valores y realiza una solicitud al servidor.
+ *
+ * @param {Event} e - Evento del teclado.
+ * @param {string} formId - ID del formulario que contiene los datos.
+ * @param {string} url - URL donde se enviará la solicitud (endpoint del módulo).
+ * @param {function} callback - Función opcional que se ejecutará si la operación es exitosa.
+ * @param {boolean} [enableButtons=true] - Indica si se deben habilitar botones después de la acción.
+ * @param {string[]} [buttonsToEnable=[]] - Lista de selectores de botones a habilitar tras la operación.
+ */
+const handleFormKeyPress = (e, formId, url, callback = null, enableButtons = true, buttonsToEnable = []) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+
+        // Obtiene los valores del formulario
+        let id = $(`#${formId} #id`).val();
+        let cantidad = $(`#${formId} #cantidad`).val();
+
+        let data = { id, cantidad };
+
+        // Realiza la petición AJAX al servidor
+        $.post(url, data, (response) => {
+            response = JSON.parse(response);
+
+            if (response.success) {
+                POS.clearForm(); // Limpia el formulario
+                if (callback) callback(); // Ejecuta una acción personalizada si existe
+
+                // Habilita botones específicos si está activado el parámetro
+                if (enableButtons && buttonsToEnable.length > 0) {
+                    buttonsToEnable.forEach(btn => $(`form#${formId} ${btn}`).prop('disabled', false));
+                }
+
+                // Abre el campo de búsqueda si existe
+                $('#search').select2('open');
+            } else {
+                POS.showAlert(response.success, response.message);
+            }
+        });
     }
 };

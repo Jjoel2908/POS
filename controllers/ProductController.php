@@ -121,4 +121,11 @@ class ProductController {
         }
         echo json_encode($data);
     }
+
+    public function droplist() {
+        $list = $this->model->selectAll($this->table);
+        foreach ($list as $item) {
+            echo '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
+        }
+    }
 }

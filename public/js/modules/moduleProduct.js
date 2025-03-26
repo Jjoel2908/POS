@@ -1,19 +1,18 @@
 $(() => {
    const formdata = new FormData();
+   const dropdowns = ['Categoría', 'Marca'];
 
-   submitForm(formdata, "droplist", 'Categoría', (data) => {
-      $("#formProduct #id_categoria").html(data);
-   }, false);
-
-   submitForm(formdata, "droplist", 'Marca', (data) => {
-      $("#formProduct #id_marca").html(data);
-   }, false);
+   dropdowns.forEach(async (module) => {
+      await submitForm(formdata, "droplist", module, (data) => {
+         $(`#formProduct #id_${module.toLowerCase()}`).html(data);
+      }, false);
+   });
 });
 
-const addProduct = async () => {
+const addProduct = () => {
    openModal('Producto');
-   if ( $('#codigo').attr('readonly') ) $('#codigo').removeAttr('readonly');
-}
+   $('#codigo').prop('readonly', false);
+};
 
 const updateProduct = async (module, idProduct) => {
    await updateRegister(module, idProduct);
