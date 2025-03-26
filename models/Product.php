@@ -10,6 +10,19 @@ class Product extends Connection
 
    public function dataTable(): array
    {
-      return $this->queryMySQL("SELECT p.*, c.nombre AS categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.estado = 1");
+      return $this->queryMySQL(
+         "SELECT 
+            p.*, 
+            c.nombre AS categoria,
+            m.nombre AS marca
+         FROM 
+            productos p 
+         INNER JOIN 
+            categorias c ON p.id_categoria = c.id 
+         INNER JOIN 
+            marcas m ON p.id_marca = m.id 
+         WHERE 
+            p.estado = 1"
+      );
    }
 }

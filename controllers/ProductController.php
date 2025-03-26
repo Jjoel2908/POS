@@ -111,13 +111,14 @@ class ProductController {
             $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Producto', '{$row['id']}', `{$row['nombre']})\"><i class=\"bx bx-trash m-0\"></i></button>";
 
             $data[] = [
-                "Producto" => $row['nombre'],
-                "Código" => $row['codigo'],
-                "Categoría" => $row['categoria'],
+                "Producto"      => $row['nombre'],
+                "Código"        => $row['codigo'],
+                "Categoría"     => $row['categoria'],
+                "Marca"         => $row['marca'],
                 "Precio Compra" => $row['precio_compra'],
-                "Precio Venta" => $row['precio_venta'],
-                "Cantidad" => $row['stock'],
-                "Acciones" => $btn
+                "Precio Venta"  => $row['precio_venta'],
+                "Cantidad"      => $row['stock'],
+                "Acciones"      => $btn
             ];
         }
         echo json_encode($data);

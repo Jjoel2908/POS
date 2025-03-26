@@ -1,12 +1,13 @@
 $(() => {
    const formdata = new FormData();
-   const dropdowns = ['Categoría', 'Marca'];
 
-   dropdowns.forEach(async (module) => {
-      await submitForm(formdata, "droplist", module, (data) => {
-         $(`#formProduct #id_${module.toLowerCase()}`).html(data);
-      }, false);
-   });
+   submitForm(formdata, "droplist", 'Categoría', (data) => {
+      $("#formProduct #id_categoria").html(data);
+   }, false);
+
+   submitForm(formdata, "droplist", 'Marca', (data) => {
+      $("#formProduct #id_marca").html(data);
+   }, false);
 });
 
 const addProduct = () => {
