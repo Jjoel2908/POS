@@ -28,7 +28,7 @@ const openModal = (title, isUpdate = false, idModal = "", data = null) => {
     modalId = idModal == "" ? "#modalRegister" : idModal;
 
     /** Determina si el texto es "Nueva" o "Nuevo" dependiendo del módulo */
-    let textNew = ["Categoría", "Marca", "Caja"].includes(title) ? "Nueva " : "Nuevo ";
+    let textNew = ["Categoría", "Marca", "Caja", "Compra"].includes(title) ? "Nueva " : "Nuevo ";
 
     /** Define el texto de acción: "Actualizar" o "Nuevo/Nueva". */
     let actionText = isUpdate ? "Actualizar " : textNew;

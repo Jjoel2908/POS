@@ -108,7 +108,7 @@ class ProductController {
         foreach ($response as $row) {
             
             $btn  = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
-            $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Producto', '{$row['id']}', `{$row['nombre']})\"><i class=\"bx bx-trash m-0\"></i></button>";
+            $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Producto', '{$row['id']}', `{$row['nombre']}`)\"><i class=\"bx bx-trash m-0\"></i></button>";
 
             $data[] = [
                 "Producto"      => $row['nombre'],

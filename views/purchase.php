@@ -2,7 +2,7 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 4,
+   'permission'   => 5,
    'title'        => 'Compras',
    'icon'         => 'fa-solid fa-bag-shopping',
    'addAction'    => "openModal('Compra')",
