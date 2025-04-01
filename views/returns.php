@@ -2,13 +2,13 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 8,
+   'permission'   => 9,
    'module'        => 'Devolución',
    'title'        => 'Devoluciones',
    'icon'         => 'fa-solid fa-person-chalkboard',
-   'addAction'    => "openModal('Devolución')",
+   'addAction'    => "addReturn()",
    'modals'       => [
-      'modal/modalReturns.php',
+      'modal/modalReturns.php'
    ],
 ];
 
