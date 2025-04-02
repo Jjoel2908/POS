@@ -207,7 +207,7 @@ const loadDataTable = async (tableId, module) => {
  * @param {string} [idModal=""] - ID del modal que se abrirá (opcional).
  */
 const updateRegister = async (module, id, idModal = "") => {
-    let formdata = new FormData();
+    const formdata = new FormData();
     formdata.append("id", id);
 
     /** Llamamos a submitForm pasando el módulo dinámicamente */
@@ -272,18 +272,20 @@ const processDelete = async (module, id) => {
 
 /** Calcula el total de una compra o venta multiplicando el precio unitario por la cantidad.
  * Si los valores ingresados no son números válidos, retorna 0.
- *
- * @param {number} price - Precio unitario del producto (puede ser un número decimal).
- * @param {number} quantity - Cantidad de productos (debe ser un número entero).
  * @returns {number} - Total calculado (precio * cantidad) con dos decimales.
  */
-const calculateTotal = (price, quantity) => {
+const calculateTotal = () => {
+    const price    = $("form #precio_compra").val() || $("form #precio_compra").val() || 0;
+    const quantity = $("form #cantidad").val() || 0;
+
     /** Validar que el precio y la cantidad sean números válidos */
     if (isNaN(price) || isNaN(quantity) || quantity < 0 || price < 0)
         return 0.00;
 
     /** Multiplicar el precio por la cantidad y redondear a 2 decimales */
-    return parseFloat((price * quantity).toFixed(2));
+    const total = parseFloat((price * quantity).toFixed(2));
+
+    $("form #total").val(total);
 };
 
 /** Maneja el evento de presionar "Enter" en formularios dinámicos.
@@ -296,34 +298,42 @@ const calculateTotal = (price, quantity) => {
  * @param {boolean} [enableButtons=true] - Indica si se deben habilitar botones después de la acción.
  * @param {string[]} [buttonsToEnable=[]] - Lista de selectores de botones a habilitar tras la operación.
  */
-const handleFormKeyPress = (e, formId, url, callback = null, enableButtons = true, buttonsToEnable = []) => {
+const handleFormKeyPress = async (e, formId, module) => {
     if (e.key === 'Enter') {
         e.preventDefault();
 
-        // Obtiene los valores del formulario
-        let id = $(`#${formId} #id`).val();
-        let cantidad = $(`#${formId} #cantidad`).val();
+        /** Obtiene los valores del formulario */
+        const id       = $(`#${formId} #id`).val();
+        const cantidad = $(`#${formId} #cantidad`).val();
 
-        let data = { id, cantidad };
+        const formdata = new FormData();
+        formdata.append("id", id);
+        formdata.append("cantidad", cantidad);
 
-        // Realiza la petición AJAX al servidor
-        $.post(url, data, (response) => {
-            response = JSON.parse(response);
-
-            if (response.success) {
-                POS.clearForm(); // Limpia el formulario
-                if (callback) callback(); // Ejecuta una acción personalizada si existe
-
-                // Habilita botones específicos si está activado el parámetro
-                if (enableButtons && buttonsToEnable.length > 0) {
-                    buttonsToEnable.forEach(btn => $(`form#${formId} ${btn}`).prop('disabled', false));
-                }
-
-                // Abre el campo de búsqueda si existe
-                $('#search').select2('open');
-            } else {
-                POS.showAlert(response.success, response.message);
-            }
-        });
+        /** Llamamos a submitForm pasando el módulo dinámicamente */
+        await submitForm(formdata, "save", module, (data) => {
+            clearForm('#modalRegister');
+            $('#search').select2('open');
+        }, false);
     }
 };
+
+$("form #search").on('select2:select', async e => {
+    const id       = e.params.data.id;
+    const cantidad = $("form #cantidad");
+
+    if (id > 0) {
+        const formdata = new FormData();
+        formdata.append("id", id);
+        await submitForm(formdata, "update", 'Producto', (data) => {
+            $.each(data, (key, value) => $("#" + key).val(value));
+
+            cantidad.prop('disabled', false);
+            cantidad.focus();
+        }, false);
+    }
+});
+
+$("form #cantidad").on('input', () => {
+    calculateTotal();
+});

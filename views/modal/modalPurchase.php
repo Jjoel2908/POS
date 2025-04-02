@@ -32,7 +32,7 @@
 
       <div class="col-md-4 view-form">
          <div class="form-floating">
-            <input id="cantidad" class="form-control" type="number" name="cantidad" oninput="validateInt(event)" onkeypress="modulePurchase.handleKeyPress(event)" disabled>
+            <input id="cantidad" class="form-control" type="number" name="cantidad" oninput="validateInt(event)" onkeypress="handleFormKeyPress(event, 'formPurchase', 'DetalleCompra')" disabled>
             <label for="cantidad"><i class="bx bx-cube me-1"></i> Cantidad</label>
          </div>
       </div>
@@ -46,14 +46,14 @@
 
       <div class="col-md-4 view-form">
          <div class="form-floating">
-            <input id="sub_total" class="form-control" type="text" name="sub_total" readonly>
-            <label for="sub_total">Sub Total</label>
+            <input id="total" class="form-control" type="text" name="total" readonly>
+            <label for="total">Sub Total</label>
          </div>
       </div>
 
       <div class="col-md-12 mt-3">
          <div class="table-responsive">
-            <table class="table table-striped view-table">
+            <table class="table table-striped table-bordered view-table">
                <thead>
                   <tr class="text-center">
                      <th>Nombre</th>

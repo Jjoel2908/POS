@@ -1,7 +1,8 @@
 <?php
 require '../models/Product.php';
 
-class ProductController {
+class ProductController
+{
     /** @var string Nombre de la tabla en la base de datos */
     private $table = "productos";
     private $model;
@@ -25,9 +26,17 @@ class ProductController {
         $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
-    public function save() {
+    public function save()
+    {
+        /** Valida campos requeridos */
+        $validateData = ['nombre', 'codigo', 'id_categoria', 'id_marca', 'precio_compra', 'precio_venta'];
+        if (!$this->model::validateData($validateData, $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
+            return;
+        }
+
         $code = $this->model::sanitizeInput('codigo', 'text');
-        
+
         /** Información a registrar o actualizar */
         $data = [
             'nombre'        => $this->model::sanitizeInput('nombre', 'text'),
@@ -38,16 +47,9 @@ class ProductController {
             'precio_venta'  => $this->model::sanitizeInput('precio_venta', 'float')
         ];
 
-        /** Valida campos requeridos */
-        $validateData = ['nombre', 'codigo', 'id_categoria', 'id_marca', 'precio_compra', 'precio_venta'];
-        if (!$this->model::validateData($validateData, $_POST)) {
-            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
-            return;
-        }
-
         if (!$this->id) {
             /** Valida que no exista un registro similar al entrante */
-            if($this->model::exists($this->table, 'codigo', $code)) {
+            if ($this->model::exists($this->table, 'codigo', $code)) {
                 echo json_encode(['success' => false, 'message' => "El código " . $code .  " ya existe"]);
                 return;
             }
@@ -58,32 +60,33 @@ class ProductController {
             $save = $this->model::insert($this->table, $data);
 
             echo json_encode(
-                $save 
-                    ? ['success' => true, 'message' => $this->messages['save_success']] 
+                $save
+                    ? ['success' => true, 'message' => $this->messages['save_success']]
                     : ['success' => false, 'message' => $this->messages['save_failed']]
-                );
-
+            );
         } else {
             $save = $this->model::update($this->table, $this->id, $data);
             echo json_encode(
-                $save 
-                    ? ['success' => true, 'message' => $this->messages['update_success']] 
+                $save
+                    ? ['success' => true, 'message' => $this->messages['update_success']]
                     : ['success' => false, 'message' => $this->messages['update_failed']]
-                );
+            );
         }
     }
 
-    public function update() {
+    public function update()
+    {
         $recoverRegister = $this->model->select($this->table, $this->id);
 
         echo json_encode(
-            count($recoverRegister) > 0     
-                ? ['success' => true, 'message' => '', 'data' => $recoverRegister] 
+            count($recoverRegister) > 0
+                ? ['success' => true, 'message' => '', 'data' => $recoverRegister]
                 : ['success' => false, 'message' => 'No se encontró el registro.']
-        ); 
+        );
     }
 
-    public function delete() {
+    public function delete()
+    {
         $dataProduct = $this->model->select($this->table, $this->id);
 
         if ($dataProduct['stock'] > 0) {
@@ -94,19 +97,19 @@ class ProductController {
         $delete = $this->model::delete($this->table, $this->id);
 
         echo json_encode(
-            $delete 
-                ? ['success' => true, 'message' => $this->messages['delete_success']] 
+            $delete
+                ? ['success' => true, 'message' => $this->messages['delete_success']]
                 : ['success' => false, 'message' => $this->messages['delete_failed']]
         );
     }
 
-    public function dataTable() 
+    public function dataTable()
     {
         $response = $this->model->dataTable();
         $data = [];
 
         foreach ($response as $row) {
-            
+
             $btn  = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
             $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Producto', '{$row['id']}', `{$row['nombre']}`)\"><i class=\"bx bx-trash m-0\"></i></button>";
 
@@ -124,10 +127,14 @@ class ProductController {
         echo json_encode($data);
     }
 
-    public function droplist() {
+    public function droplist()
+    {
+        $listRegister = "";
         $list = $this->model->selectAll($this->table);
         foreach ($list as $item) {
-            echo '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
+            $listRegister .= '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
         }
+
+        echo json_encode(['success' => true, 'data' => $listRegister]);
     }
 }

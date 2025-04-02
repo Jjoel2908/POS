@@ -46,10 +46,14 @@ class Connection
     public static function insert(string $table, array $data): bool
     {
         /** Agregamos la fecha de creación */
-        $data['fecha'] = date('Y-m-d H:i:s');
+        if ($table != "detalle_compra" && $table != "detalle_venta")
+            $data['fecha'] = date('Y-m-d H:i:s');
 
         /** Agregamos el usuario */
         $data['creado_por'] = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
+        
+        /** Escapar correctamente nombres de tabla y columna */
+        $table = "`" . str_replace("`", "``", $table) . "`";
 
         $conexion = self::conectionMySQL();
         $colums = implode(', ', array_keys($data));
@@ -66,6 +70,15 @@ class Connection
 
     public static function insertAndGetId(string $table, array $data): ?int
     {
+        /** Escapar correctamente nombres de tabla y columna */
+        $table = "`" . str_replace("`", "``", $table) . "`";
+
+        /** Agregamos la fecha de creación */
+        $data['fecha'] = date('Y-m-d H:i:s');
+
+        /** Agregamos el usuario */
+        $data['creado_por'] = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
+
         $conexion = self::conectionMySQL();
         $colums = implode(', ', array_keys($data));
         $values = str_repeat('?, ', count($data) - 1) . '?';

@@ -7,6 +7,15 @@ $(() => {
    }, false);
 });
 
+
+
+
+
+
+
+
+
+
 let modulePurchase = {
    /** H A N D L E   K E Y P R E S S  */
    handleKeyPress: (e) => {
@@ -84,28 +93,3 @@ let modulePurchase = {
       });
    },
 }
-
-$("form#formAddPurchase #search").on('select2:select', e => {
-   const id = e.params.data.id;
-   const url = URL_PURCHASE + "op=infoProduct";
-   let cantidad = $("form#formAddPurchase #cantidad");
-
-   const data = { id: id };
-
-   $.post(url, data, info => { 
-      const response = JSON.parse(info);
-      $.each(response.data, (key, value) => $("#" + key).val(value));
-   });
-
-   cantidad.prop('disabled', false);
-   // Posicionar el cursor
-   cantidad.focus();
-});
-
-$("form#formAddPurchase #cantidad").on('input', () => {
-   let precio   = $("form#formAddPurchase #precio_compra").val();
-   let cantidad = $("form#formAddPurchase #cantidad").val() || 0;
-   const total = calculateTotal(precio, cantidad);
-
-   $("form#formAddPurchase #sub_total").val(total);
-});

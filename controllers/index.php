@@ -13,11 +13,12 @@ if ($module === null)
 
 /** Mapeo de módulos con sus controladores */
 $controllers = [
-    'Categoría' => 'CategoryController.php',
-    'Marca'     => 'BrandController.php',
-    'Producto'  => 'ProductController.php',
-    'Cliente'   => 'CustomerController.php',
-    'Caja'      => 'CashboxController.php',
+    'Categoría'     => 'CategoryController.php',
+    'Marca'         => 'BrandController.php',
+    'Producto'      => 'ProductController.php',
+    'Cliente'       => 'CustomerController.php',
+    'DetalleCompra' => 'PurchaseDetailsController.php',
+    'Caja'          => 'CashboxController.php',
 ];
 
 /** Verificamos si el módulo existe en la lista */

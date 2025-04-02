@@ -1,5 +1,5 @@
 <?php
-require '../config/Connection.php';
+require_once '../config/Connection.php';
 
 class Product extends Connection
 {
@@ -25,4 +25,11 @@ class Product extends Connection
             p.estado = 1"
       );
    }
+
+   public function getPurchasePrice($idRegister): array
+   {
+      $product = $this::queryMySQL("SELECT precio_compra FROM productos WHERE id = $idRegister AND estado = 1");
+      return $product[0];
+   }
+
 }

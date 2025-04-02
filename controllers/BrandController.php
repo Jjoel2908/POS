@@ -27,17 +27,17 @@ class BrandController
 
     public function save()
     {
-        /** Nombre */
-        $name = $this->model::sanitizeInput('nombre', 'text');
-
-        /** Información a registrar o actualizar */
-        $data = ['nombre' => $name];
-
         /** Valida campos requeridos */
         if (!$this->model::validateData(['nombre'], $_POST)) {
             echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
         }
+        
+        /** Nombre */
+        $name = $this->model::sanitizeInput('nombre', 'text');
+
+        /** Información a registrar o actualizar */
+        $data = ['nombre' => $name];
 
         /** Valida que no exista un registro similar al entrante */
         if($this->model::existsByFieldAndSucursal($this->table, 'nombre', $name, $this->idSucursal)) {

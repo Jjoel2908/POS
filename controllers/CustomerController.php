@@ -28,6 +28,12 @@ class CustomerController
 
     public function save()
     {
+        /** Valida campos requeridos */
+        if (!$this->model::validateData(['nombre', 'apellidos', 'telefono'], $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
+            return;
+        }
+        
         $phone = $this->model::sanitizeInput('telefono', 'phone');
 
         /** Información a registrar o actualizar */
@@ -37,12 +43,6 @@ class CustomerController
             'telefono'  => $phone,
             'correo'    => $this->model::sanitizeInput('correo', 'email'),
         ];
-
-        /** Valida campos requeridos */
-        if (!$this->model::validateData(['nombre', 'apellidos', 'telefono'], $_POST)) {
-            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
-            return;
-        }
 
         if (!$this->id) {
             $save = $this->model::insert($this->table, $data);
