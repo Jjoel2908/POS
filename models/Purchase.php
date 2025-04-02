@@ -1,5 +1,5 @@
 <?php
-require '../config/Connection.php';
+require_once '../config/Connection.php';
 
 class Purchase extends Connection
 {
@@ -34,10 +34,6 @@ class Purchase extends Connection
    public function deletePurchaseDetail(int $id): bool
    {
       return $this->delete('detalle_compra', $id);
-   }
-
-   public function getProductDetails(int $id_usuario): array {
-      return $this->queryMySQL("SELECT * FROM detalle_compra WHERE id_compra = 0 AND estado = 0 AND id_usuario = $id_usuario");
    }
 
    public function savePurchase(array $data): int

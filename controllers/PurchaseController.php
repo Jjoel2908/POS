@@ -1,85 +1,172 @@
 <?php
-session_start();
 require '../models/Purchase.php';
+require '../models/PurchaseDetails.php';
 
-class PurchaseController {
-    private $purchase;
+class PurchaseController
+{
+    /** @var string Nombre de la tabla en la base de datos */
+    private $table = "compras";
+    private $model;
+    private $id;
+    private $idSucursal;
 
-    public function __construct() {
-        $this->purchase = new Purchase();
+    private $messages = [
+        "save_success"   => "Compra registrada correctamente.",
+        "save_failed"    => "Error al registrar la compra.",
+        "update_success" => "Compra actualizada correctamente.",
+        "update_failed"  => "Error al actualizar la compra.",
+        "delete_success" => "Compra eliminada correctamente.",
+        "delete_failed"  => "Error al eliminar la compra.",
+        "required"       => "Debe completar la información obligatoria de la compra."
+        "empty"          => "No hay detalles de compra que registrar."
+    ];
+    
+    public function __construct($id = null, $idSucursal = null)
+    {
+        $this->model = new Purchase();
+        $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
-    public function infoProduct() {
-        $infoProduct = $this->purchase::select('productos', $_POST['id']);
+    public function save()
+    {
+        $total = 0;
+        $idUser   = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
+
+        /** Validamos si hay detalles de productos pendientes */
+        $PurchaseDetails = new PurchaseDetails();
+        $details  = $PurchaseDetails->getPurchaseDetails($idUser);
+
+        if (empty($details)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['empty']]);
+            return;
+        }
+   
+        /** MODIFICAR AQUI PARA CREAR UNA TRANSACCION MEJOR */
+               foreach($productDetails as $detail) {
+                  $quantity = $detail['cantidad'];
+                  $price = $detail['precio'];
+   
+                  $totalPurchase += $quantity * $price;
+               }
+               
+               $dataPurchase = [
+                  "id_usuario" => $_SESSION['id'],
+                  "total"      => $totalPurchase
+               ];
+   
+               $savePurchase = $Purchase->savePurchase($dataPurchase);
+   
+               if ($savePurchase > 0) {
+   
+                  $id_compra  = $savePurchase;
+                  $id_usuario = $_SESSION['id'];
+   
+                  $updatePurchaseDetails = $Purchase->updateIdPurchaseDetails($id_compra, $id_usuario);
+   
+                  $detailProducts = $Purchase->idPurchaseDetails($id_compra);
+   
+                  if (!empty($detailProducts)) {
+   
+                     foreach($detailProducts as $addProduct) {
+                        $id_producto = $addProduct['id_producto'];
+                        $cantidad    = $addProduct['cantidad'];
+   
+                        $addStock = $Purchase->addStock($id_producto, $cantidad);
+                     }
+   
+                     if ($addStock) {
+                        echo json_encode(['success'  => true, 'message' => 'La compra se realizó correctamente']);
+                     } else {
+                        echo json_encode(['success'  => false, 'message' => 'Error al actualizar detalles de compra']);
+                     }
+                  }
+   
+               } else echo json_encode(['success'  => false, 'message' => 'Error al generar la compra']);
+   
+         
+
+   
+
+        /** Información a registrar o actualizar */
+        $data = [
+            'id_producto' => $this->id,
+            'precio'      => number_format((float)$detail['precio_compra'], 2, '.', ''),
+            'cantidad'    => $quantity,
+        ];
+
+        /** Identificador de usuario */
+        $idUser = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
+        $existDetail = $this->model->existPurchaseDetails($this->id, $idUser);
+
+        /** Si no existe un detalle de compra idéntico, registramos uno nuevo */
+        if (empty($existDetail)) {
+            $save = $this->model::insert($this->table, $data);
+
+            echo json_encode(
+                $save
+                    ? ['success' => true, 'message' => $this->messages['save_success'], 'data' => 'DetalleCompra']
+                    : ['success' => false, 'message' => $this->messages['save_failed']]
+            );
+        } else {
+            /** Si el detalle de compra ya existe, actualizamos la cantidad */
+            $idPurchaseDetail = $existDetail[0]['id'];
+            $save = $this->model->updatePurchaseDetail($idPurchaseDetail, $quantity);
+
+            echo json_encode(
+                $save
+                    ? ['success' => true, 'message' => $this->messages['update_success'], 'data' => 'DetalleCompra']
+                    : ['success' => false, 'message' => $this->messages['update_failed']]
+            );
+        }
+    }
+
+    public function delete()
+    {
+        $delete = $this->model::delete($this->table, $this->id);
         echo json_encode(
-            count($infoProduct) > 0 ?
-                ['success' => true, 'message' => 'Producto Encontrado', 'data' => $infoProduct] :
-                ['success' => false, 'message' => 'No se encontró el registro del producto']
+            $delete
+                ? ['success' => true, 'message' => $this->messages['delete_success']]
+                : ['success' => false, 'message' => $this->messages['delete_failed']]
         );
     }
 
-    public function addPurchaseDetails() {
-        if ($this->purchase::validateData(['id', 'cantidad'], $_POST)) {
-            $product = $this->purchase->select('productos', $_POST['id']);
-            $dataPurchase = [
-                'id_producto' => $_POST['id'],
-                'id_usuario'  => $_SESSION['id'],
-                'precio'      => $product['precio_compra'],
-                'cantidad'    => $_POST['cantidad'],
-            ];
-            $existProduct = $this->purchase->existProductDetail($_POST['id'], $_SESSION['id']);
-            if (empty($existProduct)) {
-                $result = $this->purchase->insertPurchaseDetail($dataPurchase);
-            } else {
-                $idPurchase = $existProduct[0]['id'];
-                $quantity = $existProduct[0]['cantidad'] + $_POST['cantidad'];
-                $result = $this->purchase->updatePurchaseDetail($idPurchase, ["cantidad" => $quantity]);
+    public function dataTable()
+    {
+        $idUser   = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
+        $response = $this->model->dataTable($idUser);
+        $HTML     = "";
+        $total    = 0;
+
+        if (count($response) > 0) {
+            foreach ($response as $row) {
+                $product  = htmlspecialchars($row['producto']);
+                $quantity = (int) $row['cantidad'];
+                $price    = (float) $row['precio'];
+                $btn = "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Detalle de Compra', '{$row['id']}', '{$product}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+
+                $subTotal  = $price * $quantity;
+                $total    += $subTotal;
+
+                $HTML .= "<tr>";
+                $HTML .= "<td class='text-start'>{$product}</td>";
+                $HTML .= "<td>{$quantity} uds.</td>";
+                $HTML .= "<td class='text-end'>$" . number_format($price, 2) . "</td>";
+                $HTML .= "<td class='text-end'>$" . number_format($subTotal, 2) . "</td>";
+                $HTML .= "<td>{$btn}</td>";
+                $HTML .= "</tr>";
             }
-            echo json_encode(['success' => $result, 'message' => $result ? "Operación realizada correctamente" : "Error en la operación"]);
         } else {
-            echo json_encode(['success' => false, 'message' => "Datos de entrada no válidos"]);
+            $HTML .= '<tr><td colspan="5">No hay detalles de compra disponibles.</td></tr>';
         }
-    }
 
-    public function savePurchase() {
-        if ($this->purchase::validateData(['id'], $_SESSION)) {
-            $productDetails = $this->purchase->getProductDetails($_SESSION['id']);
-            if (!empty($productDetails)) {
-                $totalPurchase = array_reduce($productDetails, fn($sum, $detail) => $sum + ($detail['cantidad'] * $detail['precio']), 0);
-                $savePurchase = $this->purchase->savePurchase(["id_usuario" => $_SESSION['id'], "total" => $totalPurchase]);
-                if ($savePurchase > 0) {
-                    $update = $this->purchase->updateIdPurchaseDetails($savePurchase, $_SESSION['id']);
-                    foreach ($this->purchase->idPurchaseDetails($savePurchase) as $product) {
-                        $this->purchase->addStock($product['id_producto'], $product['cantidad']);
-                    }
-                    echo json_encode(['success' => true, 'message' => 'La compra se realizó correctamente']);
-                } else echo json_encode(['success' => false, 'message' => 'Error al generar la compra']);
-            } else echo json_encode(['success' => false, 'message' => 'No se puede generar la compra']);
-        } else echo json_encode(['success' => false, 'message' => 'Intente más tarde']);
+        echo json_encode([
+            'success' => true,
+            'message' => '',
+            'data' => [
+                'data' => $HTML, 
+                'total' => number_format($total, 2)
+            ]
+        ]);
     }
-
-    public function deletePurchaseDetail() {
-        $result = $this->purchase->deletePurchaseDetail($_POST['id']);
-        echo json_encode(['success' => $result, 'message' => $result ? "Detalle eliminado correctamente" : "Error al eliminar detalle"]);
-    }
-
-    public function cancelPurchase() {
-        $result = $this->purchase->cancelPurchase($_SESSION['id']);
-        echo json_encode(['success' => $result, 'message' => $result ? "Compra eliminada correctamente" : "Error al cancelar la compra"]);
-    }
-
-    public function selectProducts() {
-        $products = $this->purchase::selectAll('productos');
-        foreach ($products as $product) {
-            echo '<option value="' . $product['id'] . '">' . $product['codigo'] . ' | ' . $product['nombre'] . '</option>';
-        }
-    }
-}
-
-$controller = new PurchaseController();
-$action = $_GET['op'] ?? '';
-if (method_exists($controller, $action)) {
-    $controller->$action();
-} else {
-    echo json_encode(['success' => false, 'message' => 'Operación no válida']);
 }

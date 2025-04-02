@@ -1,3 +1,5 @@
+/** TODO: PONER LOADING CUANDO SE VAYA A REGISTRAR, ACTUALIZAR O ELIMINAR UN REGISTRO */
+/** TODO: EN REPORTES PONER LOADING EN LO QUE SE CARGA LA INFORMACIÓN */
 const urlController = "../../../controllers/";
 const module = $(".card").data("module");
 let modalId;
@@ -8,12 +10,15 @@ $(() => {
         event.preventDefault();
 
         if (validateForm(event, this)) {
-        const moduleRecord = $(this).data("module");
-        /** Llamamos a submitForm pasando el módulo dinámicamente */
-        await submitForm(this, "save", moduleRecord, () => {
-            loadDataTable("#module-table", module);
-            $("#modalRegister").modal("toggle");
-        });
+            const moduleRecord = $(this).data("module");
+
+            if (moduleRecord == "Compra" || moduleRecord == "Venta") return;
+            
+            /** Llamamos a submitForm pasando el módulo dinámicamente */
+            await submitForm(this, "save", moduleRecord, () => {
+                loadDataTable("#module-table", module);
+                $("#modalRegister").modal("toggle");
+            });
         }
     });
 });
@@ -199,6 +204,31 @@ const loadDataTable = async (tableId, module) => {
     }
 };
 
+/** TODO: PONER COMENTARIOS PARA ESTO */
+const saveTransaction = async (module) => {
+    try {
+        Swal.fire({
+            title: 'Generar ' + module,
+            text: "¿Estás seguro de generar la siguiente " + module.toLowerCase() + "?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fa-solid fa-cash-register me-1"></i> Sí, Generar ' + module,
+            cancelButtonText: TextCancel,
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                /** Llamamos a submitForm pasando el módulo dinámicamente */
+                await submitForm(this, "save", module, () => {
+                    loadDataTable("#module-table", module);
+                    $('form #cantidad').prop('disabled', true);
+                    $("#modalRegister").modal("toggle");
+                });
+            }
+        });
+    } catch (error) {
+        console.error("Error en la función saveTransaction del archivo moduleRecord:", error);
+    }
+};
+
 /** Carga los datos de un registro en un formulario para su edición.
  * Realiza una solicitud al servidor para obtener la información del registro y llena los campos del formulario.
  *
@@ -350,6 +380,4 @@ $("form #search").on('select2:select', async e => {
 /** Evento que se ejecuta cuando el usuario cambia la cantidad del producto.
  * Llama a la función que calcula el total de la compra.
  */
-$("form #cantidad").on('input', () => {
-    calculateTotal();
-});
+$("form #cantidad").on('input', () => calculateTotal());

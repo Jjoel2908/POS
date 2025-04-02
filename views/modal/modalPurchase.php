@@ -3,6 +3,7 @@
    $formId = "formPurchase";
    $module = "Compra";
    $modalClass = "modal-lg";
+   $onClickEvent = "saveTransaction('Compra')"; 
 ?>
 
 <?php require 'modalHeader.php'; ?>

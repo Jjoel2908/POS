@@ -17,6 +17,7 @@ $controllers = [
     'Marca'         => 'BrandController.php',
     'Producto'      => 'ProductController.php',
     'Cliente'       => 'CustomerController.php',
+    'Compra'        => 'PurchaseController.php',
     'DetalleCompra' => 'PurchaseDetailsController.php',
     'Caja'          => 'CashboxController.php',
 ];
