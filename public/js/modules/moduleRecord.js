@@ -293,10 +293,7 @@ const calculateTotal = () => {
  *
  * @param {Event} e - Evento del teclado.
  * @param {string} formId - ID del formulario que contiene los datos.
- * @param {string} url - URL donde se enviará la solicitud (endpoint del módulo).
- * @param {function} callback - Función opcional que se ejecutará si la operación es exitosa.
- * @param {boolean} [enableButtons=true] - Indica si se deben habilitar botones después de la acción.
- * @param {string[]} [buttonsToEnable=[]] - Lista de selectores de botones a habilitar tras la operación.
+ * @param {string} module - Nombre del módulo desde donde se llama la función.
  */
 const handleFormKeyPress = async (e, formId, module) => {
     if (e.key === 'Enter') {
@@ -313,11 +310,27 @@ const handleFormKeyPress = async (e, formId, module) => {
         /** Llamamos a submitForm pasando el módulo dinámicamente */
         await submitForm(formdata, "save", module, (data) => {
             clearForm('#modalRegister');
+            loadDataTableDetails(data);
             $('#search').select2('open');
         }, false);
     }
 };
 
+/** Obtiene y muestra los detalles de una compra/venta en una tabla dentro de un modal.
+ * @param {string} module - Nombre del módulo desde donde se llama la función.
+ */
+const loadDataTableDetails = async (module) => {
+    /** Llamamos a submitForm pasando el módulo dinámicamente */
+    await submitForm(new FormData(), "dataTable", module, (data) => {
+        const total = parseFloat(data.total || 0.00);
+        $('#details').html(data.data);
+        $('#total-details').html('$' + total);
+    }, false);
+};
+
+/** Evento que se ejecuta al seleccionar un producto en el campo de búsqueda.
+ * Obtiene los datos del producto y los carga en el formulario.
+ */
 $("form #search").on('select2:select', async e => {
     const id       = e.params.data.id;
     const cantidad = $("form #cantidad");
@@ -334,6 +347,9 @@ $("form #search").on('select2:select', async e => {
     }
 });
 
+/** Evento que se ejecuta cuando el usuario cambia la cantidad del producto.
+ * Llama a la función que calcula el total de la compra.
+ */
 $("form #cantidad").on('input', () => {
     calculateTotal();
 });

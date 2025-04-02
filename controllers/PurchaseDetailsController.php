@@ -37,33 +37,43 @@ class PurchaseDetailsController
 
         $Product = new Product();
         $detail  = $Product->getPurchasePrice($this->id);
+        $quantity = $this->model::sanitizeInput('cantidad', 'int');
 
         /** Información a registrar o actualizar */
         $data = [
             'id_producto' => $this->id,
             'precio'      => number_format((float)$detail['precio_compra'], 2, '.', ''),
-            'cantidad'    => $this->model::sanitizeInput('cantidad', 'int'),
+            'cantidad'    => $quantity,
         ];
 
-        $save = $this->model::insert($this->table, $data);
+        /** Identificador de usuario */
+        $idUser = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
 
-        echo json_encode(
-            $save
-                ? ['success' => true, 'message' => $this->messages['save_success']]
-                : ['success' => false, 'message' => $this->messages['save_failed']]
-        );
+        $existDetail = $this->model->existPurchaseDetails($this->id, $idUser);
+
+        /** Si no existe un detalle de compra idéntico, registramos uno nuevo */
+        if (empty($existDetail)) {
+            $save = $this->model::insert($this->table, $data);
+
+            echo json_encode(
+                $save
+                    ? ['success' => true, 'message' => $this->messages['save_success'], 'data' => 'DetalleCompra']
+                    : ['success' => false, 'message' => $this->messages['save_failed']]
+            );
+        } else {
+            /** Si el detalle de compra ya existe, actualizamos la cantidad */
+            $idPurchaseDetail = $existDetail[0]['id'];
+            $save           = $this->model->updatePurchaseDetail($idPurchaseDetail, $quantity);
+
+            echo json_encode(
+                $save
+                    ? ['success' => true, 'message' => $this->messages['update_success'], 'data' => 'DetalleCompra']
+                    : ['success' => false, 'message' => $this->messages['update_failed']]
+            );
+        }
     }
 
-    public function update()
-    {
-        // $recoverRegister = $this->model->selectOne($this->id);
-
-        // echo json_encode(
-        //     count($recoverRegister) > 0     
-        //         ? ['success' => true, 'message' => '', 'data' => $recoverRegister[0]] 
-        //         : ['success' => false, 'message' => 'No se encontró el registro.']
-        // );
-    }
+    public function update() {}
 
     public function delete()
     {
@@ -82,30 +92,41 @@ class PurchaseDetailsController
 
     public function dataTable()
     {
-        $response = $this->model->selectAll($this->table);
-        $data = array();
+        $idUser   = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
+        $response = $this->model->dataTable($idUser);
+        $HTML     = "";
+        $total    = 0;
 
         if (count($response) > 0) {
-
             foreach ($response as $row) {
-                list($day, $hour) = explode(" ", $row['fecha']);
-                $date  = date("d/m/Y", strtotime($day));
+                $product  = htmlspecialchars($row['producto']);
+                $quantity = (int) $row['cantidad'];
+                $price    = (float) $row['precio'];
+                $btn = "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"modulePurchase.deletePurchaseDetail('{$row['id']}', '{$product}')\"><i class=\"bx bx-trash m-0\"></i></button>";
 
-                $estado = $row['estado']
-                    ? "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Activo</span>"
-                    : "";
+                $subTotal  = $price * $quantity;
+                $total    += $subTotal;
 
-                $btn = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Categoría', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Categoría', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
-                $data[] = [
-                    "Categoría"     => $row['nombre'],
-                    "Fecha de Alta" => $date,
-                    "Estado"        => $estado,
-                    "Acciones"      => $btn
-                ];
+                $HTML .= "<tr>";
+                $HTML .= "<td class='text-start'>{$product}</td>";
+                $HTML .= "<td>{$quantity} uds.</td>";
+                $HTML .= "<td class='text-end'>$" . number_format($price, 2) . "</td>";
+                $HTML .= "<td class='text-end'>$" . number_format($subTotal, 2) . "</td>";
+                $HTML .= "<td>{$btn}</td>";
+                $HTML .= "</tr>";
             }
+        } else {
+            $HTML .= '<tr><td colspan="5">No hay detalles de compra disponibles.</td></tr>';
         }
-        echo json_encode($data);
+
+        echo json_encode([
+            'success' => true,
+            'message' => '',
+            'data' => [
+                'data' => $HTML, 
+                'total' => number_format($total, 2)
+            ]
+        ]);
     }
 
     public function droplist()

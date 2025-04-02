@@ -56,18 +56,18 @@
             <table class="table table-striped table-bordered view-table">
                <thead>
                   <tr class="text-center">
-                     <th>Nombre</th>
+                     <th>Producto</th>
                      <th>Cantidad</th>
                      <th>Precio</th>
                      <th>Sub Total</th>
-                     <th>Acción</th>
+                     <th>Acciones</th>
                   </tr>
                </thead>
-               <tbody id="table-product-details"></tbody>
+               <tbody id="details"></tbody>
                <tfoot>
                   <tr>
                      <td class="text-end" colspan="4"><strong>Total</strong></td>
-                     <td id="total-purchase">0.00</td>
+                     <td id="total-details">0.00</td>
                   </tr>
                </tfoot>
             </table>

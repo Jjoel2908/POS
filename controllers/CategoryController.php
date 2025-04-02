@@ -60,7 +60,7 @@ class CategoryController
             $save = $this->model::update($this->table, $this->id, $data);
             echo json_encode(
                 $save
-                    ? ['success' => true, 'message' => $this->messages['update_success'] . $this->id]
+                    ? ['success' => true, 'message' => $this->messages['update_success']]
                     : ['success' => false, 'message' => $this->messages['update_failed']]
             );
         }

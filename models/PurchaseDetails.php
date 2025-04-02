@@ -5,24 +5,60 @@ class PurchaseDetails extends Connection
 {
    public function __construct() {}
 
-   public function existPurchaseDetails(int $idProduct, int $idUser): array
+   public function dataTable(int $idUser): array
    {
-      return $this->queryMySQL("SELECT 1 FROM detalle_compra WHERE id_compra = 0 AND estado = 0 AND id_usuario = $idUser AND id_producto = $idProduct");
+      return $this->queryMySQL(
+         "SELECT 
+            dc.id,
+            dc.precio,
+            dc.cantidad, 
+            p.nombre AS producto 
+         FROM 
+            detalle_compra dc 
+         INNER JOIN 
+            productos p 
+         ON 
+            dc.id_producto = p.id 
+         WHERE 
+            dc.estado = 0 
+         AND 
+            dc.id_compra IS NULL
+         AND
+            dc.creado_por = $idUser");
    }
 
-   public function dataTablePurchaseDetails(int $id_usuario): array
+   public function existPurchaseDetails(int $idProduct, int $idUser): array
    {
-      return $this->queryMySQL("SELECT dc.*, p.nombre AS nombre_producto, p.precio_compra AS precio FROM detalle_compra dc INNER JOIN productos p ON dc.id_producto = p.id WHERE dc.estado = 0 AND dc.id_usuario = $id_usuario");
+      return $this->queryMySQL("SELECT id FROM detalle_compra WHERE id_compra IS NULL AND estado = 0 AND creado_por = $idUser AND id_producto = $idProduct");
    }
+
+   public function updatePurchaseDetail(int $idPurchase, int $quantity): bool
+   {
+      return $this->queryMySQL("UPDATE detalle_compra SET cantidad = cantidad + $quantity WHERE id = $idPurchase");
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+  
 
    public function insertPurchaseDetail(array $data): bool
    {
       return $this->insert('detalle_compra', $data);
-   }
-
-   public function updatePurchaseDetail(int $id, array $data): bool
-   {
-      return $this->update('detalle_compra', $id, $data);
    }
 
    public function deletePurchaseDetail(int $id): bool
