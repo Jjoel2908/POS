@@ -5,7 +5,7 @@ $config = [
    'permission'   => 5,
    'title'        => 'Compras',
    'icon'         => 'fa-solid fa-bag-shopping',
-   'addAction'    => "openModal('Compra')",
+   'addAction'    => "addPurchase()",
    'addLabel'     => 'Compra',
    'modals'       => [
       'modal/modalPurchase.php',

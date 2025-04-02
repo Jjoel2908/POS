@@ -67,7 +67,7 @@
                <tfoot>
                   <tr>
                      <td class="text-end" colspan="4"><strong>Total</strong></td>
-                     <td id="total-details">0.00</td>
+                     <td class="text-end" id="total-details">0.00</td>
                   </tr>
                </tfoot>
             </table>

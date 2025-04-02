@@ -48,7 +48,6 @@ class PurchaseDetailsController
 
         /** Identificador de usuario */
         $idUser = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
-
         $existDetail = $this->model->existPurchaseDetails($this->id, $idUser);
 
         /** Si no existe un detalle de compra idéntico, registramos uno nuevo */
@@ -63,7 +62,7 @@ class PurchaseDetailsController
         } else {
             /** Si el detalle de compra ya existe, actualizamos la cantidad */
             $idPurchaseDetail = $existDetail[0]['id'];
-            $save           = $this->model->updatePurchaseDetail($idPurchaseDetail, $quantity);
+            $save = $this->model->updatePurchaseDetail($idPurchaseDetail, $quantity);
 
             echo json_encode(
                 $save
@@ -73,21 +72,14 @@ class PurchaseDetailsController
         }
     }
 
-    public function update() {}
-
     public function delete()
     {
-        $validateProducts = $this->model::exists('productos', 'id_categoria', $this->id);
-
-        if (!$validateProducts) {
-            $delete = $this->model::delete($this->table, $this->id);
-            echo json_encode(
-                $delete
-                    ? ['success' => true, 'message' => $this->messages['delete_success']]
-                    : ['success' => false, 'message' => $this->messages['delete_failed']]
-            );
-        } else
-            echo json_encode(['success' => false, 'message' => 'La categoría cuenta con productos']);
+        $delete = $this->model::delete($this->table, $this->id);
+        echo json_encode(
+            $delete
+                ? ['success' => true, 'message' => $this->messages['delete_success']]
+                : ['success' => false, 'message' => $this->messages['delete_failed']]
+        );
     }
 
     public function dataTable()
@@ -102,7 +94,7 @@ class PurchaseDetailsController
                 $product  = htmlspecialchars($row['producto']);
                 $quantity = (int) $row['cantidad'];
                 $price    = (float) $row['precio'];
-                $btn = "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"modulePurchase.deletePurchaseDetail('{$row['id']}', '{$product}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+                $btn = "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Detalle de Compra', '{$row['id']}', '{$product}')\"><i class=\"bx bx-trash m-0\"></i></button>";
 
                 $subTotal  = $price * $quantity;
                 $total    += $subTotal;
@@ -127,16 +119,5 @@ class PurchaseDetailsController
                 'total' => number_format($total, 2)
             ]
         ]);
-    }
-
-    public function droplist()
-    {
-        $listRegister = "";
-        $list = $this->model->selectAll($this->table);
-        foreach ($list as $item) {
-            $listRegister .= '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
-        }
-
-        echo json_encode(['success' => true, 'data' => $listRegister]);
     }
 }

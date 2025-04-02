@@ -7,7 +7,10 @@ $(() => {
    }, false);
 });
 
-
+const addPurchase = async () => {
+   await loadDataTableDetails('DetalleCompra');
+   openModal('Compra');
+};
 
 
 
@@ -17,48 +20,6 @@ $(() => {
 
 
 let modulePurchase = {
-   /** H A N D L E   K E Y P R E S S  */
-   handleKeyPress: (e) => {
-      if (e.key === 'Enter') {
-
-         e.preventDefault();
-
-         let id       = $("form#formAddPurchase #id").val();
-         let cantidad = $("form#formAddPurchase #cantidad").val();
-   
-         let data = {
-            id: id,
-            cantidad: cantidad
-         }
-         
-         $.post(URL_PURCHASE + "op=addPurchaseDetails", data, e => {
-            response = JSON.parse(e);
-
-            if (response.success) {
-               POS.clearForm();
-               modulePurchase.dataTablePurchaseDetails();
-               $('form#formAddPurchase #btnSave, form#formAddPurchase #btnCancel').prop('disabled', false);   
-               $('#search').select2('open');        
-            } else POS.showAlert(response.success, response.message);
-         
-         });
-      }
-   },
-   
-   /** T A B L E  P U R C H A S E   D E T A I L */
-   dataTablePurchaseDetails: () => {
-      $.post(URL_PURCHASE + "op=dataTablePurchaseDetails", e => {
-
-         let response = JSON.parse(e);
-         let message  = '<tr><td colspan="5">No hay detalles de compra disponibles.</td></tr>';
-         let result   = (response.data != "") ? response.data : message;
-         let total    = (response.total != 0) ? response.total : 0.00;
-
-         $('#modalAddPurchase #table-product-details').html(result);
-         $('#modalAddPurchase #total-purchase').html('$' + total);
-      });
-   },
-
    /**  S A V E  P U R C H A S E  */
    savePurchase: () => {
       Swal.fire({
