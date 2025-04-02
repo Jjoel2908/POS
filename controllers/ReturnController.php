@@ -6,6 +6,8 @@ class ReturnController {
     /** @var string Nombre de la tabla en la base de datos */
     private $table = "devoluciones";
     private $model;
+    private $id;
+    private $idSucursal;
 
     private $messages = [
         "save_success" => "Devolución registrada correctamente.",
@@ -17,15 +19,35 @@ class ReturnController {
         "required" => "Debe completar la información obligatoria."
     ];
 
-    public function __construct() {
+    public function __construct($id = null, $idSucursal = null)
+    {
         $this->model = new ReturnProduct();
+        $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
-    private function save() {
-        if (!$this->return::validateData(['id_venta', 'id_detail', 'id_producto', 'cantidad', 'motivo', 'precio'], $_POST)) {
-            echo json_encode(['success' => false, 'message' => 'Complete los campos requeridos']);
+    private function save() 
+    {
+        /** Valida campos requeridos */
+        if (!$this->model::validateData(['id_venta', 'id_detail', 'id_producto', 'cantidad', 'motivo', 'precio'], $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
         }
+
+        /** Información a registrar o actualizar */
+        $quantity = $this->model::sanitizeInput('cantidad', 'int');
+        $price = $this->model::sanitizeInput('precio', 'float');
+
+        $data = [
+            'id_venta'        => $this->model::sanitizeInput('id_venta', 'int'),
+            'id_cliente'      => $this->model::sanitizeInput('id_cliente', 'int'),
+            'id_detail'       => $this->model::sanitizeInput('id_detail', 'int'),
+            'id_producto'     => $this->model::sanitizeInput('id_producto', 'int'),
+            'cantidad'        => $quantity,
+            'id_venta'        => $this->model::sanitizeInput('id_venta', 'int'),
+            'motivo'          => $this->model::sanitizeInput('motivo', 'text'),
+            'total'           => $price * $quantity,
+        ];
 
         if (!$this->return->decreaseDetailProduct($_POST['id_detail'], $_POST['cantidad'])) {
             echo json_encode(['success' => false, 'message' => 'Error al modificar el detalle de venta']);
@@ -38,14 +60,7 @@ class ReturnController {
         }
 
         $sale = $this->return->select('ventas', $_POST['id_venta']);
-        $data = [
-            'id_producto' => $_POST['id_producto'],
-            'cantidad'    => $_POST['cantidad'],
-            'motivo'      => $_POST['motivo'],
-            'id_usuario'  => $_SESSION['id'],
-            'id_cliente'  => $sale['id_cliente'],
-            'total'       => $_POST['cantidad'] * $_POST['precio']
-        ];
+     
 
         if ($this->return->insertReturn($data)) {
             echo json_encode(['success' => true, 'message' => 'Devolución registrada correctamente']);

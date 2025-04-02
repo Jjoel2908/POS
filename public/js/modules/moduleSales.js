@@ -1,3 +1,27 @@
+$(() => {
+   const formdata = new FormData();
+
+   submitForm(formdata, "droplist", 'Producto', (data) => {
+      $("#formSale #search").html(data);
+      clearForm('#modalRegister');
+   }, false);
+});
+
+const addSale = async () => {
+   await loadDataTableDetails('DetalleVenta');
+   openModal('Venta');
+};
+
+
+
+
+
+
+
+
+
+
+
 let POS = new classPOS('Detalle de Venta', '#modalAddSale');
 const URL_SALES = "../../../controllers/sales.php?";
 

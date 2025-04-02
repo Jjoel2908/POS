@@ -37,7 +37,7 @@ class PurchaseDetails extends Connection
       return $this->queryMySQL("UPDATE detalle_compra SET cantidad = cantidad + $quantity WHERE id = $idPurchase");
    }
 
-   public function getPurchaseDetails(int $id_usuario): array {
+   public function getPurchaseDetails(int $idUser): array {
       return $this->queryMySQL(
          "SELECT 
             id, 

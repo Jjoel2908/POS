@@ -20,6 +20,8 @@ $controllers = [
     'Compra'        => 'PurchaseController.php',
     'DetalleCompra' => 'PurchaseDetailsController.php',
     'Caja'          => 'CashboxController.php',
+    'Venta'         => 'SaleController.php',
+    'DetalleVenta'  => 'SaleDetailsController.php',
 ];
 
 /** Verificamos si el módulo existe en la lista */
