@@ -1,6 +1,5 @@
 <?php
 require '../models/Purchase.php';
-require '../models/PurchaseDetails.php';
 
 class PurchaseController
 {
@@ -8,6 +7,7 @@ class PurchaseController
     private $table = "compras";
     private $model;
     private $id;
+    private $idUser;
     private $idSucursal;
 
     private $messages = [
@@ -17,117 +17,41 @@ class PurchaseController
         "update_failed"  => "Error al actualizar la compra.",
         "delete_success" => "Compra eliminada correctamente.",
         "delete_failed"  => "Error al eliminar la compra.",
-        "required"       => "Debe completar la información obligatoria de la compra."
-        "empty"          => "No hay detalles de compra que registrar."
+        "required"       => "Debe completar la información obligatoria de la compra.",
+        "empty"          => "Aún no hay información de compra disponible."
     ];
-    
+
     public function __construct($id = null, $idSucursal = null)
     {
-        $this->model = new Purchase();
-        $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->model      = new Purchase();
+        $this->id         = $id         !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
         $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->idUser     = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
     }
 
     public function save()
     {
-        $total = 0;
-        $idUser   = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
-
         /** Validamos si hay detalles de productos pendientes */
         $PurchaseDetails = new PurchaseDetails();
-        $details  = $PurchaseDetails->getPurchaseDetails($idUser);
+        $details         = $PurchaseDetails->getPurchaseDetails($this->idUser);
 
         if (empty($details)) {
             echo json_encode(['success' => false, 'message' => $this->messages['empty']]);
             return;
         }
-   
-        /** MODIFICAR AQUI PARA CREAR UNA TRANSACCION MEJOR */
-               foreach($productDetails as $detail) {
-                  $quantity = $detail['cantidad'];
-                  $price = $detail['precio'];
-   
-                  $totalPurchase += $quantity * $price;
-               }
-               
-               $dataPurchase = [
-                  "id_usuario" => $_SESSION['id'],
-                  "total"      => $totalPurchase
-               ];
-   
-               $savePurchase = $Purchase->savePurchase($dataPurchase);
-   
-               if ($savePurchase > 0) {
-   
-                  $id_compra  = $savePurchase;
-                  $id_usuario = $_SESSION['id'];
-   
-                  $updatePurchaseDetails = $Purchase->updateIdPurchaseDetails($id_compra, $id_usuario);
-   
-                  $detailProducts = $Purchase->idPurchaseDetails($id_compra);
-   
-                  if (!empty($detailProducts)) {
-   
-                     foreach($detailProducts as $addProduct) {
-                        $id_producto = $addProduct['id_producto'];
-                        $cantidad    = $addProduct['cantidad'];
-   
-                        $addStock = $Purchase->addStock($id_producto, $cantidad);
-                     }
-   
-                     if ($addStock) {
-                        echo json_encode(['success'  => true, 'message' => 'La compra se realizó correctamente']);
-                     } else {
-                        echo json_encode(['success'  => false, 'message' => 'Error al actualizar detalles de compra']);
-                     }
-                  }
-   
-               } else echo json_encode(['success'  => false, 'message' => 'Error al generar la compra']);
-   
-         
 
-   
-
-        /** Información a registrar o actualizar */
-        $data = [
-            'id_producto' => $this->id,
-            'precio'      => number_format((float)$detail['precio_compra'], 2, '.', ''),
-            'cantidad'    => $quantity,
-        ];
-
-        /** Identificador de usuario */
-        $idUser = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
-        $existDetail = $this->model->existPurchaseDetails($this->id, $idUser);
-
-        /** Si no existe un detalle de compra idéntico, registramos uno nuevo */
-        if (empty($existDetail)) {
-            $save = $this->model::insert($this->table, $data);
-
-            echo json_encode(
-                $save
-                    ? ['success' => true, 'message' => $this->messages['save_success'], 'data' => 'DetalleCompra']
-                    : ['success' => false, 'message' => $this->messages['save_failed']]
-            );
-        } else {
-            /** Si el detalle de compra ya existe, actualizamos la cantidad */
-            $idPurchaseDetail = $existDetail[0]['id'];
-            $save = $this->model->updatePurchaseDetail($idPurchaseDetail, $quantity);
-
-            echo json_encode(
-                $save
-                    ? ['success' => true, 'message' => $this->messages['update_success'], 'data' => 'DetalleCompra']
-                    : ['success' => false, 'message' => $this->messages['update_failed']]
-            );
+        /** Calcular total de la compra */
+        $total = 0;
+        foreach ($details as $detail) {
+            $total += $detail['cantidad'] * $detail['precio'];
         }
-    }
+        $totalFormatter  = number_format(floatval($total), 2, '.', '');
 
-    public function delete()
-    {
-        $delete = $this->model::delete($this->table, $this->id);
+        $save = $this->model->insertPurchase($this->idUser, $this->idSucursal, $totalFormatter);
         echo json_encode(
-            $delete
-                ? ['success' => true, 'message' => $this->messages['delete_success']]
-                : ['success' => false, 'message' => $this->messages['delete_failed']]
+            $save
+                ? ['success' => true, 'message' => $this->messages['save_success']]
+                : ['success' => false, 'message' => $this->messages['save_failed']]
         );
     }
 
@@ -164,7 +88,7 @@ class PurchaseController
             'success' => true,
             'message' => '',
             'data' => [
-                'data' => $HTML, 
+                'data' => $HTML,
                 'total' => number_format($total, 2)
             ]
         ]);

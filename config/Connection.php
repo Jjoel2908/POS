@@ -51,7 +51,7 @@ class Connection
 
         /** Agregamos el usuario */
         $data['creado_por'] = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
-        
+
         /** Escapar correctamente nombres de tabla y columna */
         $table = "`" . str_replace("`", "``", $table) . "`";
 
@@ -332,5 +332,105 @@ class Connection
             }
         }
         return true; // Si no se encontraron campos vacíos, retorna true, indicando que los datos son válidos.
+    }
+
+    public static function beginTransaction()
+    {
+        $conexion = self::conectionMySQL();
+        $conexion->begin_transaction();
+    }
+
+    /** Ejecuta un INSERT dentro de una transacción.
+     * Devuelve `true` si se ejecuta correctamente.
+     */
+    public static function insertWithTransaction(mysqli $conexion, string $table, array $data): bool
+    {
+        try {
+            $columns = implode(', ', array_keys($data));
+            $values  = str_repeat('?, ', count($data) - 1) . '?';
+            $types   = str_repeat('s', count($data));
+            $table   = "`" . str_replace("`", "``", $table) . "`";
+            $sql     = "INSERT INTO $table ($columns) VALUES ($values)";
+            $stmt    = $conexion->prepare($sql);
+
+            if ($stmt === false) {
+                throw new Exception("Error al preparar la consulta: " . $conexion->error);
+            }
+
+            $stmt->bind_param($types, ...array_values($data));
+
+            if (!$stmt->execute()) {
+                throw new Exception("Error al ejecutar el INSERT: " . $stmt->error);
+            }
+
+            $stmt->close();
+            return true;
+        } catch (Exception $e) {
+            error_log("Error en insertWithTransaction: " . $e->getMessage());
+            return false;
+        }
+    }
+
+     /** Ejecuta un INSERT dentro de una transacción y devuelve el ID del último registro insertado.
+     * Devuelve `NULL` si ocurre un error.
+     */
+    public static function insertAndGetIdWithTransaction(mysqli $conexion, string $table, array $data): ?int
+    {
+        try {
+            $columns = implode(', ', array_keys($data));
+            $values = str_repeat('?, ', count($data) - 1) . '?';
+            $types = str_repeat('s', count($data));
+            $table   = "`" . str_replace("`", "``", $table) . "`";
+            $sql = "INSERT INTO $table ($columns) VALUES ($values)";
+            $stmt = $conexion->prepare($sql);
+
+            if ($stmt === false) {
+                throw new Exception("Error al preparar la consulta: " . $conexion->error);
+            }
+
+            $stmt->bind_param($types, ...array_values($data));
+
+            if (!$stmt->execute()) {
+                throw new Exception("Error al ejecutar el INSERT: " . $stmt->error);
+            }
+
+            $insert_id = $stmt->insert_id;
+            $stmt->close();
+
+            return $insert_id;
+        } catch (Exception $e) {
+            error_log("Error en insertAndGetIdWithTransaction: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    public static function executeQueryWithTransaction(mysqli $conexion, string $query): bool
+    {
+        try {
+            $resultado = $conexion->query($query);
+
+            if ($resultado === false) {
+                throw new Exception("Error al ejecutar la consulta: " . $conexion->error);
+            }
+
+            return true;
+        } catch (Exception $e) {
+            error_log("Error en executeQueryWithTransaction: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function commit()
+    {
+        $conexion = self::conectionMySQL();
+        $conexion->commit();
+        self::closeConection();
+    }
+
+    public static function rollback()
+    {
+        $conexion = self::conectionMySQL();
+        $conexion->rollback();
+        self::closeConection();
     }
 }

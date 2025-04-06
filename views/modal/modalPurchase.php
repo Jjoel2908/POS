@@ -67,8 +67,8 @@
                <tbody id="details"></tbody>
                <tfoot>
                   <tr>
-                     <td class="text-end" colspan="4"><strong>Total</strong></td>
-                     <td class="text-end" id="total-details">0.00</td>
+                     <td class="text-end py-2 font-15" colspan="4"><strong>Total</strong></td>
+                     <td class="text-end py-2 font-15" id="total-details">0.00</td>
                   </tr>
                </tfoot>
             </table>

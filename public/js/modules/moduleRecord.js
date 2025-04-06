@@ -204,7 +204,12 @@ const loadDataTable = async (tableId, module) => {
     }
 };
 
-/** TODO: PONER COMENTARIOS PARA ESTO */
+/** Genera una transacción para un módulo específico mediante una confirmación previa.
+ * Muestra una alerta de confirmación antes de ejecutar la acción y, si el usuario confirma,
+ * llama a la función submitForm para procesar la transacción.
+ *
+ * @param {string} module - Nombre del módulo para la generación de la transacción.
+ */
 const saveTransaction = async (module) => {
     try {
         Swal.fire({
@@ -217,7 +222,7 @@ const saveTransaction = async (module) => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
-                await submitForm(this, "save", module, () => {
+                await submitForm(new FormData(), "save", module, () => {
                     loadDataTable("#module-table", module);
                     $('form #cantidad').prop('disabled', true);
                     $("#modalRegister").modal("toggle");
@@ -293,7 +298,10 @@ const processDelete = async (module, id) => {
 
         /** Llamamos a submitForm pasando el módulo dinámicamente */
         await submitForm(formdata, "delete", module, () => {
-            loadDataTable("#module-table", module);
+            if (module === "DetalleCompra" || module === "DetalleVenta")
+                loadDataTableDetails(module);
+            else
+                loadDataTable("#module-table", module);
         });
     } catch (error) {
         console.error("Error en processDelete:", error);
@@ -352,9 +360,8 @@ const handleFormKeyPress = async (e, formId, module) => {
 const loadDataTableDetails = async (module) => {
     /** Llamamos a submitForm pasando el módulo dinámicamente */
     await submitForm(new FormData(), "dataTable", module, (data) => {
-        const total = parseFloat(data.total || 0.00);
         $('#details').html(data.data);
-        $('#total-details').html('$' + total);
+        $('#total-details').html('$' + data.total);
     }, false);
 };
 

@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+/** Zona horaria */
+date_default_timezone_set('America/Mexico_City');
+
 /** Obtenemos el módulo y la operación a realizar */
 $module    = $_POST['module'] ?? null;
 $operation = $_POST['operation'] ?? null;

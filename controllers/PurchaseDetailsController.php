@@ -8,6 +8,7 @@ class PurchaseDetailsController
     private $table = "detalle_compra";
     private $model;
     private $id;
+    private $idUser;
     private $idSucursal;
 
     private $messages = [
@@ -22,9 +23,10 @@ class PurchaseDetailsController
 
     public function __construct($id = null, $idSucursal = null)
     {
-        $this->model = new PurchaseDetails();
-        $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->model      = new PurchaseDetails();
+        $this->id         = $id         !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
         $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->idUser     = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
     }
 
     public function save()
@@ -47,8 +49,7 @@ class PurchaseDetailsController
         ];
 
         /** Identificador de usuario */
-        $idUser = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
-        $existDetail = $this->model->existPurchaseDetails($this->id, $idUser);
+        $existDetail = $this->model->existPurchaseDetails($this->id, $this->idUser);
 
         /** Si no existe un detalle de compra idéntico, registramos uno nuevo */
         if (empty($existDetail)) {
@@ -84,8 +85,7 @@ class PurchaseDetailsController
 
     public function dataTable()
     {
-        $idUser   = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
-        $response = $this->model->dataTable($idUser);
+        $response = $this->model->dataTable($this->idUser);
         $HTML     = "";
         $total    = 0;
 
@@ -94,7 +94,7 @@ class PurchaseDetailsController
                 $product  = htmlspecialchars($row['producto']);
                 $quantity = (int) $row['cantidad'];
                 $price    = (float) $row['precio'];
-                $btn = "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Detalle de Compra', '{$row['id']}', '{$product}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+                $btn = "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('DetalleCompra', '{$row['id']}', '{$product}')\"><i class=\"bx bx-trash m-0\"></i></button>";
 
                 $subTotal  = $price * $quantity;
                 $total    += $subTotal;
