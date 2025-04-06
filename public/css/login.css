@@ -1,3 +1,4 @@
+/** L O G I N **/
 body {
   background: url(../images/regal.jpg);
   background-size: cover;
@@ -8,8 +9,25 @@ body {
 .container-login {
   width: 380px;
   height: 480px;
-  background-color: #c3d1dc60;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff90;
+  border-radius: 22px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* .container-input {
+  border: 2px solid #B3908C !important;
+} */
+
+.title-login {
+  font-size: 28px;
+  margin-bottom: 48px;
+  letter-spacing: 1px;
+  /* text-align: center;
+  width: 80%;
+  padding: 12px 0px;
+  border-top: 3px solid pink;
+  border-bottom: 3px solid pink;
+  margin: 0 auto; */
 }
 
 .img-fluid {
