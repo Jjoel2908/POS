@@ -4,27 +4,32 @@ require '../config/Connection.php';
 class Login extends Connection
 {
 
-   public function __construct(private string $user, private string $password)
+   public function __construct()
    {
    }
 
-   private function validate_password(string $password): bool
+   private function validate_password(string $savedPassword, string $loginPassword): bool
    {
-      return password_verify($this->password, $password);
+      return password_verify($loginPassword, $savedPassword);
    }
 
-   public function validateUser(): array|null
+   public function validateUser(string $email, string $loginPassword): array|bool|null
    {
+      $searchUser = $this->loginMySQL("usuarios", $email);
 
-      $search = $this->loginMySQL("usuarios", "user", $this->user);
+      if ($searchUser == null)
+         return null;
 
-      if (count($search) > 0) {
+      if (count($searchUser) > 0) {
+         
+         $savedPassword = $searchUser['password'];
+         $validatePassword = $this->validate_password($savedPassword, $loginPassword);
 
-         $password = $search['password'];
-         $validatePassword = $this->validate_password($password);
-         $data = $validatePassword ? $search : NULL;
-
-         return $data;
-      } else return NULL;
+         return $validatePassword 
+            ? $searchUser 
+            : false;
+      }
+      
+      return null;
    }
 }

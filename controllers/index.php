@@ -5,9 +5,9 @@ session_start();
 date_default_timezone_set('America/Mexico_City');
 
 /** Obtenemos el módulo y la operación a realizar */
-$module    = $_POST['module'] ?? null;
-$operation = $_POST['operation'] ?? null;
-$id        = $_POST['id'] ?? null;
+$module     = $_POST['module'] ?? null;
+$operation  = $_POST['operation'] ?? null;
+$id         = $_POST['id'] ?? null;
 $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
 
 /** Verificamos que se haya enviado el módulo */
@@ -16,6 +16,7 @@ if ($module === null)
 
 /** Mapeo de módulos con sus controladores */
 $controllers = [
+    'Login'         => 'LoginController.php',
     'Categoría'     => 'CategoryController.php',
     'Marca'         => 'BrandController.php',
     'Producto'      => 'ProductController.php',

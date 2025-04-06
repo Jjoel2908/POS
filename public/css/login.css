@@ -9,7 +9,7 @@ body {
 .container-login {
   width: 380px;
   height: 480px;
-  background-color: #ffffff90;
+  background-color: #ffffff98;
   border-radius: 22px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
@@ -20,7 +20,7 @@ body {
 
 .title-login {
   font-size: 28px;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
   letter-spacing: 1px;
   /* text-align: center;
   width: 80%;

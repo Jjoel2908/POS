@@ -29,10 +29,13 @@ class Connection
         }
     }
 
-    public static function loginMySQL(string $table, string $field, string $value): array|null
+    public static function loginMySQL(string $table, string $value): array|null
     {
         $conexion = self::conectionMySQL();
-        $sql = "SELECT * FROM $table WHERE $field = ? AND estado = 1";
+
+        /** Escapar correctamente nombre de tabla */
+        $table = "`" . str_replace("`", "``", $table) . "`";
+        $sql = "SELECT * FROM $table WHERE correo = ? AND estado = 1";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param('s', $value);
         $stmt->execute();
@@ -307,6 +310,8 @@ class Connection
                 return preg_replace('/\D/', '', $value);
             case 'email':
                 return filter_var($value, FILTER_VALIDATE_EMAIL) ?: null;
+            case 'password':
+                return preg_replace('/[^a-zA-Z0-9@#\$%\&\*\!\.\-\_]/', '', $value);
             case 'int':
                 return filter_var($value, FILTER_VALIDATE_INT) ?: 0;
             case 'float':
