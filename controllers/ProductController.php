@@ -29,7 +29,7 @@ class ProductController
     public function save()
     {
         /** Valida campos requeridos */
-        $validateData = ['nombre', 'codigo', 'id_categoria', 'id_marca', 'precio_compra', 'precio_venta'];
+        $validateData = ['nombre', 'codigo', 'id_marca', 'precio_compra', 'precio_venta'];
         if (!$this->model::validateData($validateData, $_POST)) {
             echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
@@ -41,7 +41,6 @@ class ProductController
         $data = [
             'nombre'        => $this->model::sanitizeInput('nombre', 'text'),
             'codigo'        => $code,
-            'id_categoria'  => $this->model::sanitizeInput('id_categoria', 'int'),
             'id_marca'      => $this->model::sanitizeInput('id_marca', 'int'),
             'precio_compra' => $this->model::sanitizeInput('precio_compra', 'float'),
             'precio_venta'  => $this->model::sanitizeInput('precio_venta', 'float')
@@ -115,9 +114,8 @@ class ProductController
 
             $data[] = [
                 "Producto"      => $row['nombre'],
-                "Código"        => $row['codigo'],
-                "Categoría"     => $row['categoria'],
                 "Marca"         => $row['marca'],
+                "Código"        => $row['codigo'],
                 "Precio Compra" => $row['precio_compra'],
                 "Precio Venta"  => $row['precio_venta'],
                 "Cantidad"      => $row['stock'],

@@ -1,10 +1,6 @@
 $(() => {
    const formdata = new FormData();
-
-   submitForm(formdata, "droplist", 'Categoría', (data) => {
-      $("#formProduct #id_categoria").html(data);
-   }, false);
-
+   
    submitForm(formdata, "droplist", 'Marca', (data) => {
       $("#formProduct #id_marca").html(data);
    }, false);

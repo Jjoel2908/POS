@@ -25,12 +25,6 @@ $module = "Producto";
 </div>
 
 <div class="col-md-12 view-form">
-    <label class="mb-1" for="id_categoria">Categoría</label>
-    <select name="id_categoria" id="id_categoria" class="form-control select" required>
-    </select>
-</div>
-
-<div class="col-md-12 view-form">
     <label class="mb-1" for="id_marca">Marca</label>
     <select name="id_marca" id="id_marca" class="form-control select" required>
     </select>

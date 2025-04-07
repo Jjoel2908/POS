@@ -10,15 +10,29 @@ $(() => {
         event.preventDefault();
 
         if (validateForm(event, this)) {
-            const moduleRecord = $(this).data("module");
+            try {
+                /** Mostrar el spinner */
+                $("#loadingSpinner").show();
 
-            if (moduleRecord == "Compra" || moduleRecord == "Venta") return;
-            
-            /** Llamamos a submitForm pasando el módulo dinámicamente */
-            await submitForm(this, "save", moduleRecord, () => {
-                loadDataTable("#module-table", module);
-                $("#modalRegister").modal("toggle");
-            });
+                /** Deshabilitamos el botón de submit */
+                $('#btnSave').prop("disabled", true);
+                
+                const moduleRecord = $(this).data("module");
+
+                if (moduleRecord == "Compra" || moduleRecord == "Venta") return;
+                
+                /** Llamamos a submitForm pasando el módulo dinámicamente */
+                await submitForm(this, "save", moduleRecord, () => {
+                    loadDataTable("#module-table", module);
+                    $("#modalRegister").modal("toggle");
+                });
+            } catch (error) {
+                console.log("Ocurrió un error al crear/actualizar un nuevo registro en el módulo " + moduleRecord);
+            } finally {
+                /** Ocultar el spinner después de que se complete la solicitud */
+                $("#loadingSpinner").hide();
+                $('#btnSave').prop("disabled", false);
+            }
         }
     });
 });
