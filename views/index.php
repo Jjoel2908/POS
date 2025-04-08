@@ -6,7 +6,7 @@
     <div class="container-login text-center p-4 mb-2">
 
         <!-- [  #  T I T L E  #  ] -->
-        <h2 class="fw-bold text-secondary my-4">Bienvenido</h2>
+        <h2 class="fw-bold text-black my-4">Bienvenido</h2>
         <h3 class="title-login">Gastelum Jr</h3>
 
         <!-- [  #  F O R M  #  ] -->
