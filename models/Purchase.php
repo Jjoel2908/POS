@@ -62,7 +62,7 @@ class Purchase extends Connection
          /** Registramos la compra */
          $idPurchase = $this::insertAndGetIdWithTransaction($conexion, 'compras', $data);
 
-         if ($idPurchase <= 0)
+         if (!$idPurchase)
             throw new Exception('Error al registrar la compra');
 
          /** Obtenemos los productos pendientes en detalle_compra */
@@ -86,10 +86,12 @@ class Purchase extends Connection
                throw new Exception('Error al actualizar el stock del producto ID: ' . $detail['id_producto']);
          }
 
-         $this::commit();
+         $conexion->commit();
+         $conexion->close();
          return true;
       } catch (Exception $e) {
-         $this::rollback();
+         $conexion->rollback();
+         $conexion->close();
          return false;
       }
    }
