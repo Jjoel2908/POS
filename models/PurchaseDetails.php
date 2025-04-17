@@ -5,8 +5,17 @@ class PurchaseDetails extends Connection
 {
    public function __construct() {}
 
-   public function dataTable(int $idUser): array
+   public function dataTable(int $userId, int $purchaseId): array
    {
+      /** Estado para el detalle de compra */
+      $estado = $purchaseId ? 1 : 0;
+
+      /** Identificador de la compra */
+      $idPurchase = $purchaseId ? "= $purchaseId" : "IS NULL";
+
+      /** Identificador del usuario */
+      $idUser = $purchaseId ? "" : " AND dc.creado_por = $userId";
+
       return $this->queryMySQL(
          "SELECT 
             dc.id,
@@ -20,11 +29,10 @@ class PurchaseDetails extends Connection
          ON 
             dc.id_producto = p.id 
          WHERE 
-            dc.estado = 0 
+            dc.estado = $estado
          AND 
-            dc.id_compra IS NULL
-         AND
-            dc.creado_por = $idUser");
+            dc.id_compra $idPurchase
+         $idUser");
    }
 
    public function existPurchaseDetails(int $idProduct, int $idUser): array
@@ -41,6 +49,7 @@ class PurchaseDetails extends Connection
       return $this->queryMySQL(
          "SELECT 
             id, 
+            id_producto,
             precio,
             cantidad
          FROM 

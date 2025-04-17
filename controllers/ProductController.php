@@ -116,8 +116,8 @@ class ProductController
                 "Producto"      => $row['nombre'],
                 "Marca"         => $row['marca'],
                 "Código"        => $row['codigo'],
-                "Precio Compra" => $row['precio_compra'],
-                "Precio Venta"  => $row['precio_venta'],
+                "Precio Compra" => "$" . number_format($row['precio_compra'], 2),
+                "Precio Venta"  => "$" . number_format($row['precio_venta'], 2),
                 "Cantidad"      => $row['stock'],
                 "Acciones"      => $btn
             ];

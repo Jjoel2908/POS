@@ -6,22 +6,42 @@ class Purchase extends Connection
 {
    public function __construct() {}
 
+
+   public function dataTable(): array
+   {
+      return $this->queryMySQL(
+         "SELECT 
+            c.id,
+            c.fecha, 
+            c.total, 
+            u.nombre AS usuario 
+         FROM 
+            compras c 
+         INNER JOIN 
+            usuarios u 
+         ON c.creado_por = u.id 
+         WHERE 
+            c.estado = 1 
+         ORDER BY 
+            c.id DESC 
+         LIMIT 5");
+   }
+
    /** Actualizamos las compras que estan pendientes con respecto al usuario */
    public function updatePurchaseDetails(mysqli $conexion, int $idPurchase, int $idUser): bool
    {
-      return $this->executeQueryWithTransaction(
-         $conexion,
+      return $conexion->query(
          "UPDATE 
             detalle_compra 
          SET 
             id_compra = $idPurchase, 
             estado = 1 
          WHERE 
-            dc.estado = 0 
+            estado = 0 
          AND 
-            dc.id_compra IS NULL
+            id_compra IS NULL
          AND
-            dc.creado_por = $idUser"
+            creado_por = $idUser"
       );
    }
 
@@ -78,6 +98,7 @@ class Purchase extends Connection
          if (!$updateDetails)
             throw new Exception('Error al actualizar los detalles de compra');
 
+
          /** Actualizar stock en productos */
          foreach ($details as $detail) {
             $updateStock = $this->updateProductStock($conexion, $detail['id_producto'], $detail['cantidad']);
@@ -95,59 +116,4 @@ class Purchase extends Connection
          return false;
       }
    }
-
-   public function dataTable(): array
-   {
-      return $this->queryMySQL("SELECT c.*, u.nombre AS nombre_usuario FROM compras c INNER JOIN usuarios u ON c.id_usuario = u.id WHERE c.estado = 1 ORDER BY c.id DESC LIMIT 5");
-   }
 }
-
-
-// <?php
-// require_once '../config/Connection.php';
-
-// class Purchase extends Connection
-// {
-
-//    public function __construct() {}
-
-//    public function dataTablePurchaseDetails(int $id_usuario): array
-//    {
-//       return $this->queryMySQL("SELECT dc.*, p.nombre AS nombre_producto, p.precio_compra AS precio FROM detalle_compra dc INNER JOIN productos p ON dc.id_producto = p.id WHERE dc.estado = 0 AND dc.id_usuario = $id_usuario");
-//    }
-
-//    public function existProductDetail(int $id_producto, int $id_usuario): array
-//    {
-//       return $this->queryMySQL("SELECT * FROM detalle_compra WHERE id_compra = 0 AND estado = 0 AND id_usuario = $id_usuario AND id_producto = $id_producto");
-//    }
-
-//    public function insertPurchaseDetail(array $data): bool
-//    {
-//       return $this->insert('detalle_compra', $data);
-//    }
-
-//    public function updatePurchaseDetail(int $id, array $data): bool
-//    {
-//       return $this->update('detalle_compra', $id, $data);
-//    }
-
-//    public function deletePurchaseDetail(int $id): bool
-//    {
-//       return $this->delete('detalle_compra', $id);
-//    }
-
-//    public function savePurchase(array $data): int
-//    {
-//       return $this->insertAndGetId('compras', $data);
-//    }
-//    public function idPurchaseDetails(int $id_compra): array
-//    {
-//       return $this->queryMySQL("SELECT * FROM detalle_compra WHERE id_compra = $id_compra");
-//    }
-
-
-//    public function cancelPurchase(int $id_usuario): bool
-//    {
-//       return $this->queryMySQL("DELETE FROM detalle_compra WHERE id_compra = 0 AND estado = 0 AND id_usuario = $id_usuario");
-//    }
-// }

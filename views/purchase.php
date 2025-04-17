@@ -2,12 +2,12 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 5,
-   'title'        => 'Compras',
-   'icon'         => 'fa-solid fa-bag-shopping',
-   'addAction'    => "addPurchase()",
-   'addLabel'     => 'Compra',
-   'modals'       => [
+   'permission' => 5,
+   'module'     => 'Compra',
+   'title'      => 'Compras',
+   'icon'       => 'fa-solid fa-bag-shopping',
+   'addAction'  => "addPurchase()",
+   'modals'     => [
       'modal/modalPurchase.php',
    ],
    'moduleScript' => 'modulePurchase',

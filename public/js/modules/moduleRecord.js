@@ -3,6 +3,8 @@
 const urlController = "../../../controllers/";
 const module = $(".card").data("module");
 let modalId;
+
+const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha", "Hora", "Teléfono", "Código", "Cantidad", "Acciones", "Estado"];
 $(() => {
     loadDataTable("#module-table", module);
 
@@ -202,9 +204,9 @@ const loadDataTable = async (tableId, module) => {
         /** Aplica alineaciones dinámicas a las filas */
         content.createdRow = (row, rowData) => {
         Object.keys(rowData).forEach((key, index) => {
-            if (["Fecha de Creación", "Fecha de Alta", "Teléfono", "Código", "Cantidad", "Acciones", "Estado"].includes(key)) {
+            if (columnsCenterTable.includes(key)) {
                 $(`td:eq(${index})`, row).addClass("text-center");
-            } else if (["Precio Compra", "Precio Venta"].includes(key)) {
+            } else if (["Precio Compra", "Precio Venta", "Total"].includes(key)) {
                 $(`td:eq(${index})`, row).addClass("text-end");
             } else {
                 $(`td:eq(${index})`, row).addClass("text-start");
@@ -370,10 +372,14 @@ const handleFormKeyPress = async (e, formId, module) => {
 
 /** Obtiene y muestra los detalles de una compra/venta en una tabla dentro de un modal.
  * @param {string} module - Nombre del módulo desde donde se llama la función.
+ * @param {int} purchaseId - Identificador de la compra.
  */
-const loadDataTableDetails = async (module) => {
+const loadDataTableDetails = async (module, purchaseId) => {
     /** Llamamos a submitForm pasando el módulo dinámicamente */
-    await submitForm(new FormData(), "dataTable", module, (data) => {
+    const formData = new FormData();
+    formData.append("purchaseId", purchaseId);
+
+    await submitForm(formData, "dataTable", module, (data) => {
         $('#details').html(data.data);
         $('#total-details').html('$' + data.total);
     }, false);

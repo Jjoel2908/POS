@@ -17,7 +17,9 @@ class Product extends Connection
          FROM 
             productos p 
          INNER JOIN 
-            marcas m ON p.id_marca = m.id 
+            marcas m 
+         ON 
+            p.id_marca = m.id 
          WHERE 
             p.estado = 1"
       );
@@ -28,5 +30,4 @@ class Product extends Connection
       $product = $this::queryMySQL("SELECT precio_compra FROM productos WHERE id = $idRegister AND estado = 1");
       return $product[0];
    }
-
 }

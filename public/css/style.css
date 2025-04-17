@@ -1,4 +1,4 @@
-.simplebar-content-wrapper {
+/* .simplebar-content-wrapper {
    background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf);
 }
 
@@ -10,9 +10,9 @@
    background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf);
    color: white;
    border: none;
-}
+} */
 
-.topbar .navbar {
+/* .topbar .navbar {
    background-color: #7B3CA6;
 }
 
@@ -34,9 +34,9 @@
    background-color: #e00000 !important;
    border: 1px solid #e00000 !important;
    color: #fff !important;
-}
+} */
 
-.logo-text,
+/* .logo-text,
 .sidebar-wrapper .metismenu a,
 .sidebar-wrapper .metismenu a .parent-icon,
 .sidebar-wrapper .metismenu a .menu-title,
@@ -50,12 +50,12 @@
 .sidebar-wrapper .metismenu a:hover {
    color: white;
    text-decoration: none;
-   background: rgba(178, 211, 194, 0.12); /* Verde menta con opacidad */
+   background: rgba(178, 211, 194, 0.12); 
 }
 
 .metismenu .has-arrow:after {
    color: white;
-}
+} */
 
 /* [ ------------------------------------- ] */
 /* [ ----------- T I T U L O S ----------- ] */

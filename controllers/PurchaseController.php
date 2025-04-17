@@ -57,40 +57,27 @@ class PurchaseController
 
     public function dataTable()
     {
-        $idUser   = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
-        $response = $this->model->dataTable($idUser);
-        $HTML     = "";
-        $total    = 0;
+        $response = $this->model->dataTable();
+        $data = array();
 
         if (count($response) > 0) {
+
             foreach ($response as $row) {
-                $product  = htmlspecialchars($row['producto']);
-                $quantity = (int) $row['cantidad'];
-                $price    = (float) $row['precio'];
-                $btn = "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Detalle de Compra', '{$row['id']}', '{$product}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+                list($day, $hour) = explode(" ", $row['fecha']);
+                $date  = date("d/m/Y", strtotime($day));
+                $time  = date("h:i A", strtotime($hour));
 
-                $subTotal  = $price * $quantity;
-                $total    += $subTotal;
-
-                $HTML .= "<tr>";
-                $HTML .= "<td class='text-start'>{$product}</td>";
-                $HTML .= "<td>{$quantity} uds.</td>";
-                $HTML .= "<td class='text-end'>$" . number_format($price, 2) . "</td>";
-                $HTML .= "<td class='text-end'>$" . number_format($subTotal, 2) . "</td>";
-                $HTML .= "<td>{$btn}</td>";
-                $HTML .= "</tr>";
+                $btn = "<button type=\"button\" class=\"btn btn-warning text-white font-18 mx-1\" onclick=\"loadDataTableDetails('DetalleCompra', '{$row['id']}')\"><i class=\"fa-solid fa-folder-open\"></i></button>";
+                
+                $data[] = [
+                    "Fecha"       => $date,
+                    "Hora"        => $time,
+                    "Total"       => "$" . number_format($row['total'], 2),
+                    "Creador Por" => $row['usuario'],
+                    "Acciones"    => $btn
+                ];
             }
-        } else {
-            $HTML .= '<tr><td colspan="5">No hay detalles de compra disponibles.</td></tr>';
         }
-
-        echo json_encode([
-            'success' => true,
-            'message' => '',
-            'data' => [
-                'data' => $HTML,
-                'total' => number_format($total, 2)
-            ]
-        ]);
+        echo json_encode($data);
     }
 }

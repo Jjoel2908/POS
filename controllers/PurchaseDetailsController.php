@@ -85,7 +85,9 @@ class PurchaseDetailsController
 
     public function dataTable()
     {
-        $response = $this->model->dataTable($this->idUser);
+        $purchaseId = $_POST['purchaseId'] ? (filter_var($_POST['purchaseId'], FILTER_VALIDATE_INT) ?: 0) : null;
+
+        $response = $this->model->dataTable($this->idUser, $purchaseId);
         $HTML     = "";
         $total    = 0;
 
