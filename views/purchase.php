@@ -9,6 +9,7 @@ $config = [
    'addAction'  => "addPurchase()",
    'modals'     => [
       'modal/modalPurchase.php',
+      'modal/modalViewDetails.php',
    ],
    'moduleScript' => 'modulePurchase',
 ];

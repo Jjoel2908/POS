@@ -83,11 +83,9 @@ class PurchaseDetailsController
         );
     }
 
-    public function dataTable()
+    public function temporaryDataTable()
     {
-        $purchaseId = $_POST['purchaseId'] ? (filter_var($_POST['purchaseId'], FILTER_VALIDATE_INT) ?: 0) : null;
-
-        $response = $this->model->dataTable($this->idUser, $purchaseId);
+        $response = $this->model->dataTable($this->idUser);
         $HTML     = "";
         $total    = 0;
 
@@ -121,5 +119,39 @@ class PurchaseDetailsController
                 'total' => number_format($total, 2)
             ]
         ]);
+    }
+
+    public function dataTable()
+    {
+        $purchaseId = $_POST['registerId'] ? (filter_var($_POST['registerId'], FILTER_VALIDATE_INT) ?: 0) : null;
+
+        $response = $this->model->dataTable($this->idUser, $purchaseId);
+        $data = array();
+
+        if (count($response) > 0) {
+
+            foreach ($response as $row) {
+
+                /** Nombre de producto */
+                $product  = htmlspecialchars($row['producto']);
+
+                /** Cantidad del producto */
+                $quantity = (int) $row['cantidad'];
+
+                /** Precio de producto */
+                $price    = (float) $row['precio'];
+
+                /** Total de producto */
+                $subTotal  = $price * $quantity;
+
+                $data[] = [
+                    "Producto" => $product,
+                    "Cantidad" => $quantity . " uds.",
+                    "Precio"   => "$" . number_format($price, 2),
+                    "Subtotal" => "$" . number_format($subTotal, 2),
+                ];
+            }
+        }
+        echo json_encode($data);
     }
 }

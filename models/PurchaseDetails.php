@@ -5,7 +5,7 @@ class PurchaseDetails extends Connection
 {
    public function __construct() {}
 
-   public function dataTable(int $userId, int $purchaseId): array
+   public function dataTable(int $userId, ?int $purchaseId = null): array
    {
       /** Estado para el detalle de compra */
       $estado = $purchaseId ? 1 : 0;

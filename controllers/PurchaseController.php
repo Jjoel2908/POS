@@ -67,8 +67,7 @@ class PurchaseController
                 $date  = date("d/m/Y", strtotime($day));
                 $time  = date("h:i A", strtotime($hour));
 
-                $btn = "<button type=\"button\" class=\"btn btn-warning text-white font-18 mx-1\" onclick=\"loadDataTableDetails('DetalleCompra', '{$row['id']}')\"><i class=\"fa-solid fa-folder-open\"></i></button>";
-                
+                $btn = "<button type=\"button\" class=\"btn btn-warning text-white font-18 mx-1\" onclick=\"loadRegisteredDetails('DetalleCompra', '{$row['id']}', '{$date}')\"><i class=\"fa-solid fa-folder-open\"></i></button>";
                 $data[] = [
                     "Fecha"       => $date,
                     "Hora"        => $time,

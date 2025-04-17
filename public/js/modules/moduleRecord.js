@@ -4,6 +4,7 @@ const urlController = "../../../controllers/";
 const module = $(".card").data("module");
 let modalId;
 
+const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total"];
 const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha", "Hora", "Teléfono", "Código", "Cantidad", "Acciones", "Estado"];
 $(() => {
     loadDataTable("#module-table", module);
@@ -166,13 +167,15 @@ const showAlert = (success, message) => {
  *
  * @param {string} tableId - Selector de la tabla donde se mostrarán los datos.
  * @param {string} module - Nombre del módulo para la solicitud al controlador.
+ * @param {int} registerId - Identificador si se desea buscar registros de algo en particular.
  */
-const loadDataTable = async (tableId, module) => {
+const loadDataTable = async (tableId, module, registerId = null) => {
     try {
         /** Creamos un objeto FormData para enviar la solicitud */
         let formData = new FormData();
         formData.append("module", module);
         formData.append("operation", "dataTable");
+        formData.append("registerId", registerId);
 
         /** Enviamos la solicitud al servidor */
         const response = await fetch(urlController, {
@@ -206,7 +209,7 @@ const loadDataTable = async (tableId, module) => {
         Object.keys(rowData).forEach((key, index) => {
             if (columnsCenterTable.includes(key)) {
                 $(`td:eq(${index})`, row).addClass("text-center");
-            } else if (["Precio Compra", "Precio Venta", "Total"].includes(key)) {
+            } else if (columnsEndTable.includes(key)) {
                 $(`td:eq(${index})`, row).addClass("text-end");
             } else {
                 $(`td:eq(${index})`, row).addClass("text-start");
@@ -315,7 +318,7 @@ const processDelete = async (module, id) => {
         /** Llamamos a submitForm pasando el módulo dinámicamente */
         await submitForm(formdata, "delete", module, () => {
             if (module === "DetalleCompra" || module === "DetalleVenta")
-                loadDataTableDetails(module);
+                loadTemporaryDetails(module);
             else
                 loadDataTable("#module-table", module);
         });
@@ -364,25 +367,49 @@ const handleFormKeyPress = async (e, formId, module) => {
         /** Llamamos a submitForm pasando el módulo dinámicamente */
         await submitForm(formdata, "save", module, (data) => {
             clearForm('#modalRegister');
-            loadDataTableDetails(data);
+            loadTemporaryDetails(data);
             $('#search').select2('open');
         }, false);
     }
 };
 
-/** Obtiene y muestra los detalles de una compra/venta en una tabla dentro de un modal.
+/** Carga y muestra los detalles de productos (compra/venta) *antes* de ser registrados,
+ * es decir, en un estado provisional o temporal (por ejemplo, dentro de un formulario).
+ * 
  * @param {string} module - Nombre del módulo desde donde se llama la función.
- * @param {int} purchaseId - Identificador de la compra.
  */
-const loadDataTableDetails = async (module, purchaseId) => {
+const loadTemporaryDetails = async (module) => {
     /** Llamamos a submitForm pasando el módulo dinámicamente */
     const formData = new FormData();
-    formData.append("purchaseId", purchaseId);
 
-    await submitForm(formData, "dataTable", module, (data) => {
+    await submitForm(formData, "temporaryDataTable", module, (data) => {
         $('#details').html(data.data);
         $('#total-details').html('$' + data.total);
     }, false);
+};
+
+/** Carga y muestra los detalles de una compra/venta *ya registrada* en el sistema,
+ * es decir, cuando los datos ya están almacenados en la base de datos.
+ * Muestra los detalles en un modal si se pasa un ID de compra.
+ * 
+ * @param {string} module - Nombre del módulo desde donde se llama la función.
+ * @param {int} registerId - Identificador si se desea buscar registros de algo en particular.
+ */
+const loadRegisteredDetails = async (module, registerId = null, date) => {
+    const newDate      = parseFechaDMY(date);
+    const purchaseDate = getFechaActualLetras(newDate);
+    const title = `Detalles de ${module == "DetalleCompra" ? "Compra" : "Venta"} del ${purchaseDate}`
+
+    console.log(module);
+
+    /** Asignamos el título para el modal */
+    $("#modalViewDetails #modalTitle").html(title);
+    
+    /** Cargamos la información */
+    loadDataTable("#table-view-details", module, registerId);
+
+    /** Mostramos el modal */
+    $("#modalViewDetails").modal("toggle");
 };
 
 /** Evento que se ejecuta al seleccionar un producto en el campo de búsqueda.

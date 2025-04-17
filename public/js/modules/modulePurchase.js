@@ -8,6 +8,6 @@ $(() => {
 });
 
 const addPurchase = async () => {
-   await loadDataTableDetails('DetalleCompra');
+   await loadTemporaryDetails('DetalleCompra');
    openModal('Compra');
 };

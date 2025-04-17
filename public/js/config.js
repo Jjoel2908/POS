@@ -455,9 +455,14 @@ const validatePhoneNumber = (event) => {
   event.target.value = value;
 };
 
+function parseFechaDMY(fechaStr) {
+  const [dia, mes, año] = fechaStr.split("/");
+  return new Date(`${año}-${mes}-${dia}`);
+}
+
 function getFechaActualLetras(fecha = new Date()) {
   return fecha.toLocaleDateString("es-ES", {
-    weekday: "long", // Nombre del día (lunes, martes, etc.)
+    //weekday: "long", // Nombre del día (lunes, martes, etc.)
     day: "numeric", // Día del mes
     month: "long", // Nombre del mes (enero, febrero, etc.)
     year: "numeric", // Año completo
