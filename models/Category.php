@@ -7,6 +7,6 @@ class Category extends Connection
 
    public function selectOne($idRegister)
    {
-      return $this::queryMySQL("SELECT id, nombre FROM categorias WHERE id = $idRegister AND estado = 1");
+      return $this::queryMySQL("SELECT id, nombre FROM categorias WHERE id = $idRegister AND estado = 1 LIMIT 1");
    }
 }

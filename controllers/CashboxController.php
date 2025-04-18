@@ -8,23 +8,29 @@ class CashboxController
     private $model;
     private $id;
     private $idSucursal;
+    private $idUser;
 
     private $messages = [
-        "save_success" => "Caja registrada correctamente.",
-        "save_failed" => "Error al registrar caja.",
+        "save_success"   => "Caja registrada correctamente.",
+        "save_failed"    => "Error al registrar caja.",
         "update_success" => "Caja actualizada correctamente.",
-        "update_failed" => "Error al actualizar la caja.",
+        "update_failed"  => "Error al actualizar la caja.",
         "delete_success" => "Caja eliminada correctamente.",
-        "delete_failed" => "Error al eliminar la caja.",
-        "required" => "Debe completar la información obligatoria.",
+        "delete_failed"  => "Error al eliminar la caja.",
+        "open_success"   => "Caja abierta correctamente.",
+        "open_failed"    => "Error al abrir caja.",
+        "close_success"  => "Caja cerrada correctamente.",
+        "close_failed"   => "Error al cerrar la caja.",
+        "required"       => "Debe completar la información obligatoria.",
         "box_open_error" => "Es necesario cerrar la caja para eliminar."
     ];
 
     public function __construct($id = null, $idSucursal = null)
     {
-        $this->model = new Cashbox();
-        $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->model      = new Cashbox();
+        $this->id         = $id         !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
         $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
+        $this->idUser     = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
     }
 
     public function save()
@@ -81,8 +87,8 @@ class CashboxController
 
     public function delete()
     {
-        $stateCashbox = $this->model->select($this->table, $this->id);
-        $isOpen = $stateCashbox['abierta'];
+        $statusCashbox = $this->model->select($this->table, $this->id);
+        $isOpen        = $statusCashbox['abierta'];
 
         if ($isOpen == 1) {
             echo json_encode(['success' => false, 'message' => $this->messages['box_open_error']]);
@@ -100,21 +106,20 @@ class CashboxController
     public function dataTable()
     {
         $response = $this->model::selectAllBySucursal($this->table, $this->idSucursal);
-        $existPurchaseOpen = $this->model::exists($this->table, 'abierta', 1);
-        $data = array();
+        $data     = array();
 
         if (count($response) > 0) {
             foreach ($response as $row) {
                 list($day, $hour) = explode(" ", $row['fecha']);
-                $date  = date("d/m/Y", strtotime($day));
+                $date             = date("d/m/Y", strtotime($day));
 
-                $isOpen = $row['abierta'];
-                $estado = $isOpen ? "<span class=\"badge bg-success font-14 px-3 fw-normal cursor-pointer\" onclick=\"moduleCashbox.modalOpenCashbox()\">Abierta</span>" : "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Cerrada</span>";
+                $isOpen  = $row['abierta'] == 1;
+                $estado  = $isOpen 
+                    ? "<span class=\"badge bg-success font-14 px-3 fw-normal cursor-pointer\" onclick=\"loadRegisteredDetails('ArqueoCaja', '{$row['id']}')\">Abierta</span>" 
+                    : "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Cerrada</span>";
 
-                $invisible = "";
-                if ($existPurchaseOpen) $invisible = "invisible";
-
-                $btn  = "<button type=\"button\" class=\"btn btn-inverse-success mx-1 $invisible\" onclick=\"moduleCashbox.openCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-box m-0\"></i></button>";
+                $btn  = "";
+                $btn .= $row['abierta'] == 0 ? "<button type=\"button\" class=\"btn btn-inverse-success mx-1\" onclick=\"openCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-box m-0\"></i></button>" : "";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Caja', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Caja', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
                 
@@ -127,5 +132,43 @@ class CashboxController
             }
         }
         echo json_encode($data);
+    }
+
+    public function openCashbox()
+    {
+        /** Valida campos requeridos */
+        if (!$this->model::validateData(['id', 'monto'], $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
+            return;
+        }
+
+        $startDate = date('Y-m-d H:i:s');
+        $initialAmount = $this->model::sanitizeInput('monto', 'float');
+        
+        $openCashbox = $this->model->open($this->id, $this->idUser, $startDate, $initialAmount);
+        echo json_encode(
+            $openCashbox
+                ? ['success' => true, 'message' => $this->messages['open_success']]
+                : ['success' => false, 'message' => $this->messages['open_failed']]
+        );
+    }
+
+    public function closeCashbox()
+    {
+        /** Valida campos requeridos */
+        if (!$this->model::validateData(['id', 'cashboxCountId'], $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
+            return;
+        }
+
+        $cashboxCountId = $this->model::sanitizeInput('cashboxCountId', 'int');
+        $endDate = date('Y-m-d H:i:s');
+        
+        $closeCashbox = $this->model->close($this->id, $cashboxCountId, $endDate);
+        echo json_encode(
+            $closeCashbox
+                ? ['success' => true, 'message' => $this->messages['close_success']]
+                : ['success' => false, 'message' => $this->messages['close_failed']]
+        );
     }
 }

@@ -23,6 +23,7 @@ $controllers = [
     'Cliente'       => 'CustomerController.php',
     'Compra'        => 'PurchaseController.php',
     'DetalleCompra' => 'PurchaseDetailsController.php',
+    'ArqueoCaja'    => 'CashboxCountController.php',
     'Caja'          => 'CashboxController.php',
     'Venta'         => 'SaleController.php',
     'DetalleVenta'  => 'SaleDetailsController.php',

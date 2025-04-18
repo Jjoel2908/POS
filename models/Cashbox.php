@@ -1,66 +1,78 @@
 <?php
-require '../config/Connection.php';
+require_once '../config/Connection.php';
+require '../models/CashboxCount.php';
 
 class Cashbox extends Connection
 {
-   public function __construct()
-   {
-   }
+   public function __construct() {}
 
    public function selectOne($idRegister)
    {
-      return $this::queryMySQL("SELECT id, nombre FROM cajas WHERE id = $idRegister AND estado = 1");
+      return $this::queryMySQL("SELECT id, nombre FROM cajas WHERE id = $idRegister AND estado = 1 LIMIT 1");
    }
 
-
-
-
-
-
-
-
-
-
-
-   
-
-   public function dataTable(): array
+   public function open(int $cashboxId, int $userId, string $date, float $amount): bool
    {
-      return $this->selectAll('cajas');
+      try {
+         $conexion = self::conectionMySQL();
+         $conexion->begin_transaction();
+
+         /** Abrimos la caja */
+         $cashbox = $this::executeQueryWithTransaction($conexion, "UPDATE cajas SET abierta = 1 WHERE id = $cashboxId");
+
+         if (!$cashbox)
+            throw new Exception('Error al abrir la caja');
+
+         /** Información a registrar */
+         $data = [
+            'id_caja'       => $cashboxId,
+            'creado_por'    => $userId,
+            'fecha_inicio'  => $date,
+            'monto_inicial' => $amount
+         ];
+
+         /** Registramos el arqueo de caja */
+         $CashboxCount = new CashboxCount();
+         $idCount = $CashboxCount::insertAndGetIdWithTransaction($conexion, 'arqueo_caja', $data);
+
+         if (!$idCount)
+            throw new Exception('Error al registrar el arqueo de caja');
+
+         $conexion->commit();
+         $conexion->close();
+         return true;
+      } catch (Exception $e) {
+         $conexion->rollback();
+         $conexion->close();
+         return false;
+      }
    }
 
-   public function insertCashbox(array $data): bool
+   public function close(int $cashboxId, int $cashboxCountId, string $date): bool
    {
-      return $this->insert('cajas', $data);
-   }
+      try {
+         $conexion = self::conectionMySQL();
+         $conexion->begin_transaction();
 
-   public function updateCashbox(array $data, int $id): bool
-   {
-      return $this->update('cajas', $id, $data);
-   }
+         /** Cerramos la caja */
+         $cashbox = $this::executeQueryWithTransaction($conexion, "UPDATE cajas SET abierta = 0 WHERE id = $cashboxId");
 
-   public function deleteCashbox(int $id): bool
-   {
-      return $this->delete('cajas', $id);
-   }
+         if (!$cashbox)
+            throw new Exception('Error al abrir la caja');
 
-   public function openCashbox(array $data): bool
-   {
-      return $this->insert('arqueo_caja', $data);
-   }
+         /** Actualizamos el arqueo de caja */
+         $cashboxCount = $this::executeQueryWithTransaction($conexion, "UPDATE arqueo_caja SET fecha_fin = '$date' WHERE id = $cashboxCountId");
 
-   public function dataTableCashboxes(): array
-   {
-      return $this->queryMySQL("SELECT ac.*, c.caja AS nombre_caja FROM arqueo_caja ac INNER JOIN cajas c ON ac.id_caja = c.id WHERE fecha_fin IS NULL");
-   }
+         if (!$cashboxCount)
+            throw new Exception('Error al actualizar el arqueo de caja');
 
-   public function creditSales($idArqueo): int {
-      $total = $this->queryMySQL("SELECT SUM(pagado) AS total FROM credito WHERE id_arqueo = $idArqueo");
-      return (float) $total[0]['total'];
-   }
-
-   public function closeCashbox(array $data, int $id): bool
-   {
-      return $this->update('arqueo_caja', $id, $data);
+         $conexion->commit();
+         $conexion->close();
+         return true;
+      } catch (Exception $e) {
+         $conexion->rollback();
+         $conexion->close();
+         return false;
+      }
    }
 }

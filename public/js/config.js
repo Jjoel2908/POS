@@ -456,20 +456,21 @@ const validatePhoneNumber = (event) => {
 };
 
 function parseFechaDMY(fechaStr) {
-  const [dia, mes, año] = fechaStr.split("/");
-  return new Date(`${año}-${mes}-${dia}`);
+  const [dia, mes, año] = fechaStr.split("/").map(Number);
+  return new Date(año, mes - 1, dia); // mes - 1 porque enero = 0
 }
 
 function getFechaActualLetras(fecha = new Date()) {
-  return fecha.toLocaleDateString("es-ES", {
-    //weekday: "long", // Nombre del día (lunes, martes, etc.)
-    day: "numeric", // Día del mes
-    month: "long", // Nombre del mes (enero, febrero, etc.)
-    year: "numeric", // Año completo
+  const fechaFija = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+
+  return fechaFija.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 }
 
-// Función para cambiar el formato de la fecha
+// Función para   cambiar el formato de la fecha
 function formatearFecha(fecha) {
   if (!fecha) return ""; // Verifica si la fecha está vacía
   let partes = fecha.split("-"); // Divide la fecha en partes

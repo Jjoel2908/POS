@@ -27,7 +27,7 @@ class Product extends Connection
 
    public function getPurchasePrice($idRegister): array
    {
-      $product = $this::queryMySQL("SELECT precio_compra FROM productos WHERE id = $idRegister AND estado = 1");
+      $product = $this::queryMySQL("SELECT precio_compra FROM productos WHERE id = $idRegister AND estado = 1 LIMIT 1");
       return $product[0];
    }
 }

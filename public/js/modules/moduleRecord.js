@@ -5,7 +5,7 @@ const module = $(".card").data("module");
 let modalId;
 
 const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total"];
-const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha", "Hora", "Teléfono", "Código", "Cantidad", "Acciones", "Estado"];
+const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estado"];
 $(() => {
     loadDataTable("#module-table", module);
 
@@ -395,12 +395,17 @@ const loadTemporaryDetails = async (module) => {
  * @param {string} module - Nombre del módulo desde donde se llama la función.
  * @param {int} registerId - Identificador si se desea buscar registros de algo en particular.
  */
-const loadRegisteredDetails = async (module, registerId = null, date) => {
-    const newDate      = parseFechaDMY(date);
-    const purchaseDate = getFechaActualLetras(newDate);
-    const title = `Detalles de ${module == "DetalleCompra" ? "Compra" : "Venta"} del ${purchaseDate}`
+const loadRegisteredDetails = async (module, registerId = null, date = null) => {
+    let purchaseDate;
 
-    console.log(module);
+    if (date) {
+        const newDate      = parseFechaDMY(date);
+              purchaseDate = getFechaActualLetras(newDate);
+    }
+
+    const title = module == "ArqueoCaja"
+        ?  `Arqueo de Caja`
+        :  `Detalles de ${module == "DetalleCompra" ? "Compra" : "Venta"} del ${purchaseDate}`;
 
     /** Asignamos el título para el modal */
     $("#modalViewDetails #modalTitle").html(title);
