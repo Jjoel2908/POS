@@ -165,7 +165,7 @@ html.dark-theme .order-actions a {
 	color: #fff
 }
 html.dark-theme .alert {
-	background-color: #161515
+	/* background-color: #161515 */
 }
 html.dark-theme .accordion-button {
 	color: #bac0c6;
@@ -773,6 +773,12 @@ html.dark-theme .text-primary {
 	color: #4aaeff !important
 }
 
+html.dark-theme .btn-inverse-secondary {
+	color: #fff;
+	background-color: rgb(47, 53, 58);
+	border-color: rgb(209, 234, 255);
+}
+
 html.dark-theme .btn-inverse-primary {
 	color: #fff;
 	background-color: rgba(0, 140, 255, 0.80);
@@ -782,7 +788,7 @@ html.dark-theme .btn-inverse-primary {
 html.dark-theme .btn-inverse-success {
 	color: #fff;
 	background-color: rgba(21, 202, 32, 0.80);
-	border-color: rgb(212, 246, 214);
+	border-color: rgb(209, 234, 255);
 }
 
 html.dark-theme .btn-success {
@@ -800,7 +806,7 @@ html.dark-theme .btn-primary {
 html.dark-theme .btn-inverse-danger {
 	color: #fff;
 	background-color: rgba(253, 53, 80, 0.80);
-	border-color: rgb(255, 218, 223);
+	border-color: rgb(209, 234, 255);
 }
 
 html.dark-theme a {

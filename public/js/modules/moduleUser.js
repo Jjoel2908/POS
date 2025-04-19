@@ -1,162 +1,140 @@
-let POS = new classPOS('Usuario', '#modalAddUser');
-let URL_USER = "../../../controllers/user.php?";
-
 $(() => {
+    $("#show_hide_password a").on("click", function (event) {
+        event.preventDefault();
+        if ($("#show_hide_password input").attr("type") == "text")
+            $("#show_hide_password input").attr("type", "password");
+        else if ($("#show_hide_password input").attr("type") == "password")
+            $("#show_hide_password input").attr("type", "text");
+    });
 
-   moduleUser.tableUser();
-   
-   /**  A D D   U S E R  */
-   $("form#formAddUser").submit(function (event) {
-      event.preventDefault();
+    $("#show_hide_password_new a").on("click", function (event) {
+        event.preventDefault();
+        if ($("#show_hide_password_new input").attr("type") == "text")
+            $("#show_hide_password_new input").attr("type", "password");
+        else if ($("#show_hide_password_new input").attr("type") == "password")
+            $("#show_hide_password_new input").attr("type", "text");
+    });
 
-      POS.validateForm(event, this).then((isValid) => {
-         if (isValid) {
-            let formData = new FormData(this);
-            $.ajax({
-            url: URL_USER + "op=saveUser",
-            type: "POST",
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (e) {
-               response = JSON.parse(e);
-               if (response.success) {
-                  POS.showAlert(response.success, response.message);
-                  moduleUser.tableUser();
-                  $("#modalAddUser").modal("toggle");
-               } else POS.showAlert(response.success, response.message);
-            },
-            });
-         }
-      });
-   });
+    $("#show_hide_password_confirm a").on("click", function (event) {
+        event.preventDefault();
+        if ($("#show_hide_password_confirm input").attr("type") == "text")
+            $("#show_hide_password_confirm input").attr("type", "password");
+        else if ($("#show_hide_password_confirm input").attr("type") == "password")
+            $("#show_hide_password_confirm input").attr("type", "text");
+    });
 
-   /**  U P D A T E   P A S S W O R D  */
-   $("form#formUpdatePassword").submit(function (event) {
-      event.preventDefault();
+    $("form#formUpdatePassword").submit(async function (event) {
+        event.preventDefault();
 
-      POS.validateForm(event, this).then((isValid) => {
-         if (isValid) {
-            let formData = new FormData(this);
-            $.ajax({
-            url: URL_USER + "op=updatePassword",
-            type: "POST",
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            success: function (response) {
-               if (response.success) {
-                  POS.showAlert(response.success, response.message);
-                  moduleUser.tableUser();
-                  $("#modalUpdatePassword").modal("toggle");
-               } else POS.showAlert(response.success, response.message);
-            },
-            });
-         }
-      });
-   });
+        if (validateForm(event, this)) {
+            try {
+                /** Mostrar el spinner */
+                $("#loadingSpinnerPassword").show();
 
-   /**  U P D A T E   P E R M I S S I O N S  */
-   $("form#formUserPermissions").submit(function (event) {
-      event.preventDefault();
+                /** Deshabilitamos el botón de submit */
+                $('#btnUpdate').prop("disabled", true);
+                
+                /** Llamamos a submitForm pasando el módulo dinámicamente */
+                await submitForm(this, "updatePassword", "Usuario", () => {
+                    $("#modalUpdatePassword").modal("toggle");
+                });
+            } catch (error) {
+                console.log("Ocurrió un error al crear/actualizar la contraseña en moduleUser");
+            } finally {
+                /** Ocultar el spinner después de que se complete la solicitud */
+                $("#loadingSpinnerPassword").hide();
+                $('#btnUpdate').prop("disabled", false);
+            }
+        }
+    });
 
-      POS.validateForm(event, this).then((isValid) => {
-         if (isValid) {
-            let formData = new FormData(this);
-            $.ajax({
-            url: URL_USER + "op=updatePermissions",
-            type: "POST",
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            success: function (response) {
-               if (response.success) {
-                  POS.showAlert(response.success, response.message);
-                  $("#modalUserPermissions").modal("toggle");
-               } else POS.showAlert(response.success, response.message);
-            },
-            });
-         }
-      });
-   });
+    $("form#formUserPermissions").submit(async function (event) {
+        event.preventDefault();
+
+        if (validateForm(event, this)) {
+            try {
+                /** Mostrar el spinner */
+                $("#loadingSpinnerPermissions").show();
+
+                /** Deshabilitamos el botón de submit */
+                $('#btnPermissions').prop("disabled", true);
+                
+                /** Llamamos a submitForm pasando el módulo dinámicamente */
+                await submitForm(this, "updatePermissions", "Usuario", () => {
+                    $("#modalUserPermissions").modal("toggle");
+                });
+            } catch (error) {
+                console.log("Ocurrió un error al crear/actualizar los permisos del usuario en moduleUser");
+            } finally {
+                /** Ocultar el spinner después de que se complete la solicitud */
+                $("#loadingSpinnerPermissions").hide();
+                $('#btnPermissions').prop("disabled", false);
+            }
+        }
+    });
 });
 
-let moduleUser = {
+/** Abre el modal para registrar un nuevo usuario.
+ * Habilita el campo 'user' para que el usuario pueda ingresarlo manualmente.
+ * Muestra el campo para ingresar la contraseña.
+ */
+const addUser = () => {
+    openModal('Usuario');
+    $('#user').removeAttr('readonly');
+    $('#container-password').removeClass('d-none');
+ };
 
-   /** M O D A L  A D D  U S E R */
-   modalAddUser: () => {
-      if ( $('#formAddUser #user').attr('readonly') ) $('#formAddUser #user').removeAttr('readonly');
-      if ($('#modalAddUser #container-password').hasClass('d-none')) $('#modalAddUser #container-password').removeClass('d-none');
-      $('form#formAddUser #password').prop("disabled", false);
-      POS.viewModal();
-   },
+/** Carga los datos de un usuario existente en el formulario para su edición.
+ * Oculta el campo 'password' para evitar su modificación.
+ *
+ * @param {string} module - Nombre del módulo (por lo general 'Producto').
+ * @param {number} idUser - ID del usuario que se desea actualizar.
+ */
+const updateUser = async (module, idUser) => {
+    await updateRegister(module, idUser);
+    $('#user').prop('readonly', true);
+    $('#container-password').addClass('d-none');
+}
 
-   /** T A B L E  U S E R S */
-   tableUser: () => {
-      $.ajax({
-         url: URL_USER + "op=dataTable",
-         type: "GET",
-         dataType: "JSON",
-         success: (data) => {
-   
-            let content         = initTable();
-            content.columns = [  { data: 'id',   title: '#' },
-                                    { data: 'nombre',   title: 'Nombre' },
-                                    { data: 'user',     title: 'Usuario' },
-                                    { data: 'correo',   title: 'Correo' },
-                                    { data: 'telefono', title: 'Teléfono' },
-                                    { data: 'estado',   title: 'Estado' },
-                                    { data: 'btn',      title: 'Acciones' } ];
-            content.order      = [[0, "asc"]];
-            content.columnDefs = [ { targets: [0], visible: false } ];
-            content.data       = data;
-            content.createdRow = (row, data) => {
-               $(`td:eq(0), td:eq(1), td:eq(2)`, row).addClass("text-start");
-            };
-   
-            showTable("#table-users", content);
-         }
-      });
-	},
+/** Actualiza la contraseña existente de un usuario.
+ * @param {number} idUser - ID del usuario que se desea actualizar.
+ */
+const updatePassword = async (idUser) => {
+    /** Limpiamos el formulario */
+    clearForm("#modalUpdatePassword");
 
-   /** U P D A T E  P A S S W O R D */
-   updatePassword: id => {
-      POS.clearForm();
-      $('form#formUpdatePassword #id').val(id);
-      $('#modalUpdatePassword').modal('toggle');
-   },
+    /** Asignamos el identificador del usuario */
+    $('#idPassword').val(idUser);
 
-   /** U P D A T E  P E R M I S S I O N S */
-   userPermissions: (id, nameUser) => {
-      POS.clearForm();
-      $('#nameUser').html(nameUser);
-      $('form#formUserPermissions #id').val(id);
+    /** Mostramos el modal */
+    $('#modalUpdatePassword').modal('toggle');
+}
 
-      let data = {
-         id: id
-      }
+/** Actualiza la contraseña existente de un usuario.
+ * @param {number} idUser - ID del usuario que se desea actualizar.
+ * @param {number} nameUser - Nombre del usuario que se desea actualizar.
+ */
+const updatePermissions = async (idUser, nameUser) => {
 
-      $.post(URL_USER + "op=showPermissions", data, permission => { 
-         $("form#formUserPermissions #permissions").html(permission);
-      });
+    const formData = new FormData();
+    formData.append("id", idUser);
 
-      $('#modalUserPermissions').modal('toggle');
-   },
+    /** Llamamos a submitForm pasando el módulo dinámicamente */
+    await submitForm(formData, "loadPermissionDetails", "Usuario", (data) => {
+        
+        /** Limpiamos el formulario */
+        clearForm("#modalUserPermissions");
 
-   /** U P D A T E  U S E R */
-   updateUser: id => {
-      let url = URL_USER + "op=updateUser";
-      $('#formAddUser #user').prop('readonly', true);
-      $('#modalAddUser #container-password').addClass('d-none');
-      $('form#formAddUser #password').prop("disabled", true);
-      POS.update(id, url);
-   },
+        /** Asignamos el nombre del usuario */
+        $('#nameUser').html(nameUser);
 
-   /** D E L E T E  U S E R */
-   deleteUser: (id, nombre) => {
-      let url = URL_USER + "op=deleteUser";
-      POS.delete(id, nombre, url, moduleUser.tableUser);
-   }
+        /** Asignamos el identificador del usuario */
+        $('#idPermissions').val(idUser);
+
+        /** Cargamos los permisos en el modal del usuario */
+        $("#permissions").html(data);
+
+        /** Mostramos el modal */
+        $('#modalUserPermissions').modal('toggle');
+    }, false);
 }

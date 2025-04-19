@@ -2,15 +2,15 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 10,
-   'module'        => 'Usuario',
-   'title'        => 'Usuarios',
-   'icon'         => 'fa-solid fa-users',
-   'addAction'    => "openModal('Usuario')",
-   'modals'       => [
+   'permission' => 10,
+   'module'     => 'Usuario',
+   'title'      => 'Usuarios',
+   'icon'       => 'fa-solid fa-users',
+   'addAction'  => "addUser()",
+   'modals'     => [
       'modal/modalUser.php',
-      // 'modal/modalUpdatePassword.php',
-      // 'modal/modalUserPermissions.php'
+      'modal/modalPassword.php',
+      'modal/modalPermission.php'
    ],
    'moduleScript' => 'moduleUser',
 ];

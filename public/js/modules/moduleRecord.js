@@ -6,6 +6,7 @@ let modalId;
 
 const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total"];
 const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estado"];
+
 $(() => {
     loadDataTable("#module-table", module);
 
@@ -22,7 +23,7 @@ $(() => {
                 
                 const moduleRecord = $(this).data("module");
 
-                if (moduleRecord == "Compra" || moduleRecord == "Venta") return;
+                if (!moduleRecord || moduleRecord == "Compra" || moduleRecord == "Venta") return;
                 
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
                 await submitForm(this, "save", moduleRecord, () => {

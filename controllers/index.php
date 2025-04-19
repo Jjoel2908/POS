@@ -27,6 +27,7 @@ $controllers = [
     'Caja'          => 'CashboxController.php',
     'Venta'         => 'SaleController.php',
     'DetalleVenta'  => 'SaleDetailsController.php',
+    'Usuario'       => 'UserController.php',
 ];
 
 /** Verificamos si el módulo existe en la lista */

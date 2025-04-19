@@ -53,7 +53,8 @@ class Connection
             $data['fecha'] = date('Y-m-d H:i:s');
 
         /** Agregamos el usuario */
-        $data['creado_por'] = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
+        if ($table != "usuarios")
+            $data['creado_por'] = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
 
         /** Escapar correctamente nombres de tabla y columna */
         $table = "`" . str_replace("`", "``", $table) . "`";
