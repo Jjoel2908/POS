@@ -28,7 +28,8 @@ class Cashbox extends Connection
             'id_caja'       => $cashboxId,
             'creado_por'    => $userId,
             'fecha_inicio'  => $date,
-            'monto_inicial' => $amount
+            'monto_inicial' => $amount,
+            'estado'        => 0
          ];
 
          /** Registramos el arqueo de caja */
@@ -76,9 +77,9 @@ class Cashbox extends Connection
       }
    }
 
-   public function hasOpen(int $branchId): bool
+   public function hasOpen(int $branchId): int
    {
       $openCashbox = $this::queryMySQL("SELECT id FROM cajas WHERE abierta = 1 AND id_sucursal = $branchId AND estado = 1 LIMIT 1");
-      return count($openCashbox) > 0;
+      return count($openCashbox) > 0 ? $openCashbox[0]['id'] : 0;
    }
 }

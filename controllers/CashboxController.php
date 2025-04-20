@@ -178,7 +178,7 @@ class CashboxController
         $hasOpen = $this->model->hasOpen($this->idSucursal);
 
         echo json_encode(
-            $hasOpen
+            $hasOpen > 0
                 ? ['success' => true ]
                 : ['success' => false, 'data' => false, 'message' => $this->messages['empty_cashbox']]
         );

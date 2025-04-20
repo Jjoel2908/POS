@@ -180,8 +180,8 @@ const loadDataTable = async (tableId, module, registerId = null) => {
 
         /** Enviamos la solicitud al servidor */
         const response = await fetch(urlController, {
-        method: "POST",
-        body: formData,
+            method: "POST",
+            body: formData,
         });
 
         /** Verificamos si la respuesta es válida */
@@ -241,8 +241,17 @@ const saveTransaction = async (module) => {
             cancelButtonText: TextCancel,
         }).then(async (result) => {
             if (result.isConfirmed) {
+
+                /** Información a enviar */
+                const type     = $("form #tipo_venta").val();
+                const cliente   = $(`form #cliente option:selected`).val();
+
+                const formData = new FormData();
+                formData.append("type", type);
+                formData.append("customer", cliente ?? 0);
+
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
-                await submitForm(new FormData(), "save", module, () => {
+                await submitForm(formData, "save", module, () => {
                     loadDataTable("#module-table", module);
                     $('form #cantidad').prop('disabled', true);
                     $("#modalRegister").modal("toggle");
@@ -358,8 +367,10 @@ const handleFormKeyPress = async (e, formId, module) => {
         e.preventDefault();
 
         /** Obtiene los valores del formulario */
-        const id       = $(`#${formId} #id`).val();
-        const cantidad = $(`#${formId} #cantidad`).val();
+        const id        = $(`#${formId} #id`).val();
+        const cantidad  = $(`#${formId} #cantidad`).val();
+        const tipoVenta = $(`#${formId} #tipo_venta`).val();
+        const cliente   = $(`#${formId} #cliente option:selected`).val();
 
         const formdata = new FormData();
         formdata.append("id", id);
@@ -370,6 +381,8 @@ const handleFormKeyPress = async (e, formId, module) => {
             clearForm('#modalRegister');
             loadTemporaryDetails(data);
             $('#search').select2('open');
+            $('#tipo_venta').val(tipoVenta);
+            $(`select#cliente`).val(cliente).trigger('change');
         }, false);
     }
 };

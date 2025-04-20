@@ -1,9 +1,9 @@
 <!-- # [ H E A D E R ] # -->
 <?php
-   $formId = "formSale";
-   $module = "Venta";
-   $modalClass = "modal-lg";
-   $onClickEvent = "saveTransaction('Venta')"; 
+$formId       = "formSale";
+$module       = "Venta";
+$modalClass   = "modal-lg";
+$onClickEvent = "saveTransaction('Venta')";
 ?>
 
 <?php require 'modalHeader.php'; ?>
@@ -12,13 +12,19 @@
 <div class="col-md-12">
    <div class="row">
 
-      <div class="col-md-12 text-center mb-3">
+      <input type="hidden" id="id" name="id">
+      <input type="hidden" id="tipo_venta" name="tipo_venta">
+
+      <div class="col-md-12 text-center mb-3" id="container-search">
          <select name="search" id="search" class="form-control select"></select>
+      </div>
+
+      <div class="col-sm-12 col-lg-5 text-center mb-3 d-none" id="container-customer">
+         <select name="cliente" id="cliente" class="form-control"></select>
       </div>
 
       <div class="col-md-7 view-form">
          <div class="form-floating">
-            <input type="hidden" id="id" name="id">
             <input id="nombre" class="form-control" type="text" name="nombre" readonly>
             <label for="nombre"><i class="fa-solid fa-chevron-right me-1"></i> Nombre</label>
          </div>

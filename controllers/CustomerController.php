@@ -110,4 +110,15 @@ class CustomerController
         }
         echo json_encode($data);
     }
+
+    public function droplist()
+    {
+        $listRegister = "";
+        $list = $this->model->selectAll($this->table);
+        foreach ($list as $item) {
+            $listRegister .= '<option value="' . $item['id'] . '">' . $item['nombre'] . " " . $item['apellidos'] . '</option>';
+        }
+
+        echo json_encode(['success' => true, 'data' => $listRegister]);
+    }
 }

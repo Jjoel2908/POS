@@ -1,6 +1,7 @@
 <?php
 require_once '../config/Connection.php';
 require '../models/SaleDetails.php';
+require '../models/Cashbox.php';
 
 class Sale extends Connection
 {
@@ -13,7 +14,7 @@ class Sale extends Connection
             "SELECT 
                 v.id,
                 v.fecha, 
-                v.total, 
+                v.total_pagado AS total, 
                 u.nombre AS usuario 
             FROM 
                 ventas v
@@ -28,21 +29,21 @@ class Sale extends Connection
         );
     }   
 
-    /** Actualizamos las compras que estan pendientes con respecto al usuario */
-    public function updatePurchaseDetails(mysqli $conexion, int $idPurchase, int $idUser): bool
+    /** Actualizamos las detalles de venta que estan pendientes con respecto al usuario */
+    public function updateSaleDetails(mysqli $conexion, int $saleId, int $userId): bool
     {
         return $conexion->query(
             "UPDATE 
-            detalle_compra 
-         SET 
-            id_compra = $idPurchase, 
-            estado = 1 
-         WHERE 
-            estado = 0 
-         AND 
-            id_compra IS NULL
-         AND
-            creado_por = $idUser"
+                detalle_venta
+            SET 
+                id_venta = $saleId, 
+                estado = 1 
+            WHERE 
+                estado = 0 
+            AND 
+                id_venta IS NULL
+            AND
+                creado_por = $userId"
         );
     }
 
@@ -51,22 +52,41 @@ class Sale extends Connection
         return $this->executeQueryWithTransaction(
             $conexion,
             "UPDATE 
-            productos
-         SET 
-            stock = stock + $quantity
-         WHERE 
-            id = $idProduct"
+                productos
+            SET 
+                stock = stock - $quantity
+            WHERE 
+                id = $idProduct"
+        );
+    }
+
+    public function updateCashboxCount(mysqli $conexion, int $cashboxId, float $total): bool
+    {
+        return $this->executeQueryWithTransaction(
+            $conexion,
+            "UPDATE 
+                arqueo_caja 
+            SET 
+                monto_fin = monto_fin + $total, 
+                total_ventas = total_ventas + 1 
+            WHERE 
+                ISNULL(fecha_fin) 
+            AND 
+                estado = 0
+            AND
+                id_caja = $cashboxId"
         );
     }
 
     /** Registra una nueva venta y actualiza stock de productos
      *
-     * @param int $idUser - ID del usuario que genera la venta
-     * @param int $idSucursal - ID de la sucursal donde se realiza la venta
+     * @param int $userId - ID del usuario que genera la venta
+     * @param int $branchId - ID de la sucursal donde se realiza la venta
+     * @param int $cashboxId - ID de la caja abierta.
      * @param float $total - Total de la venta
      * @return array - Respuesta de éxito o error
      */
-    public function insertSale(int $idUser, int $idSucursal, float $total): bool
+    public function insertSale(int $userId, int $branchId, int $cashboxId, int $saleType, int $customer, float $total): bool
     {
         try {
             $conexion = self::conectionMySQL();
@@ -74,31 +94,34 @@ class Sale extends Connection
 
             /** Información a registrar */
             $data = [
-                'id_sucursal' => $idSucursal,
-                'total'       => $total,
-                'fecha'       => date('Y-m-d H:i:s'),
-                'creado_por'  => $idUser
+                'id_sucursal'  => $branchId,
+                'id_caja'      => $cashboxId,
+                'id_cliente'   => $saleType == 2 ? $customer : 1,
+                'total_venta'  => $total,
+                'total_pagado' => $saleType == 1 ? $total : 0.00,
+                'tipo_venta'   => $saleType,
+                'fecha'        => date('Y-m-d H:i:s'),
+                'creado_por'   => $userId
             ];
 
-            /** Registramos la compra */
-            $idPurchase = $this::insertAndGetIdWithTransaction($conexion, 'compras', $data);
+            /** Registramos la venta */
+            $saleId = $this::insertAndGetIdWithTransaction($conexion, 'ventas', $data);
 
-            if (!$idPurchase)
-                throw new Exception('Error al registrar la compra');
+            if (!$saleId)
+                throw new Exception('Error al registrar la venta');
 
-            /** Obtenemos los productos pendientes en detalle_compra */
-            $PurchaseDetails = new PurchaseDetails();
-            $details         = $PurchaseDetails->getPurchaseDetails($idUser);
+            /** Obtenemos los productos pendientes en detalle_venta */
+            $SaleDetails = new SaleDetails();
+            $details     = $SaleDetails->getSaleDetails($userId);
 
             if (empty($details))
-                throw new Exception('No hay productos pendientes para registrar la compra');
+                throw new Exception('No hay productos para esta venta');
 
-            /** Actualizamos los detalles de compra */
-            $updateDetails = $this->updatePurchaseDetails($conexion, $idPurchase, $idUser);
+            /** Actualizamos los detalles de venta */
+            $updateDetails = $this->updateSaleDetails($conexion, $saleId, $userId);
 
             if (!$updateDetails)
-                throw new Exception('Error al actualizar los detalles de compra');
-
+                throw new Exception('Error al actualizar los detalles de venta');
 
             /** Actualizar stock en productos */
             foreach ($details as $detail) {
@@ -107,6 +130,11 @@ class Sale extends Connection
                 if (!$updateStock)
                     throw new Exception('Error al actualizar el stock del producto ID: ' . $detail['id_producto']);
             }
+
+            /** Actualizar caja (monto y número de ventas) */
+            $updateCashbox = $this->updateCashboxCount($conexion, $cashboxId, $total);
+            if (!$updateCashbox)
+                throw new Exception('Error al actualizar la caja');
 
             $conexion->commit();
             $conexion->close();

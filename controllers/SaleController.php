@@ -11,14 +11,16 @@ class SaleController
     private $idSucursal;
 
     private $messages = [
-        "save_success"   => "Venta registrada correctamente.",
-        "save_failed"    => "Error al registrar la venta.",
-        "update_success" => "Venta actualizada correctamente.",
-        "update_failed"  => "Error al actualizar la venta.",
-        "delete_success" => "Venta eliminada correctamente.",
-        "delete_failed"  => "Error al eliminar la venta.",
-        "required"       => "Debe completar la información obligatoria de la venta.",
-        "empty"          => "Aún no hay información de venta disponible."
+        "save_success"      => "Venta registrada correctamente.",
+        "save_failed"       => "Error al registrar la venta.",
+        "update_success"    => "Venta actualizada correctamente.",
+        "update_failed"     => "Error al actualizar la venta.",
+        "delete_success"    => "Venta eliminada correctamente.",
+        "delete_failed"     => "Error al eliminar la venta.",
+        "required"          => "Debe completar la información obligatoria de la venta.",
+        "required_customer" => "Debe seleccionar un cliente para la venta a crédito.",
+        "empty"             => "Aún no hay información de venta disponible.",
+        "empty_cashbox"     => "Es necesario abrir una caja para las ventas."
     ];
 
     public function __construct($id = null, $idSucursal = null)
@@ -30,8 +32,23 @@ class SaleController
     }
 
     public function save()
-    {
-        /** Validamos si hay detalles de productos pendientes */
+    {        
+        /** Valida campos requeridos */
+        if (!$this->model::validateData(['type'], $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
+            return;
+        }
+
+        /** Tipo de Venta */
+        $saleType = $this->model::sanitizeInput('type', 'int');
+
+        /** Valida campos requeridos */
+        if ($_POST['customer'] == 0 && $saleType == 2) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required_customer']]);
+            return;
+        }
+
+        /** Validamos si hay productos en el carrito del usuario */
         $SaleDetails = new SaleDetails();
         $details     = $SaleDetails->getSaleDetails($this->idUser);
 
@@ -40,14 +57,29 @@ class SaleController
             return;
         }
 
-        /** Calcular total de la compra */
+        /** Calcular total de la venta */
         $total = 0;
         foreach ($details as $detail) {
             $total += $detail['cantidad'] * $detail['precio'];
         }
-        $totalFormatter  = number_format(floatval($total), 2, '.', '');
 
-        $save = $this->model->insertSale($this->idUser, $this->idSucursal, $totalFormatter);
+        $totalFormatted = number_format(floatval($total), 2, '.', '');
+
+        /** Obtener ID de caja abierta */
+        $Cashbox = new Cashbox();
+        $cashbox = $Cashbox->hasOpen($this->idSucursal);
+
+        if ($cashbox == 0) {
+            echo json_encode(['success' => false, 'message' => $this->messages['empty_cashbox']]);
+            return;
+        }
+
+        /** Cliente */
+        $customer = $this->model::sanitizeInput('customer', 'int');
+
+        /** Registrar venta en el modelo */
+        $save = $this->model->insertSale($this->idUser, $this->idSucursal, $cashbox, $saleType, $customer, $totalFormatted);
+
         echo json_encode(
             $save
                 ? ['success' => true, 'message' => $this->messages['save_success']]

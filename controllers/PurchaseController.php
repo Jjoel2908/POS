@@ -45,9 +45,9 @@ class PurchaseController
         foreach ($details as $detail) {
             $total += $detail['cantidad'] * $detail['precio'];
         }
-        $totalFormatter  = number_format(floatval($total), 2, '.', '');
+        $totalFormatted  = number_format(floatval($total), 2, '.', '');
 
-        $save = $this->model->insertPurchase($this->idUser, $this->idSucursal, $totalFormatter);
+        $save = $this->model->insertPurchase($this->idUser, $this->idSucursal, $totalFormatted);
         echo json_encode(
             $save
                 ? ['success' => true, 'message' => $this->messages['save_success']]
