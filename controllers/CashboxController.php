@@ -22,7 +22,8 @@ class CashboxController
         "close_success"  => "Caja cerrada correctamente.",
         "close_failed"   => "Error al cerrar la caja.",
         "required"       => "Debe completar la información obligatoria.",
-        "box_open_error" => "Es necesario cerrar la caja para eliminar."
+        "box_open_error" => "Es necesario cerrar la caja para eliminar.",
+        "empty_cashbox"  => "Es necesario abrir una caja para las ventas."
     ];
 
     public function __construct($id = null, $idSucursal = null)
@@ -40,7 +41,7 @@ class CashboxController
             echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
         }
-        
+
         /** Nombre */
         $name = $this->model::sanitizeInput('nombre', 'text');;
 
@@ -114,15 +115,15 @@ class CashboxController
                 $date             = date("d/m/Y", strtotime($day));
 
                 $isOpen  = $row['abierta'] == 1;
-                $estado  = $isOpen 
-                    ? "<span class=\"badge bg-success font-14 px-3 fw-normal cursor-pointer\" onclick=\"loadRegisteredDetails('ArqueoCaja', '{$row['id']}')\">Abierta</span>" 
+                $estado  = $isOpen
+                    ? "<span class=\"badge bg-success font-14 px-3 fw-normal cursor-pointer\" onclick=\"loadRegisteredDetails('ArqueoCaja', '{$row['id']}')\">Abierta</span>"
                     : "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Cerrada</span>";
 
                 $btn  = "";
                 $btn .= $row['abierta'] == 0 ? "<button type=\"button\" class=\"btn btn-inverse-success mx-1\" onclick=\"openCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-box m-0\"></i></button>" : "";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Caja', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Caja', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
-                
+
                 $data[] = [
                     "Caja"          => $row['nombre'],
                     "Fecha de Alta" => $date,
@@ -144,7 +145,7 @@ class CashboxController
 
         $startDate = date('Y-m-d H:i:s');
         $initialAmount = $this->model::sanitizeInput('monto', 'float');
-        
+
         $openCashbox = $this->model->open($this->id, $this->idUser, $startDate, $initialAmount);
         echo json_encode(
             $openCashbox
@@ -163,12 +164,23 @@ class CashboxController
 
         $cashboxCountId = $this->model::sanitizeInput('cashboxCountId', 'int');
         $endDate = date('Y-m-d H:i:s');
-        
+
         $closeCashbox = $this->model->close($this->id, $cashboxCountId, $endDate);
         echo json_encode(
             $closeCashbox
                 ? ['success' => true, 'message' => $this->messages['close_success']]
                 : ['success' => false, 'message' => $this->messages['close_failed']]
+        );
+    }
+
+    public function hasOpenCashbox() 
+    {
+        $hasOpen = $this->model->hasOpen($this->idSucursal);
+
+        echo json_encode(
+            $hasOpen
+                ? ['success' => true ]
+                : ['success' => false, 'data' => false, 'message' => $this->messages['empty_cashbox']]
         );
     }
 }

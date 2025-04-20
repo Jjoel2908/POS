@@ -2,14 +2,14 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 6,
-   'title'        => 'Ventas',
-   'icon'         => 'fa-solid fa-cart-shopping',
-   'addAction'    => "openModal('Nueva Venta')",
-   'addLabel'     => 'Nueva Venta',
-   'modals'       => [
-      'modal/modalAddSales.php',
-      'modal/modalAddCreditSale.php'
+   'permission' => 6,
+   'module'     => 'Venta',
+   'title'      => 'Ventas',
+   'icon'       => 'fa-solid fa-cart-shopping',
+   'addAction'  => "addSale()",
+   'modals'     => [
+      'modal/modalSale.php',
+      'modal/modalViewDetails.php',
    ],
    'moduleScript' => 'moduleSales',
 ];

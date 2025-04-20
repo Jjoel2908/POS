@@ -333,7 +333,7 @@ const processDelete = async (module, id) => {
  * @returns {number} - Total calculado (precio * cantidad) con dos decimales.
  */
 const calculateTotal = () => {
-    const price    = $("form #precio_compra").val() || $("form #precio_compra").val() || 0;
+    const price    = $("form #precio_compra").val() || $("form #precio_venta").val() || 0;
     const quantity = $("form #cantidad").val() || 0;
 
     /** Validar que el precio y la cantidad sean números válidos */
@@ -341,9 +341,9 @@ const calculateTotal = () => {
         return 0.00;
 
     /** Multiplicar el precio por la cantidad y redondear a 2 decimales */
-    const total = parseFloat((price * quantity).toFixed(2));
+    const total = parseFloat(price * quantity);
 
-    $("form #total").val(total);
+    $("form #total").val(total.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 };
 
 /** Maneja el evento de presionar "Enter" en formularios dinámicos.
@@ -433,6 +433,7 @@ $("form #search").on('select2:select', async e => {
 
             cantidad.prop('disabled', false);
             cantidad.focus();
+            calculateTotal();
         }, false);
     }
 });

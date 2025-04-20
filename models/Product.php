@@ -4,9 +4,7 @@ require_once '../config/Connection.php';
 class Product extends Connection
 {
 
-   public function __construct()
-   {
-   }
+   public function __construct() {}
 
    public function dataTable(): array
    {
@@ -29,5 +27,16 @@ class Product extends Connection
    {
       $product = $this::queryMySQL("SELECT precio_compra FROM productos WHERE id = $idRegister AND estado = 1 LIMIT 1");
       return $product[0];
+   }
+
+   public function getSalePrice($idRegister): array
+   {
+      $product = $this::queryMySQL("SELECT precio_compra, precio_venta, stock FROM productos WHERE id = $idRegister AND estado = 1 LIMIT 1");
+      return $product[0];
+   }
+
+   public function searchProduct(string $text): array
+   {
+      return $this::queryMySQL("SELECT id, codigo, nombre, stock FROM productos WHERE codigo LIKE '%$text%' OR nombre LIKE '%$text%'");
    }
 }

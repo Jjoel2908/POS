@@ -75,4 +75,10 @@ class Cashbox extends Connection
          return false;
       }
    }
+
+   public function hasOpen(int $branchId): bool
+   {
+      $openCashbox = $this::queryMySQL("SELECT id FROM cajas WHERE abierta = 1 AND id_sucursal = $branchId AND estado = 1 LIMIT 1");
+      return count($openCashbox) > 0;
+   }
 }

@@ -126,7 +126,7 @@ class PurchaseDetailsController
         $purchaseId = $_POST['registerId'] ? (filter_var($_POST['registerId'], FILTER_VALIDATE_INT) ?: 0) : null;
 
         $response = $this->model->dataTable($this->idUser, $purchaseId);
-        $data = array();
+        $data     = array();
 
         if (count($response) > 0) {
 

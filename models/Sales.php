@@ -1,7 +1,7 @@
 <?php
 require '../config/Connection.php';
 
-class Sales extends Connection
+class Sale extends Connection
 {
 
    public function __construct() {}

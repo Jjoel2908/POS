@@ -5,12 +5,21 @@ class SaleDetails extends Connection
 {
    public function __construct() {}
 
-   public function dataTable(int $idUser): array
+   public function dataTable(int $userId, ?int $saleId = null): array
    {
+      /** Estado para el detalle de compra */
+      $estado = $saleId ? 1 : 0;
+
+      /** Identificador de la compra */
+      $idSale = $saleId ? "= $saleId" : "IS NULL";
+
+      /** Identificador del usuario */
+      $idUser = $saleId ? "" : " AND dv.creado_por = $userId";
+
       return $this->queryMySQL(
          "SELECT 
             dv.id,
-            dv.precio_venta,
+            dv.precio_venta AS precio,
             dv.cantidad, 
             p.nombre AS producto 
          FROM 
@@ -20,16 +29,15 @@ class SaleDetails extends Connection
          ON 
             dv.id_producto = p.id 
          WHERE 
-            dv.estado = 0 
+            dv.estado = $estado
          AND 
-            dv.id_venta IS NULL
-         AND
-            dv.creado_por = $idUser");
+            dv.id_venta $idSale
+         $idUser");
    }
 
    public function existSaleDetails(int $idProduct, int $idUser): array
    {
-      return $this->queryMySQL("SELECT id FROM detalle_venta WHERE id_venta IS NULL AND estado = 0 AND creado_por = $idUser AND id_producto = $idProduct");
+      return $this->queryMySQL("SELECT id, cantidad FROM detalle_venta WHERE id_venta IS NULL AND estado = 0 AND creado_por = $idUser AND id_producto = $idProduct");
    }
 
    public function updateSaleDetail(int $idSale, int $quantity): bool
@@ -41,7 +49,8 @@ class SaleDetails extends Connection
       return $this->queryMySQL(
          "SELECT 
             id, 
-            precio_venta,
+            id_producto,
+            precio_venta AS precio,
             cantidad
          FROM 
             detalle_venta
@@ -50,6 +59,7 @@ class SaleDetails extends Connection
          AND 
             id_venta IS NULL
          AND
-            creado_por = $idUser");
+            creado_por = $idUser"
+      );
    }
 }

@@ -1,15 +1,54 @@
-$(() => {
-   const formdata = new FormData();
-
-   submitForm(formdata, "droplist", 'Producto', (data) => {
-      $("#formSale #search").html(data);
-      clearForm('#modalRegister');
-   }, false);
-});
-
+/** Inicia el proceso de registro de una nueva venta */
 const addSale = async () => {
-   await loadDataTableDetails('DetalleVenta');
-   openModal('Venta');
+   /** Llamamos a submitForm pasando el módulo dinámicamente */
+   await submitForm(new FormData(), "hasOpenCashbox", "Caja", async () => {
+      /** Cargamos los detalles de venta y abrimos el modal */
+      await loadTemporaryDetails('DetalleVenta');
+      openModal('Venta');
+
+      /** Búsqueda en tiempo real */
+      await initProductSearch();
+   }, false);
+};
+
+/** Inicializa el componente Select2 para realizar búsquedas de productos en tiempo real
+ * dentro del formulario de ventas (form#formAddSale).
+ * 
+ * Características:
+ * - Muestra resultados con un retraso de 250ms para evitar múltiples peticiones simultáneas.
+ * - Muestra sugerencias cuando el usuario escribe al menos 2 caracteres.
+ * - Utiliza AJAX para obtener productos desde el backend (op=selectProducts).
+ */
+const initProductSearch = async () => {
+   $("form#formSale #search").css("width", "100%").select2({  
+      placeholder: "Buscar Producto...",
+      allowClear: true,
+      dropdownParent: "#modalRegister",
+      minimumInputLength: 2,
+      ajax: {
+         url: urlController,
+         type: 'POST',
+         dataType: "json",
+         delay: 250,
+         data: function (params) {
+            return {
+               module: 'Producto',
+               operation: 'droplistSales',
+               search: params.term || '',
+            };
+         },
+         processResults: function (data) {
+            return {
+               results: data.results
+            };
+         },
+         cache: true,
+      },
+      language: {
+         searching: () => "Buscando...",
+         inputTooShort: () => "", // No muestra texto cuando el input es muy corto
+      },
+   });
 };
 
 
@@ -22,8 +61,7 @@ const addSale = async () => {
 
 
 
-let POS = new classPOS('Detalle de Venta', '#modalAddSale');
-const URL_SALES = "../../../controllers/sales.php?";
+
 
 $(() => {
    
@@ -51,54 +89,35 @@ let moduleSales = {
 
    /** M O D A L   A D D   S A L E  */
    modalAddSale: () => {
-      let success;
-      let error = "Debes abrir caja para realizar ventas";
-
-      $.post(URL_SALES + 'op=existOpenCashbox', e => { 
-         
-         success = e;
-         if (success == 0) {
-            POS.showAlert(false, error);
-         } else {
-            $('#modalAddSale').modal('toggle');
-            POS.clearForm();
-
-            $("form#formAddSale #search").css('width', '100%').select2({
-               placeholder: 'Buscar Producto...',
-               allowClear: true,
-               dropdownParent: '#modalAddSale',
-               ajax: {
-                  url: URL_SALES,
-                  dataType: 'json',
-                  delay: 250,
-                  data: function (params) {
-                     return {
-                        op: 'selectProducts',
-                        q: params.term || '',
-                     };
-                  },
-                  processResults: function (data) {
-                     return {
-                        results: data.results
-                     };
-                  },
-                  cache: true
-               },
-               minimumInputLength: 2,
-               language: {
-                  searching: function () {
-                     return 'Buscando...';
-                  },
-                  inputTooShort: function() {
-                     return '';
-                  }
-               }
-            });
-
-            $.post(URL_SALES + "op=selectCustomer", customers => { 
-               $("form#formAddSale #cliente").html(customers);
-               POS.clearForm();
-            })
+      $("form#formAddSale #search").css('width', '100%').select2({
+         placeholder: 'Buscar Producto...',
+         allowClear: true,
+         dropdownParent: '#modalAddSale',
+         ajax: {
+            url: URL_SALES,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+               return {
+                  op: 'selectProducts',
+                  q: params.term || '',
+               };
+            },
+            processResults: function (data) {
+               return {
+                  results: data.results
+               };
+            },
+            cache: true
+         },
+         minimumInputLength: 2,
+         language: {
+            searching: function () {
+               return 'Buscando...';
+            },
+            inputTooShort: function() {
+               return '';
+            }
          }
       });
    },

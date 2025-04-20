@@ -135,4 +135,28 @@ class ProductController
 
         echo json_encode(['success' => true, 'data' => $listRegister]);
     }
+
+    public function droplistSales()
+    {
+        /** Producto a buscar */
+        $text = $this->model::sanitizeInput('search', 'text');
+        
+        /** Buscamos coincidencias */
+        $products = $this->model->searchProduct($text);
+
+        $formatted_products = [];
+        if (!empty($products)) {
+            foreach ($products as $product) {
+
+                if ($product['stock'] == 0) continue;
+
+                $formatted_products[] = [
+                    'id'   => $product['id'],
+                    'text' => $product['codigo'] . ' | ' . $product['nombre']
+                ];
+            }
+        }
+
+        echo json_encode(['results' => $formatted_products]);
+    }
 }
