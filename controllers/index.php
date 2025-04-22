@@ -26,6 +26,7 @@ $controllers = [
     'ArqueoCaja'    => 'CashboxCountController.php',
     'Caja'          => 'CashboxController.php',
     'Venta'         => 'SaleController.php',
+    'VentaCredito'  => 'CreditSaleController.php',
     'DetalleVenta'  => 'SaleDetailsController.php',
     'Usuario'       => 'UserController.php',
 ];

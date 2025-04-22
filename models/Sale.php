@@ -20,14 +20,34 @@ class Sale extends Connection
                 ventas v
             INNER JOIN 
                 usuarios u 
-            ON v.creado_por = u.id 
+            ON 
+                v.creado_por = u.id 
             WHERE 
                 v.estado = 1 
+            AND
+                v.tipo_venta = 1
             ORDER BY 
                 v.id DESC 
             LIMIT 5"
         );
-    }   
+    }  
+    
+    public function isCartEmpty(int $userId): array
+    {
+        $SaleDetails = new SaleDetails();
+        $details     = $SaleDetails->getSaleDetails($userId);
+        return $details;
+    }
+
+    public function calculateSaleTotal(array $details): float
+    {
+        $total = 0;
+        foreach ($details as $detail) {
+            $total += $detail['cantidad'] * $detail['precio'];
+        }
+
+        return number_format(floatval($total), 2, '.', '');
+    }
 
     /** Actualizamos las detalles de venta que estan pendientes con respecto al usuario */
     public function updateSaleDetails(mysqli $conexion, int $saleId, int $userId): bool

@@ -251,8 +251,8 @@ const saveTransaction = async (module) => {
                 formData.append("customer", cliente ?? 0);
 
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
-                await submitForm(formData, "save", module, () => {
-                    loadDataTable("#module-table", module);
+                await submitForm(formData, "save", module, (data) => {
+                    loadDataTable("#module-table", data);
                     $('form #cantidad').prop('disabled', true);
                     $("#modalRegister").modal("toggle");
                 });

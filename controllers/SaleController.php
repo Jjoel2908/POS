@@ -49,21 +49,14 @@ class SaleController
         }
 
         /** Validamos si hay productos en el carrito del usuario */
-        $SaleDetails = new SaleDetails();
-        $details     = $SaleDetails->getSaleDetails($this->idUser);
-
+        $details = $this->model->isCartEmpty($this->idUser);
         if (empty($details)) {
             echo json_encode(['success' => false, 'message' => $this->messages['empty']]);
             return;
         }
 
         /** Calcular total de la venta */
-        $total = 0;
-        foreach ($details as $detail) {
-            $total += $detail['cantidad'] * $detail['precio'];
-        }
-
-        $totalFormatted = number_format(floatval($total), 2, '.', '');
+        $totalFormatted = $this->model->calculateSaleTotal($details);
 
         /** Obtener ID de caja abierta */
         $Cashbox = new Cashbox();
@@ -80,10 +73,11 @@ class SaleController
         /** Registrar venta en el modelo */
         $save = $this->model->insertSale($this->idUser, $this->idSucursal, $cashbox, $saleType, $customer, $totalFormatted);
 
+        $module = $saleType == 1 ? "Venta" : "VentaCredito"; 
         echo json_encode(
             $save
-                ? ['success' => true, 'message' => $this->messages['save_success']]
-                : ['success' => false, 'message' => $this->messages['save_failed']]
+                ? ['success' => true, 'message' => $this->messages['save_success'], 'data' => $module]
+                : ['success' => false, 'message' => $this->messages['save_failed'], 'data' => $module]
         );
     }
 
