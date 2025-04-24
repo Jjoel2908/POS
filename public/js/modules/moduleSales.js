@@ -89,9 +89,9 @@ const addPayment = async (saleId) => {
       title: '<h4 class="mt-3">Ingrese el monto del pago</h4>',
       input: "number",
       inputAttributes: {
-      min: 0,
-      step: 0.01,
-      placeholder: "Monto del pago",
+         min: 0,
+         step: 0.01,
+         placeholder: "Monto del pago",
       },
       showCancelButton: true,
       confirmButtonText: '<i class="fa-solid fa-circle-check me-1"></i> Confirmar Pago',
@@ -127,7 +127,7 @@ const addPayment = async (saleId) => {
          formData.append("monto", paymentAmount);
 
          /** Llamamos a submitForm pasando el módulo dinámicamente */
-         await submitForm(formData, "processPayment", "VentaCredito", async () => {
+         await submitForm(formData, "processCustomerPayment", "VentaCredito", async () => {
             loadDataTable("#module-table", "VentaCredito");
          });
       }
