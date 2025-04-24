@@ -1,5 +1,3 @@
-/** TODO: PONER LOADING CUANDO SE VAYA A REGISTRAR, ACTUALIZAR O ELIMINAR UN REGISTRO */
-/** TODO: EN REPORTES PONER LOADING EN LO QUE SE CARGA LA INFORMACIÓN */
 const urlController = "../../../controllers/";
 const module = $(".card").data("module");
 let modalId;
@@ -100,14 +98,14 @@ const clearForm = (modalId) => {
  * @returns {boolean} - Retorna true si el formulario es válido, false si hay errores.
  */
 const validateForm = (event, form) => {
-  if (!form.checkValidity()) {
-    event.preventDefault();
-    event.stopPropagation();
-    showAlert(false, "Debe completar la información obligatoria");
-    form.classList.add("was-validated");
-    return false;
-  }
-  return true;
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        showAlert(false, "Debe completar la información obligatoria");
+        form.classList.add("was-validated");
+        return false;
+    }
+    return true;
 };
 
 /** Envía el formulario al servidor usando async/await y FormData.
