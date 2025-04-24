@@ -191,8 +191,12 @@ const loadDataTable = async (tableId, module, registerId = null) => {
         const data = await response.json();
 
         if (data.length === 0) {
-            showAlert(false, "No hay datos disponibles.");
+            $("#table-empty").removeClass("d-none");
+            $("#table-data").addClass("d-none");
             return;
+        } else {
+            $("#table-empty").addClass("d-none");
+            $("#table-data").removeClass("d-none");
         }
 
         /** Generamos dinámicamente las columnas basadas en las claves del primer objeto */

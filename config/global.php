@@ -16,13 +16,13 @@ define("DB_NAME", "ventas");
  * Nombre del usuario de la base de datos
  * Esta constante define el nombre de usuario utilizado para acceder a la base de datos.
  */
-define("DB_USERNAME", "joy");
+define("DB_USERNAME", "root");
 
 /** 
  * Contraseña de la base de datos
  * Esta constante define la contraseña utilizada para acceder a la base de datos.
  */
-define("DB_PASSWORD", "#J29#o08");
+define("DB_PASSWORD", "");
 
 /** 
  * Codificación de carácteres

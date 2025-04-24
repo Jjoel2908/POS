@@ -104,7 +104,27 @@ class TemplateView
                 <?php endif; ?>
 
                 <!-- # [ C O N T E N T ] # -->
-                <div class="row">
+                <div id="table-empty" class="row mt-5 d-none">
+                    <table class="table table-striped table-bordered view-table text-center">
+                        <thead>
+                            <tr>
+                                <th><?= $this->title ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center">
+                                    <p class="font-15 my-2">
+                                        <i class="fa-solid fa-magnifying-glass-chart me-1"></i>
+                                        Sin información disponible por el momento.
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="table-data" class="row d-none">
                     <table class="table table-striped table-bordered view-table" id="<?= $this->tableId ?>">
                     </table>
                 </div>
