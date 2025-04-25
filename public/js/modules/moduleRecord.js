@@ -6,7 +6,10 @@ const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", 
 const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estado"];
 
 $(() => {
-    loadDataTable("#module-table", module);
+    if (module == "Producto")
+        loadDataTableServerSide("#module-table", module);
+    else
+        loadDataTable("#module-table", module);
 
     $("form").submit(async function (event) {
         event.preventDefault();
@@ -220,6 +223,76 @@ const loadDataTable = async (tableId, module, registerId = null) => {
     } catch (error) {
         console.error("Error en la función loadDataTable del archivo moduleRecord:", error);
     }
+};
+
+/** Carga datos en una tabla utilizando DataTables con procesamiento en servidor (serverSide).
+ * Es una función genérica reutilizable para cualquier módulo, renderizando columnas de forma dinámica.
+ *
+ * @param {string} tableId - Selector de la tabla donde se mostrarán los datos (ej: "#tabla").
+ * @param {string} module - Nombre del módulo (se envía al controlador como identificador).
+ * @param {int|null} registerId - ID opcional si se requiere buscar un registro específico.
+ */
+ const loadDataTableServerSide = (tableId, module, registerId = null) => {
+    const content = initTable();
+
+    /** Activamos el procesamiento en servidor */
+    content.serverSide = true;
+    content.processing = true;
+
+    /** Definimos el origen de datos desde el backend */
+    content.ajax = {
+        url: urlController,
+        type: "POST",
+        data: {
+            module,
+            operation: "dataTable",
+            registerId,
+        }
+    };
+
+    /** Obtenemos las columnas de forma dinámica una vez recibida la primera respuesta */
+    content.columns = [];
+
+    /** Callback para definir columnas y alineaciones cuando ya hay datos */
+    content.initComplete = function (settings, json) {
+        if (!json.data || json.data.length === 0) return;
+
+        /** Generamos dinámicamente las columnas según las claves del primer registro */
+        const columns = Object.keys(json.data[0]).map(key => ({
+            data: key,
+            title: key,
+            orderable: key !== "Acciones",
+            searchable: key !== "Acciones"
+        }));
+
+        /** Reemplazamos las columnas actuales (vacías) por las dinámicas */
+        const table = $(tableId).DataTable();
+        table.clear();
+        table.destroy();
+
+        const newContent = { ...content, columns };
+
+        /** Alineación dinámica basada en tipos */
+        newContent.createdRow = (row, rowData) => {
+            Object.keys(rowData).forEach((key, index) => {
+                const value = rowData[key];
+                const $td = $("td", row).eq(index);
+                if (typeof value === "number" || key.includes("Precio") || key === "Cantidad") {
+                    $td.addClass("text-end");
+                } else if (key === "Acciones" || key === "Imagen") {
+                    $td.addClass("text-center");
+                } else {
+                    $td.addClass("text-start");
+                }
+            });
+        };
+
+        /** Recargamos la tabla ya con columnas dinámicas */
+        showTable(tableId, newContent);
+    };
+
+    /** Inicializa una primera instancia vacía para cargar la estructura */
+    showTable(tableId, content);
 };
 
 /** Genera una transacción para un módulo específico mediante una confirmación previa.
