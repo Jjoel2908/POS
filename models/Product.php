@@ -6,9 +6,21 @@ class Product extends Connection
 
    public function __construct() {}
 
-   public function dataTable(): array
+   /** Función para obtener los productos con paginación y búsqueda */
+   public function dataTable($start, $length, $search): array
    {
-      return $this->queryMySQL(
+      /** Condición base para los productos activos */
+      $where = "WHERE p.estado = 1";
+ 
+      /** Si hay búsqueda, agregarla a la condición */
+      if (!empty($search)) {
+         /** Protege contra inyecciones básicas */
+         $search = addslashes($search);
+         $where .= " AND (p.nombre LIKE '%$search%' OR p.codigo LIKE '%$search%' OR m.nombre LIKE '%$search%')";
+      }
+
+      /** Consulta SQL para contar los productos filtrados */
+      $query = $this->queryMySQL(
          "SELECT 
             p.*, 
             m.nombre AS marca
@@ -18,9 +30,38 @@ class Product extends Connection
             marcas m 
          ON 
             p.id_marca = m.id 
-         WHERE 
-            p.estado = 1"
+         $where
+         LIMIT 
+            $start, 
+            $length"
       );
+ 
+      return $query;
+   }
+
+   /** Función para contar el total de productos (sin filtros) */
+   public function countProducts(): int
+   {
+      $query = $this->queryMySQL("SELECT COUNT(*) as total FROM productos WHERE estado = 1");
+      return $query[0]['total'];
+   }
+
+   /** Función para contar el total de productos filtrados por búsqueda */
+   public function countFilteredProducts(string $search): int
+   {
+      $where = "WHERE p.estado = 1";
+ 
+      /** Si hay búsqueda, agregarla a la condición */
+      if (!empty($search)) {
+         /** Protege contra inyecciones básicas */
+         $search = addslashes($search); 
+         $where .= " AND (p.nombre LIKE '%$search%' OR p.codigo LIKE '%$search%' OR m.nombre LIKE '%$search%')";
+      }
+ 
+      /** Consulta SQL para contar los productos filtrados */
+      $query = $this->queryMySQL("SELECT COUNT(*) as total FROM productos p INNER JOIN marcas m ON p.id_marca = m.id $where");
+ 
+      return $query[0]['total'];
    }
 
    public function getPurchasePrice($idRegister): array

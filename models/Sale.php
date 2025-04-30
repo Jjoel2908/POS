@@ -120,6 +120,7 @@ class Sale extends Connection
                 'total_venta'  => $total,
                 'total_pagado' => $saleType == 1 ? $total : 0.00,
                 'tipo_venta'   => $saleType,
+                'estado_pago'  => $saleType,
                 'fecha'        => date('Y-m-d H:i:s'),
                 'creado_por'   => $userId
             ];

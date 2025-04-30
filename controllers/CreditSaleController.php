@@ -10,6 +10,10 @@ class CreditSaleController
     private $idUser;
     private $idSucursal;
 
+    private $messages = [
+        "amount_required" => "El monto del pago debe ser mayor a cero",
+    ];
+
     public function __construct($id = null, $idSucursal = null)
     {
         $this->model      = new CreditSale();
@@ -18,26 +22,26 @@ class CreditSaleController
         $this->idUser     = (filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0);
     }
 
-    // case 'processPayment':
+    public function processCustomerPayment()
+    {
+        /** Valida campos requeridos */
+        if (!$this->model::validateData(['id', 'monto'], $_POST)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['required']]);
+            return;
+        }
 
-    //     if (!$Sale::validateData(['id', 'total_pagado'], $_POST)) {
-    //        echo json_encode(['success' => false, 'message' => 'Complete los campos requeridos']);
-    //        break;
-    //     }
+        /** Limpiamos el monto a pagar y verificamos que sea mayor a 0 */
+        $amountPayment = $this->model::sanitizeInput('monto', 'float');
+        if ($amountPayment < 1) {
+           echo json_encode(['success' => false, 'message' => $this->messages['amount_required']]);
+           break;
+        }
   
-    //     $idRepartidor  = intval($_POST['id']);
-    //     $paymentAmount = number_format(floatval($_POST['total_pagado']), 2, '.', '');
-  
-    //     if ($paymentAmount <= 0) {
-    //        echo json_encode(['success' => false, 'message' => 'El monto del pago debe ser mayor a cero']);
-    //        break;
-    //     }
-  
-    //     $response = $Sale->processPayment($idRepartidor, $paymentAmount);
-  
-    //     echo json_encode($response);
-    //     break;
-
+        /** Procesamos el pago del cliente */
+        $response = $this->model->processPayment($this->id, $amountPayment);
+        echo json_encode($response);
+   }
+   
     public function dataTable()
     {
         $response = $this->model->dataTable();
