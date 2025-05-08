@@ -3,7 +3,7 @@ const module = $(".card").data("module");
 let modalId;
 
 const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total"];
-const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estado"];
+const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estado"];
 
 $(() => {
     if (module == "Producto")

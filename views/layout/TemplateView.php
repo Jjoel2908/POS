@@ -94,7 +94,7 @@ class TemplateView
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="d-flex justify-content-end">
-                                <button class="btn btn-success radius-30 px-4 fs-14" onclick="<?= $this->addAction ?>">
+                                <button class="btn btn-warning radius-30 px-4 fs-14" onclick="<?= $this->addAction ?>">
                                     <i class="<?= $this->addIcon ?> me-1"></i>
                                     Agregar <?= $this->addLabel ?>
                                 </button>

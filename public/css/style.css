@@ -1,61 +1,73 @@
-/* .simplebar-content-wrapper {
-   background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf);
-}
-
+/** Color de fondo - Menú lateral y Topbar Superior */
+.sidebar-header,
+.simplebar-content-wrapper,
+.sidebar-wrapper .metismenu ul,
+.topbar .navbar,
 .sidebar-wrapper {
-   background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf); 
+   background-color: #fafafa;
 }
 
-.sidebar-wrapper .metismenu ul {
-   background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf);
-   color: white;
-   border: none;
-} */
-
-/* .topbar .navbar {
-   background-color: #7B3CA6;
-}
+.view-dashboard {
+   background: url(../images/bgLogin.jpg);
+   background-size: cover;
+   background-position: center;
+   font-family: sans-serif;
+ }
 
 .daterangepicker .ranges li.active {
-   background-color: #9a3fbc !important;
+   background-color: #ffc107 !important;
 }
 
 .daterangepicker td.active {
-   background-color: #9a3fbc !important;
+   background-color: #ffc107 !important;
    color: #fff !important;
 }
 
-.applyBtn {
-   background-color: #9a3fbc !important;
-   border: 1px solid #9a3fbc !important;
+.back-to-top,
+.back-to-top:hover {
+   color: #fff;
+   background-color: #ffc107;
+   transition: all 0.5s;
 }
+
+/* .applyBtn {
+   background-color: #ffc107 !important;
+   border: 1px solid #ffc107 !important;
+} */
 
 .cancelBtn {
    background-color: #e00000 !important;
    border: 1px solid #e00000 !important;
    color: #fff !important;
-} */
-
-/* .logo-text,
-.sidebar-wrapper .metismenu a,
-.sidebar-wrapper .metismenu a .parent-icon,
-.sidebar-wrapper .metismenu a .menu-title,
-.toggle-icon,
-.user-info .user-name {
-   color: white;
 }
 
+/** Estilos para cada apartado del menú cuando está activo */
 .sidebar-wrapper .metismenu .mm-active > a,
-.sidebar-wrapper .metismenu a:active,
-.sidebar-wrapper .metismenu a:hover {
-   color: white;
+.sidebar-wrapper .metismenu a:active {
+   color: #4C5258;
+   letter-spacing: 1px;
    text-decoration: none;
-   background: rgba(178, 211, 194, 0.12); 
+   background: #EFEFEF;
+}
+
+.sidebar-wrapper .metismenu a:hover {  
+   color: #4C5258;
+   letter-spacing: 1.2px;
+   font-size: 16.8 !important;
+   background: #ffc107 !important;
 }
 
 .metismenu .has-arrow:after {
-   color: white;
-} */
+   color: gray;
+}
+
+.letter-1 {
+   letter-spacing: 1px !important;
+}
+
+.letter-2 {
+   letter-spacing: 2px !important;
+}
 
 /* [ ------------------------------------- ] */
 /* [ ----------- T I T U L O S ----------- ] */

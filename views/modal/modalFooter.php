@@ -5,7 +5,7 @@
                         <span class="visually-hidden">Loading...</span>
                     </div>
                     <div class="btn-group" role="group">
-                        <button id="btnSave" type="submit" class="btn btn-primary fs-14 border-r1 px-4 radius-30" 
+                        <button id="btnSave" type="submit" class="btn btn-warning fs-14 border-r1 px-4 radius-30" 
                             <?php echo !empty($onClickEvent) ? 'onclick="' . $onClickEvent . '"' : ''; ?>>
                         </button>
                         <button type="button" class="btn btn-danger fs-14 px-4 radius-30" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1"></i> Salir</button>
