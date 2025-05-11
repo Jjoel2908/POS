@@ -110,8 +110,6 @@ class TestController
                 $data[] = [
                     "Producto"               => $row['nombre'],
                     "Precio Venta"  => "$" . number_format($row['precio_venta'], 2),
-                    "Fecha de Actualización" => $date,
-                    "Estado"                 => $estado,
                     "Acciones"               => $btn
                 ];
             }
