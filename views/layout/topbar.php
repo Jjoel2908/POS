@@ -1,18 +1,17 @@
 <header>
     <div class="topbar d-flex align-items-center">
         <nav class="navbar navbar-expand justify-content-between">
-            <div class="mobile-toggle-menu font-20 text-white ms-3"><i class='fa-solid fa-bars'></i>
-            </div>
+            <div class="toggle-icon ms-2"><i class="fa-solid fa-bars text-secondary font-26 icon-bar"></i></div>
             <div class="search-bar flex-grow-1">
                 <div class="position-relative">
                 </div>
             </div>
             <div class="user-box dropdown">
                 <a class="d-flex align-items-center nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="../../public/images/logo.jpg" class="user-img" alt="Imagen de Usuario">
-                    <div class="user-info ps-3">
-                        <p class="user-name mb-0"><?php echo $_SESSION['user_name'] ?></p>
-                        <p class="designattion mb-0"> En línea</p>
+                    <img src="../../public/images/beauty.jpg" class="user-img" alt="Imagen de Usuario">
+                    <div class="user-info">
+                        <p class="user-name mb-0 text-black ps-3"><?php echo $_SESSION['user_name'] ?></p>
+                        <p class="designattion text-secondary mb-0 ps-3"> En línea</p>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">

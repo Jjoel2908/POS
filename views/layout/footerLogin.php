@@ -1,7 +1,3 @@
-
-<!-- BOOTSTRAP JS -->
-<script src="../../public/js/bootstrap.bundle.min.js"></script>
-
 <!-- JQUERY JS -->
 <script src="../../public/js/jquery.min.js"></script>
 

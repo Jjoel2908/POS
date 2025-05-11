@@ -852,6 +852,10 @@ button.btn.btn-secondary.buttons-pdf.buttons-html5:hover {
   font-size: 24px !important;
 }
 
+.font-26 {
+  font-size: 24px !important;
+}
+
 .font-30 {
   font-size: 30px !important;
 }
@@ -2236,11 +2240,10 @@ input.search-control-2::placeholder {
 }
 
 .user-img {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: 0 solid #e5e5e5;
-  padding: 0;
+  border: 1px solid #2a2185;
 }
 
 .user-info .user-name {

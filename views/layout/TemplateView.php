@@ -76,8 +76,8 @@ class TemplateView
         require_once 'layout/header.php';
 ?>
 
-        <div class="card radius-10" data-module="<?= $this->module ?>">
-            <div class="card-body p-4">
+        <div class="card bg-transparent shadow-0" data-module="<?= $this->module ?>">
+            <div class="card-body pt-1">
 
                 <!-- # [ T I T L E ] # -->
                 <div class="row">
