@@ -1,5 +1,5 @@
 :root {
-  --blue: #2a2185;
+  --main: #2a2185;
   --white: #fafafa;
   --gray: #f5f5f5;
   --black1: #222;
@@ -11,16 +11,16 @@ body {
 }
 
 .simplebar-content-wrapper {
-  background-color: var(--blue);
+  background-color: var(--main);
 }
 
 .sidebar-wrapper {
-  background-color: var(--blue);
+  background-color: var(--main);
 }
 
 .sidebar-wrapper .metismenu ul {
-  background-color: var(--blue);
-  color: white;
+  background-color: var(--main);
+  color: var(--white);
   border: none;
 }
 
@@ -31,17 +31,17 @@ body {
 }
 
 .daterangepicker .ranges li.active {
-  background-color: #9a3fbc !important;
+  background-color: var(--main) !important;
 }
 
 .daterangepicker td.active {
-  background-color: #9a3fbc !important;
+  background-color: var(--main) !important;
   color: #fff !important;
 }
 
 .applyBtn {
-  background-color: #9a3fbc !important;
-  border: 1px solid #9a3fbc !important;
+  background-color: var(--main) !important;
+  border: 1px solid var(--main) !important;
 }
 
 .cancelBtn {
@@ -56,21 +56,18 @@ body {
 .sidebar-wrapper .metismenu a .menu-title,
 .toggle-icon,
 .user-info .user-name {
-  color: white;
+  color: var(--white);
 }
 
 .sidebar-wrapper .metismenu .mm-active > a,
 .sidebar-wrapper .metismenu a:active,
 .sidebar-wrapper .metismenu a:hover {
   text-decoration: none;
-  background-color: var(--white);
-  border-top-left-radius: 30px;
-  border-bottom-left-radius: 30px;
-  color: var(--blue) !important; 
+  color: var(--main) !important; 
 }
 
 .metismenu .has-arrow:after {
-  color: var(--blue);
+  color: var(--main);
 }
 
 /* [ ------------------------------------- ] */
@@ -78,7 +75,7 @@ body {
 /* [ ------------------------------------- ] */
 .view-title {
   font-size: 22px;
-  color: var(--blue);
+  color: var(--main);
   font-weight: normal !important;
   margin-bottom: 22px;
 }
