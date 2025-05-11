@@ -89,11 +89,11 @@ html.dark-theme .view-text {
 }
 
 .view-border {
-  border-color: #8d41bf !important;
+  border-color: var(--main) !important;
 }
 
 .view-bg {
-  background-color: #8d41bf !important;
+  background-color: var(--main) !important;
 }
 
 .view-bg-light {
@@ -101,7 +101,7 @@ html.dark-theme .view-text {
 }
 
 .bg-primary {
-  background-color: #c697e8 !important;
+  background-color: var(--main) !important;
 }
 
 .btn-success {
@@ -134,11 +134,15 @@ html.dark-theme .view-text {
 .dropdown-item:active {
   color: #fff;
   text-decoration: none;
-  background-color: #8d41bf;
+  background-color: var(--main);
 }
 
 td.text-start.dtr-control {
   padding-left: 16px;
+}
+
+.back-to-top {
+  background-color: var(--main) !important;
 }
 
 /* [ ------------------------------------- ] */
@@ -157,7 +161,7 @@ button.btn.btn-secondary.buttons-pdf.buttons-html5 {
 
 /** Botones de acción DATATABLE */
 button.btn.btn-secondary {
-  background-image: linear-gradient(to top, #b13cb6, #a63eb9, #9a3fbc, #8d41bf);
+  background-color: var(--main) !important;
   font-size: 17px !important;
   border: none;
 }
@@ -182,18 +186,41 @@ button.btn.btn-secondary {
 }
 
 .page-item.active .page-link {
-  background-color: #8d41bf;
-  border-color: #8d41bf;
+  background-color: var(--main);
+  border-color: var(--main);
 }
 
 .page-link {
-  color: #8d41bf;
+  color: var(--main);
 }
 
 .page-link:hover {
-  color: #8d41bf;
+  color: var(--main);
   background-color: #e9ecef;
   border-color: #dee2e6;
+}
+
+.pace .pace-progress {
+  background-color: greenyellow !important;
+}
+
+.pace .pace-activity {
+    display: block;
+    position: fixed;
+    z-index: 2000;
+    top: 15px;
+    right: 15px;
+    width: 20px;
+    height: 20px;
+    border: solid 3px transparent;
+    border-top-color: greenyellow !important;
+    border-left-color: greenyellow !important;
+    border-radius: 10px;
+    -webkit-animation: pace-spinner .4s linear infinite;
+    -moz-animation: pace-spinner .4s linear infinite;
+    -ms-animation: pace-spinner .4s linear infinite;
+    -o-animation: pace-spinner .4s linear infinite;
+    animation: pace-spinner .4s linear infinite;
 }
 
 /* [ -------------------------------------- ] */

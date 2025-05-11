@@ -205,6 +205,7 @@ button.btn.btn-secondary.buttons-pdf.buttons-html5:hover {
 
 .logo-icon {
   width: 45px;
+  border-radius: 50%;
 }
 
 .logo-text {
@@ -1814,7 +1815,7 @@ button.btn.btn-secondary.buttons-pdf.buttons-html5:hover {
 }
 
 .split-bg-primary {
-  background-color: #0c62e0;
+  background-color: #0c62e0;  
   border-color: #0c62e0;
 }
 
