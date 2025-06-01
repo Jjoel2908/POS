@@ -125,8 +125,9 @@ class TemplateView
                 </div>
 
                 <div id="table-data" class="row d-none">
-                    <table class="table table-striped table-bordered view-table" id="<?= $this->tableId ?>">
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered view-table" id="<?= $this->tableId ?>"></table>
+                    </div>
                 </div>
 
                 <!-- # [ M O D A L S ] # -->

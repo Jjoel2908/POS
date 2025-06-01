@@ -38,7 +38,6 @@ const initTable = () => {
     dom: '<"top"Bf>rt<"bottom"ip>',
     processing: true,
     destroy: true,
-    responsive: true,
     autoWidth: true,
     lengthChange: true,
     pageLength: 10,

@@ -6,6 +6,18 @@ $(() => {
    }, false);
 });
 
+/** Columnas que tendrá la tabla del módulo */
+const moduleColumns = [
+    { data: "nombre", title: "Nombre" },
+    { data: "marca", title: "Marca" },
+    { data: "codigo", title: "Código" },
+    { data: "compra", title: "P. Compra" },
+    { data: "venta", title: "P. Venta" },
+    { data: "cantidad", title: "Stock" },
+    { data: "imagen", title: "Imagen" },
+    { data: "acciones", title: "Acciones" },
+];
+
 /** Abre el modal para registrar un nuevo producto.
  * Habilita el campo 'código' para que el usuario pueda ingresarlo manualmente.
  */

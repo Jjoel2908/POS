@@ -46,5 +46,10 @@ $module = "Producto";
     </div>
 </div>
 
+<div class="col-md-12 view-form">
+    <label class="mb-1" for="imagen">Imagen</label>
+    <input class="form-control" type="file" name="imagen" id="imagen" accept="image/png, image/jpeg, image/jpg, image/webp">
+</div>
+
 <!-- # [ F O O T E R ] # -->
 <?php require 'modalFooter.php'; ?>

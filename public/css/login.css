@@ -129,16 +129,9 @@ form {
 
 .input-group label {
   position: absolute;
-  top: 0;
-  left: 0;
-  transition: 0.5s;
-}
-
-.input-group input:focus ~ label,
-.input-group input:valid ~ label {
-  font-size: 12px;
-  top: -16px;
-  color: #9e25ef;
+  font-size: 14px;
+  top: -18px;
+  color: #000;
 }
 
 .input-group i {
@@ -168,10 +161,6 @@ form {
 
 .btn-login:hover {
   background: transparent;
-  color: #000;
-}
-
-.label-login {
   color: #000;
 }
 

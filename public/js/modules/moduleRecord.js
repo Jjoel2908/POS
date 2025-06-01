@@ -1,15 +1,13 @@
 const urlController = "../../../controllers/";
-const module = $(".card").data("module");
+const module = $(".card").data("module"); 
+const currentModule = $(".card").data("module"); 
 let modalId;
 
-const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total"];
-const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estado"];
+const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total", "compra", "venta"];
+const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estado", "codigo", "cantidad", "imagen", "acciones"];
 
 $(() => {
-    if (module == "Producto")
-        loadDataTableServerSide("#module-table", module);
-    else
-        loadDataTable("#module-table", module);
+    loadModuleTable(currentModule);
 
     $("form").submit(async function (event) {
         event.preventDefault();
@@ -28,7 +26,7 @@ $(() => {
                 
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
                 await submitForm(this, "save", moduleRecord, () => {
-                    loadDataTable("#module-table", module);
+                    loadModuleTable(currentModule);
                     $("#modalRegister").modal("toggle");
                 });
             } catch (error) {
@@ -41,6 +39,21 @@ $(() => {
         }
     });
 });
+
+/** Carga la tabla de datos dependiendo del módulo.
+ * Si el módulo es 'Producto', utiliza carga del lado del servidor.
+ * En otros casos, utiliza carga normal.
+ * @param {string} currentModule - Nombre del módulo a cargar.
+ * @param {string} [tableSelector="#module-table"] - Selector de la tabla donde se cargan los datos.
+ */
+const loadModuleTable = (currentModule, tableSelector = "#module-table") => {
+    if (currentModule === "Producto") {
+        loadDataTableServerSide(tableSelector, module);
+    } else {
+        loadDataTable(tableSelector, module);
+    }
+};
+
 
 /** Abre un modal para crear o actualizar un registro.
  * @param {string} [modal=""] - ID del modal a abrir. Por defecto 'modalRegister'.
@@ -212,15 +225,15 @@ const loadDataTable = async (tableId, module, registerId = null) => {
 
         /** Aplica alineaciones dinámicas a las filas */
         content.createdRow = (row, rowData) => {
-        Object.keys(rowData).forEach((key, index) => {
-            if (columnsCenterTable.includes(key)) {
-                $(`td:eq(${index})`, row).addClass("text-center");
-            } else if (columnsEndTable.includes(key)) {
-                $(`td:eq(${index})`, row).addClass("text-end");
-            } else {
-                $(`td:eq(${index})`, row).addClass("text-start");
-            }
-        });
+            Object.keys(rowData).forEach((key, index) => {
+                if (columnsCenterTable.includes(key)) {
+                    $(`td:eq(${index})`, row).addClass("text-center");
+                } else if (columnsEndTable.includes(key)) {
+                    $(`td:eq(${index})`, row).addClass("text-end");
+                } else {
+                    $(`td:eq(${index})`, row).addClass("text-start");
+                }
+            });
         };
 
         showTable(tableId, content);
@@ -236,8 +249,13 @@ const loadDataTable = async (tableId, module, registerId = null) => {
  * @param {string} module - Nombre del módulo (se envía al controlador como identificador).
  * @param {int|null} registerId - ID opcional si se requiere buscar un registro específico.
  */
- const loadDataTableServerSide = (tableId, module, registerId = null) => {
-    const content = initTable();
+const loadDataTableServerSide = (tableId, module, registerId = null) => {
+
+    /** Visulización de tablas */
+    $("#table-empty").addClass("d-none");
+    $("#table-data").removeClass("d-none");
+
+    let content = initTable();
 
     /** Activamos el procesamiento en servidor */
     content.serverSide = true;
@@ -247,55 +265,30 @@ const loadDataTable = async (tableId, module, registerId = null) => {
     content.ajax = {
         url: urlController,
         type: "POST",
-        data: {
-            module,
-            operation: "dataTable",
-            registerId,
+        data: function(d) {
+            d.module     = module;
+            d.operation  = "dataTable";
+            d.registerId = registerId;
+            return d;
         }
     };
 
-    /** Obtenemos las columnas de forma dinámica una vez recibida la primera respuesta */
-    content.columns = [];
+    content.columns = moduleColumns;
 
-    /** Callback para definir columnas y alineaciones cuando ya hay datos */
-    content.initComplete = function (settings, json) {
-        if (!json.data || json.data.length === 0) return;
-
-        /** Generamos dinámicamente las columnas según las claves del primer registro */
-        const columns = Object.keys(json.data[0]).map(key => ({
-            data: key,
-            title: key,
-            orderable: key !== "Acciones",
-            searchable: key !== "Acciones"
-        }));
-
-        /** Reemplazamos las columnas actuales (vacías) por las dinámicas */
-        const table = $(tableId).DataTable();
-        table.clear();
-        table.destroy();
-
-        const newContent = { ...content, columns };
-
-        /** Alineación dinámica basada en tipos */
-        newContent.createdRow = (row, rowData) => {
-            Object.keys(rowData).forEach((key, index) => {
-                const value = rowData[key];
-                const $td = $("td", row).eq(index);
-                if (typeof value === "number" || key.includes("Precio") || key === "Cantidad") {
-                    $td.addClass("text-end");
-                } else if (key === "Acciones" || key === "Imagen") {
-                    $td.addClass("text-center");
-                } else {
-                    $td.addClass("text-start");
-                }
-            });
-        };
-
-        /** Recargamos la tabla ya con columnas dinámicas */
-        showTable(tableId, newContent);
+    /** Aplica alineaciones dinámicas a las filas */
+    content.createdRow = (row, rowData) => {
+        Object.keys(rowData).forEach((key, index) => {
+            if (columnsCenterTable.includes(key)) {
+                $(`td:eq(${index})`, row).addClass("text-center");
+            } else if (columnsEndTable.includes(key)) {
+                $(`td:eq(${index})`, row).addClass("text-end");
+            } else {
+                $(`td:eq(${index})`, row).addClass("text-start");
+            }
+        });
     };
 
-    /** Inicializa una primera instancia vacía para cargar la estructura */
+    /** Recargamos la tabla ya con columnas dinámicas */
     showTable(tableId, content);
 };
 
@@ -405,7 +398,7 @@ const processDelete = async (module, id) => {
             if (module === "DetalleCompra" || module === "DetalleVenta")
                 loadTemporaryDetails(module);
             else
-                loadDataTable("#module-table", module);
+                loadModuleTable(module);
         });
     } catch (error) {
         console.error("Error en processDelete:", error);

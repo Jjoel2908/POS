@@ -8,11 +8,11 @@
             <h1 class="title-form">Bienvenido</h1>
             <form class="validation" id="formLogin" method="POST" action="" name="" novalidate="">
                 <div class="input-group">
-                    <input type="text" name="correo" id="correo" required />
+                    <input type="text" name="correo" id="correo" placeholder="admin@gmail.com" required />
                     <label class="label-login" for="correo">Correo Electrónico</label>
                 </div>
                 <div class="input-group d-flex input-password" id="show_hide_password">
-                    <input type="password" name="password" id="password" required />
+                    <input type="password" name="password" id="password" placeholder="********" required />
                     <label class="label-login" for="password">Contraseña</label>
                     <a href="javascript:;" class="input-group-text border-0">
                         <i class="fa-solid fa-eye"></i>

@@ -10,13 +10,13 @@ class ProductController
     private $idSucursal;
 
     private $messages = [
-        "save_success" => "Producto registrado correctamente.",
-        "save_failed" => "Error al registrar el producto.",
+        "save_success"   => "Producto registrado correctamente.",
+        "save_failed"    => "Error al registrar el producto.",
         "update_success" => "Producto actualizado correctamente.",
-        "update_failed" => "Error al actualizar el producto.",
+        "update_failed"  => "Error al actualizar el producto.",
         "delete_success" => "Producto eliminado correctamente.",
-        "delete_failed" => "Error al eliminar el producto.",
-        "required" => "Debe completar la información obligatoria."
+        "delete_failed"  => "Error al eliminar el producto.",
+        "required"       => "Debe completar la información obligatoria."
     ];
 
     public function __construct($id = null, $idSucursal = null)
@@ -28,6 +28,7 @@ class ProductController
 
     public function save()
     {
+        echo json_encode($_POST);
         /** Valida campos requeridos */
         $validateData = ['nombre', 'codigo', 'id_marca', 'precio_compra', 'precio_venta'];
         if (!$this->model::validateData($validateData, $_POST)) {
@@ -45,6 +46,9 @@ class ProductController
             'precio_compra' => $this->model::sanitizeInput('precio_compra', 'float'),
             'precio_venta'  => $this->model::sanitizeInput('precio_venta', 'float')
         ];
+
+        /** Si el usuario adjunta una imagen al producto la guardamos y recuperamos su path  */
+        $data['imagen'] = $this->model->saveImage();
 
         if (!$this->id) {
             /** Valida que no exista un registro similar al entrante */
@@ -143,18 +147,21 @@ class ProductController
             $imgUrl = "../media/products/$img";
 
             /** @var string $imgTag - Etiqueta HTML <img> para mostrar la imagen. */
-            $imgTag = "<img src='$imgUrl' alt='img' width='50' height='50'>";
+            $imgTag = "<img src='$imgUrl' alt='img' width='90' height='90'>";
+
+            /** Cantidad de producto */
+            $stock = $row['stock'] . ' ' . ($row['stock'] == 1 ? 'ud.' : 'uds.');
 
             /** Agregamos la fila al array de datos */
             $data[] = [
-                "Producto"      => $row['nombre'],
-                "Marca"         => $row['marca'],
-                "Código"        => $row['codigo'],
-                "Precio Compra" => "$" . number_format($row['precio_compra'], 2),
-                "Precio Venta"  => "$" . number_format($row['precio_venta'], 2),
-                "Cantidad"      => $row['stock'],
-                "Imagen"        => $imgTag,
-                "Acciones"      => $btn
+                "nombre"   => $row['nombre'],
+                "marca"    => $row['marca'],
+                "codigo"   => $row['codigo'],
+                "compra"   => "$" . number_format($row['precio_compra'], 2),
+                "venta"    => "$" . number_format($row['precio_venta'], 2),
+                "cantidad" => $stock,
+                "imagen"   => $row['imagen'] ? $imgTag : "N/A",
+                "acciones" => $btn
             ];
         }
 
@@ -187,7 +194,7 @@ class ProductController
     {
         /** Producto a buscar */
         $text = $this->model::sanitizeInput('search', 'text');
-        
+
         /** Buscamos coincidencias */
         $products = $this->model->searchProduct($text);
 
