@@ -76,7 +76,7 @@ body {
 
 .input-group-text {
   position: absolute;
-	padding: .375rem .75rem;
+	padding: .100rem .75rem;
 	font-size: 1rem;
 	font-weight: 400;
 	color: #212529;
@@ -88,25 +88,6 @@ input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
   -webkit-text-fill-color: #000 !important;
   transition: background-color 5000s ease-in-out 0s;
-}
-
-
-@keyframes animate-container-left {
-  from {
-    top: -200%;
-  }
-  to {
-    top: 0;
-  }
-}
-
-@keyframes animate-form {
-  from {
-    bottom: -200%;
-  }
-  to {
-    bottom: 0;
-  }
 }
 
 .container-left p {
@@ -216,24 +197,6 @@ form {
   .container-left h2 {
     font-size: 40px;
     margin-bottom: 20px;
-  }
-
-  @keyframes animate-container-left {
-    from {
-      left: -200%;
-    }
-    to {
-      left: 0;
-    }
-  }
-
-  @keyframes animate-form {
-    from {
-      right: -200%;
-    }
-    to {
-      right: 0;
-    }
   }
 }
 
