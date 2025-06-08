@@ -304,6 +304,9 @@ class Connection
 
         switch ($type) {
             case 'text':
+                if ($value === '')
+                    return null;
+
                 return preg_replace('/[^a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]/', '', $value);
             case 'name':
                 return ucwords(strtolower(preg_replace('/[^a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]/', '', $value)));
@@ -325,6 +328,21 @@ class Connection
                     return 0.00;
 
                 return number_format((float)$value, 2, '.', '');
+            case 'image':
+                /** Elimina rutas o intentos de navegación de directorios */
+                $value = basename($value);
+
+                /** Solo permite letras, números, guiones, guiones bajos y puntos */
+                $value = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $value);
+
+                /** Opcional: validar extensión permitida */
+                $allowedExtensions = ["jpg", "jpeg", "png", "webp"];
+                $extension = strtolower(pathinfo($value, PATHINFO_EXTENSION));
+                if (!in_array($extension, $allowedExtensions))
+                    return null;
+
+                return $value;
+
         }
 
         return $value;

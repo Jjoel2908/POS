@@ -28,7 +28,6 @@ class ProductController
 
     public function save()
     {
-        echo json_encode($_POST);
         /** Valida campos requeridos */
         $validateData = ['nombre', 'codigo', 'id_marca', 'precio_compra', 'precio_venta'];
         if (!$this->model::validateData($validateData, $_POST)) {
@@ -41,14 +40,18 @@ class ProductController
         /** Información a registrar o actualizar */
         $data = [
             'nombre'        => $this->model::sanitizeInput('nombre', 'text'),
+            'modelo'        => $this->model::sanitizeInput('modelo', 'text'),
             'codigo'        => $code,
             'id_marca'      => $this->model::sanitizeInput('id_marca', 'int'),
+            'id_talla'      => $this->model::sanitizeInput('id_talla', 'int'),
+            'id_color'      => $this->model::sanitizeInput('id_color', 'int'),
             'precio_compra' => $this->model::sanitizeInput('precio_compra', 'float'),
             'precio_venta'  => $this->model::sanitizeInput('precio_venta', 'float')
         ];
 
-        /** Si el usuario adjunta una imagen al producto la guardamos y recuperamos su path  */
-        $data['imagen'] = $this->model->saveImage();
+        /** Si el usuario adjunta una imagen al producto la guardamos y recuperamos su path */
+        $oldImage = $this->model::sanitizeInput('current_image', 'image');
+        $data['imagen'] = $this->model->saveImage($oldImage);
 
         if (!$this->id) {
             /** Valida que no exista un registro similar al entrante */
@@ -137,7 +140,8 @@ class ProductController
         foreach ($productos as $row) {
 
             /** @var string $btn - Botones de acción (editar y eliminar). */
-            $btn  = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
+            $btn  = "<button type=\"button\" class=\"btn btn-inverse-warning mx-1\" onclick=\"duplicateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-copy m-0\"></i></button>";
+            $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
             $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Producto', '{$row['id']}', `{$row['nombre']}`)\"><i class=\"bx bx-trash m-0\"></i></button>";
 
             /** @var string $img - Nombre de la imagen (desde la base de datos). */

@@ -8,14 +8,14 @@ $(() => {
 
 /** Columnas que tendrá la tabla del módulo */
 const moduleColumns = [
-    { data: "nombre", title: "Nombre" },
-    { data: "marca", title: "Marca" },
-    { data: "codigo", title: "Código" },
-    { data: "compra", title: "P. Compra" },
-    { data: "venta", title: "P. Venta" },
-    { data: "cantidad", title: "Stock" },
-    { data: "imagen", title: "Imagen" },
-    { data: "acciones", title: "Acciones" },
+   { data: "nombre", title: "Nombre" },
+   { data: "marca", title: "Marca" },
+   { data: "codigo", title: "Código" },
+   { data: "compra", title: "P. Compra" },
+   { data: "venta", title: "P. Venta" },
+   { data: "cantidad", title: "Stock" },
+   { data: "imagen", title: "Imagen" },
+   { data: "acciones", title: "Acciones" },
 ];
 
 /** Abre el modal para registrar un nuevo producto.
@@ -35,4 +35,15 @@ const addProduct = () => {
 const updateProduct = async (module, idProduct) => {
    await updateRegister(module, idProduct);
    $('#codigo').prop('readonly', true);
+}
+
+/** Carga los datos de un producto existente en el formulario para su duplicación.
+ *
+ * @param {string} module - Nombre del módulo (por lo general 'Producto').
+ * @param {number} idProduct - ID del producto que se desea actualizar.
+ */
+const duplicateProduct = async (module, idProduct) => {
+   await updateRegister(module, idProduct);
+   $('#id').val("");
+   $('#codigo').val("").prop('readonly', false);
 }

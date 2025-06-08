@@ -85,9 +85,22 @@ const openModal = (title, isUpdate = false, idModal = "", data = null) => {
 
     if (data != null) {
         $.each(data, (key, value) => {
-            $(`select#${key}`).val(value).trigger('change');
-            $(`#${key}`).val(value);
+            const $el = $(`#${key}`);
+            
+            /** Evitamos intentar asignar valor a inputs tipo file */
+            if ($el.prop("type") === "file")
+                return;
+
+            if ($el.is("select")) {
+                $el.val(value).trigger("change");
+            } else {
+                $el.val(value);
+            }
         });
+
+        /** Si data trae imagen, guardamos la ruta en campo oculto */
+        if (data.imagen)
+            $('#current_image').val(data.imagen);
     }
 
     /** Muestra u oculta el modal */

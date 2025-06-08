@@ -22,7 +22,7 @@ class Dashboard extends Connection
       $this->resultCategories();
       $this->resultCashboxes();
       $this->resultUsers();
-      $this->resultStockMinimo();
+      // $this->resultStockMinimo();
       $this->resultPurchasesPerMonth();
       $this->resultSalesPerMonth();
       $this->resultSalesPerDay();
@@ -48,10 +48,10 @@ class Dashboard extends Connection
       $this->totalUsers = $query[0]['total'];
    }
 
-   private function resultStockMinimo() {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM productos WHERE stock <= stock_minimo");
-      $this->totalStockMinimo = $query[0]['total'];
-   }
+   // private function resultStockMinimo() {
+   //    $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM productos WHERE stock <= stock_minimo");
+   //    $this->totalStockMinimo = $query[0]['total'];
+   // }
 
    private function resultPurchasesPerMonth() {
       $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM compras WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())");
