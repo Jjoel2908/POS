@@ -12,7 +12,7 @@ $modalClass = "view-modal";
     <label class="mb-1" for="nombre">Nombre</label>
     <div class="position-relative input-icon">
         <input class="form-control" type="hidden" name="id" id="id">
-        <input class="form-control" type="text" name="nombre" id="nombre" maxlength="100" placeholder="Ingrese el nombre del producto" oninput="validateString(event)" required>
+        <input class="form-control" type="text" name="nombre" id="nombre" maxlength="100" placeholder="Ingrese el nombre del producto" oninput="validateAndConvertToUppercase(event)" required>
         <span class="position-absolute top-50 translate-middle-y"><i class="fa-solid fa-chevron-right"></i></span>
     </div>
 </div>

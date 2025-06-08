@@ -140,9 +140,12 @@ class ProductController
         foreach ($productos as $row) {
 
             /** @var string $btn - Botones de acción (editar y eliminar). */
-            $btn  = "<button type=\"button\" class=\"btn btn-inverse-warning mx-1\" onclick=\"duplicateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-copy m-0\"></i></button>";
-            $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
-            $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Producto', '{$row['id']}', `{$row['nombre']}`)\"><i class=\"bx bx-trash m-0\"></i></button>";
+            $btn  = "<br>";
+            $btn .= "<button type=\"button\" class=\"btn btn-inverse-warning my-1 w-75\" onclick=\"duplicateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-copy m-0\"></i> Duplicar</button>";
+            $btn .= "<br>";
+            $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary my-1 w-75\" onclick=\"updateProduct('Producto', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i> Actualizar</button>";
+            $btn .= "<br>";
+            $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger my-1 w-75\" onclick=\"deleteRegister('Producto', '{$row['id']}', `{$row['nombre']}`)\"><i class=\"bx bx-trash m-0\"></i> Eliminar</button>";
 
             /** @var string $img - Nombre de la imagen (desde la base de datos). */
             $img = $row['imagen'] ?? 'default.png';
@@ -151,21 +154,33 @@ class ProductController
             $imgUrl = "../media/products/$img";
 
             /** @var string $imgTag - Etiqueta HTML <img> para mostrar la imagen. */
-            $imgTag = "<img src='$imgUrl' alt='img' width='90' height='90'>";
+            $imgTag = "<img src='$imgUrl' alt='img' width='240' height='240'>";
 
             /** Cantidad de producto */
             $stock = $row['stock'] . ' ' . ($row['stock'] == 1 ? 'ud.' : 'uds.');
+            $color = $row['id_color'] ? $this->model::$COLORES[$row['id_color']] : "-";
+            $talla = $row['id_talla'] ? $this->model::$TALLAS[$row['id_talla']] : "-";
+
+            /** Detalles del producto */
+            $descripcion = "
+                <div class='p-2'>
+                    <div class='fw-bold fs-6 mb-2 text-primary'>{$row['nombre']}</div>
+                    <div class='mb-1 font-15'><strong>Marca:</strong> {$row['marca']}</div>
+                    <div class='mb-1 font-15'><strong>Código:</strong> {$row['codigo']}</div>
+                    <div class='mb-1 font-15'><strong>Color:</strong> {$color}</div>
+                    <div class='mb-1 font-15'><strong>Talla:</strong> {$talla}</div>
+                    <div class='mb-1 font-15'><strong>Modelo:</strong> " . ($row['modelo'] ?? "-") . "</div>
+                    <div class='mb-1 font-15'><strong>Precio Compra:</strong> $" . number_format($row['precio_compra'], 2) . "</div>
+                    <div class='mb-1 font-15'><strong>Precio Venta:</strong> $" . number_format($row['precio_venta'], 2) . "</div>
+                    <div class='mb-1 font-15'><strong>Stock:</strong> {$stock}</div>
+                </div>
+            ";
 
             /** Agregamos la fila al array de datos */
             $data[] = [
-                "nombre"   => $row['nombre'],
-                "marca"    => $row['marca'],
-                "codigo"   => $row['codigo'],
-                "compra"   => "$" . number_format($row['precio_compra'], 2),
-                "venta"    => "$" . number_format($row['precio_venta'], 2),
-                "cantidad" => $stock,
-                "imagen"   => $row['imagen'] ? $imgTag : "N/A",
-                "acciones" => $btn
+                "imagen"      => $row['imagen'] ? $imgTag : "-",
+                "descripcion" => $descripcion,
+                "acciones"    => $btn
             ];
         }
 

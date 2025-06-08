@@ -7,15 +7,25 @@ $(() => {
 });
 
 /** Columnas que tendrá la tabla del módulo */
-const moduleColumns = [
-   { data: "nombre", title: "Nombre" },
-   { data: "marca", title: "Marca" },
-   { data: "codigo", title: "Código" },
-   { data: "compra", title: "P. Compra" },
-   { data: "venta", title: "P. Venta" },
-   { data: "cantidad", title: "Stock" },
-   { data: "imagen", title: "Imagen" },
-   { data: "acciones", title: "Acciones" },
+const MODULE_COLUMNS = [
+   { 
+      data: "imagen", 
+      title: "Producto", 
+      width: "320px", 
+      orderable: false, 
+      searchable: false 
+   },
+   { 
+      data: "descripcion", 
+      title: "Detalles",
+      orderable: false, 
+   },
+   { 
+      data: "acciones", 
+      title: "Acciones", 
+      orderable: false, 
+      searchable: false 
+   },
 ];
 
 /** Abre el modal para registrar un nuevo producto.
