@@ -35,7 +35,7 @@ const showTable = (idTable, content) => {
  */
 const initTable = () => {
   return {
-    dom: '<"top"Bf>rt<"bottom"ip>',
+    dom: '<"top"fB>rt<"bottom"ip>',
     processing: true,
     destroy: true,
     responsive: true,
@@ -346,6 +346,9 @@ const initTable = () => {
         text: '<i class="fa-solid fa-eye"></i>',
       },
     ],
+    headerCallback: function (thead, data, start, end, display) {
+      $(thead).find("th").addClass("text-center");
+    },
   };
 };
 

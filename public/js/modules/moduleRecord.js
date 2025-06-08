@@ -234,6 +234,7 @@ const loadDataTable = async (tableId, module, registerId = null) => {
 
         let content = initTable();
         content.columns = columns;
+        content.buttons = [];
         content.data = data;
 
         /** Aplica alineaciones dinámicas a las filas */
@@ -285,7 +286,8 @@ const loadDataTableServerSide = (tableId, module, registerId = null) => {
         }
     };
     
-    content.columns   = MODULE_COLUMNS;
+    content.buttons = [];
+    content.columns = MODULE_COLUMNS;
 
     /** Aplica alineaciones dinámicas a las filas */
     content.createdRow = (row, rowData) => {

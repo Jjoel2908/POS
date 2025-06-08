@@ -147,10 +147,21 @@ td.text-start.dtr-control {
 /* [ ------------------------------------- ] */
 /* [ --------- D A T A T A B L E --------- ] */
 /* [ ------------------------------------- ] */
+tbody > tr > td {
+    background-color: #fff !important;
+    vertical-align: middle;
+    text-align: start !important;
+}
+
 .top {
   display: flex;
   justify-content: space-between;
   margin: 28px 0 14px 0;
+}
+
+/** B U S C A D O R */
+div.dataTables_wrapper div.dataTables_filter label {
+  font-size: 16px;
 }
 
 button.btn.btn-secondary.buttons-excel.buttons-html5,
@@ -290,5 +301,9 @@ label {
 @media (min-width: 992px) {
   .view-modal {
     max-width: 600px;
+  }
+
+  div.dataTables_wrapper div.dataTables_filter input {
+    width: 248px;
   }
 }
