@@ -75,7 +75,6 @@ body {
 /* [ ------------------------------------- ] */
 .view-title {
   font-size: 22px;
-  color: var(--main);
   font-weight: normal !important;
   margin-bottom: 22px;
 }

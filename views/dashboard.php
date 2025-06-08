@@ -22,23 +22,23 @@ else {
 ?>
 
    <!-- # [ M O D U L E  |  D A S H B O A R D ] # -->
-   <div class="row justify-content-center w-100">
-      <div class="col-sm-12 col-lg-12 mb-3">
-         <h3 class="mt-4 mb-3 text-center"><span class="text-success">Bienvenido</span>, <?php echo $_SESSION['user_name'] ?>.</h3>
+   <div class="row justify-content-center mx-auto w-100">
+      <div class="col-sm-12 mb-3">
+         <h3 class="mt-1 mb-2 text-center"><span class="text-success">Bienvenido</span>, <?php echo $_SESSION['user_name'] ?>.</h3>
       </div>
       <div class="col-sm-12 col-lg-12">
          <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
 
             <!-- # [ P R O D U C T S ] # -->
             <?php if (in_array(4, $_SESSION['permisos'])) { ?>
-               <div class="col">
-                  <div class="card radius-10 border-bottom border-0 border-5 border-primary">
+               <div class="col pe-0">
+                  <div class="card radius-10 border-start border-0 border-5 border-primary">
                      <div class="card-body">
                         <div class="d-flex align-items-center">
                            <div>
-                              <p class="mb-0 text-secondary">Productos</p>
-                              <h4 class="my-1 text-primary"><?php echo $products ?></h4>
-                              <a href="product.php" class="mb-0 font-13">Detalles</a>
+                              <p class="mb-0 text-secondary font-16">Productos</p>
+                              <h3 class="my-1 text-primary"><?php echo $products ?></h3>
+                              <a href="product.php" class="mb-0 font-12">Detalles</a>
                            </div>
                            <div class="widgets-icons-3 rounded-circle bg-gradient-blues text-white ms-auto"><i class="fa-brands fa-slack"></i>
                            </div>
@@ -50,14 +50,14 @@ else {
 
             <!-- # [  B R A N D S  ] # -->
             <?php if (in_array(3, $_SESSION['permisos'])) { ?>
-               <div class="col">
-                  <div class="card radius-10 border-bottom border-0 border-5 border-primary">
+               <div class="col pe-0">
+                  <div class="card radius-10 border-start border-0 border-5 border-primary">
                      <div class="card-body">
                         <div class="d-flex align-items-center">
                            <div>
-                              <p class="mb-0 text-secondary">Marcas</p>
-                              <h4 class="my-1 text-primary"><?php echo $brands ?></h4>
-                              <a href="brand.php" class="mb-0 font-13">Detalles</a>
+                              <p class="mb-0 text-secondary font-16">Marcas</p>
+                              <h3 class="my-1 text-primary"><?php echo $brands ?></h3>
+                              <a href="brand.php" class="mb-0 font-12">Detalles</a>
                            </div>
                            <div class="widgets-icons-3 rounded-circle bg-gradient-blues text-white ms-auto"><i class="fa-solid fa-layer-group"></i>
                            </div>

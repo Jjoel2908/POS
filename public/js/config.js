@@ -38,6 +38,7 @@ const initTable = () => {
     dom: '<"top"Bf>rt<"bottom"ip>',
     processing: true,
     destroy: true,
+    responsive: true,
     autoWidth: true,
     lengthChange: true,
     pageLength: 10,
@@ -345,9 +346,6 @@ const initTable = () => {
         text: '<i class="fa-solid fa-eye"></i>',
       },
     ],
-    headerCallback: function (thead, data, start, end, display) {
-      $(thead).find("th").addClass("text-center");
-    },
   };
 };
 

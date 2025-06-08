@@ -4,7 +4,7 @@ const currentModule = $(".card").data("module");
 let modalId;
 
 const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total", "compra", "venta"];
-const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estado", "codigo", "cantidad", "imagen", "acciones"];
+const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Monto Inicial", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
 
 $(() => {
     loadModuleTable(currentModule);
@@ -263,7 +263,6 @@ const loadDataTable = async (tableId, module, registerId = null) => {
  * @param {int|null} registerId - ID opcional si se requiere buscar un registro específico.
  */
 const loadDataTableServerSide = (tableId, module, registerId = null) => {
-
     /** Visulización de tablas */
     $("#table-empty").addClass("d-none");
     $("#table-data").removeClass("d-none");
@@ -285,8 +284,8 @@ const loadDataTableServerSide = (tableId, module, registerId = null) => {
             return d;
         }
     };
-
-    content.columns = moduleColumns;
+    
+    content.columns   = MODULE_COLUMNS;
 
     /** Aplica alineaciones dinámicas a las filas */
     content.createdRow = (row, rowData) => {

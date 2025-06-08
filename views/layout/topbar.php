@@ -10,7 +10,7 @@
                 <a class="d-flex align-items-center nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="../../public/images/beauty.jpg" class="user-img" alt="Imagen de Usuario">
                     <div class="user-info">
-                        <p class="user-name mb-0 text-black ps-3"><?php echo $_SESSION['user_name'] ?></p>
+                        <p class="user-name mb-0 text-secondary ps-3"><?php echo $_SESSION['user_name'] ?></p>
                         <p class="designattion text-secondary mb-0 ps-3"> En línea</p>
                     </div>
                 </a>

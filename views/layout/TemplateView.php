@@ -82,7 +82,7 @@ class TemplateView
                 <!-- # [ T I T L E ] # -->
                 <div class="row">
                     <div class="col-sm-12">
-                        <h5 class="view-title">
+                        <h5 class="view-title text-secondary">
                             <i class="<?= $this->icon ?> me-1"></i>
                             <?= $this->title ?>
                         </h5>
@@ -123,7 +123,7 @@ class TemplateView
                         </tbody>
                     </table>
                 </div>
-
+                    
                 <div id="table-data" class="row d-none">
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered view-table" id="<?= $this->tableId ?>"></table>
