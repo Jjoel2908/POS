@@ -565,6 +565,17 @@ button.btn.btn-secondary.buttons-pdf.buttons-html5:hover {
   border-radius: 10px;
 }
 
+.widgets-icons-3 {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ededed;
+  font-size: 32px;
+  border-radius: 10px;
+}
+
 #geographic-map {
   width: 100%;
   height: 440px;

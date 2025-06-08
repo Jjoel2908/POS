@@ -5,6 +5,7 @@ class Dashboard extends Connection
 {
 
    private $totalProducts;
+   private $totalBrands;
    private $totalCategories;
    private $totalCashboxes;
    private $totalUsers;
@@ -13,12 +14,15 @@ class Dashboard extends Connection
    private $totalSalesPerMonth;
    private $totalSalesPerDay;
 
-   public function __construct() {
+   public function __construct()
+   {
       $this->fetchData();
    }
 
-   private function fetchData() {
+   private function fetchData()
+   {
       $this->resultProducts();
+      $this->resultBrands();
       $this->resultCategories();
       $this->resultCashboxes();
       $this->resultUsers();
@@ -28,22 +32,33 @@ class Dashboard extends Connection
       $this->resultSalesPerDay();
    }
 
-   private function resultProducts() {
+   /** Recuperamos la cantidad de marcas registradas en el sistema */
+   private function resultBrands()
+   {
+      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM marcas WHERE estado = 1");
+      $this->totalBrands = $query[0]['total'];
+   }
+
+   private function resultProducts()
+   {
       $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM productos WHERE estado = 1");
       $this->totalProducts = $query[0]['total'];
    }
 
-   private function resultCategories() {
+   private function resultCategories()
+   {
       $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM categorias WHERE estado = 1");
       $this->totalCategories = $query[0]['total'];
    }
 
-   private function resultCashboxes() {
+   private function resultCashboxes()
+   {
       $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM cajas WHERE estado = 1");
       $this->totalCashboxes = $query[0]['total'];
    }
 
-   private function resultUsers() {
+   private function resultUsers()
+   {
       $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1");
       $this->totalUsers = $query[0]['total'];
    }
@@ -53,27 +68,32 @@ class Dashboard extends Connection
    //    $this->totalStockMinimo = $query[0]['total'];
    // }
 
-   private function resultPurchasesPerMonth() {
+   private function resultPurchasesPerMonth()
+   {
       $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM compras WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())");
       $this->totalPurchasesPerMonth = $query[0]['total'];
    }
 
-   private function resultSalesPerMonth() {
+   private function resultSalesPerMonth()
+   {
       $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())");
       $this->totalSalesPerMonth = $query[0]['total'];
    }
 
-   private function resultSalesPerDay() {
+   private function resultSalesPerDay()
+   {
       $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM ventas WHERE DAY(fecha) = DAY(CURRENT_DATE())  ");
       $this->totalSalesPerDay = $query[0]['total'];
    }
 
-   public function getProductStockMinimo(): array {
+   public function getProductStockMinimo(): array
+   {
       $query = $this->queryMySQL("SELECT * FROM productos WHERE stock <= stock_minimo");
       return $query;
    }
 
-   public function getProductBestSelling(): array {
+   public function getProductBestSelling(): array
+   {
       $query = $this->queryMySQL("SELECT dv.*, p.nombre AS nombre_producto, SUM(cantidad) AS total_selling FROM detalle_venta dv INNER JOIN productos p ON dv.id_producto = p.id GROUP BY nombre_producto ORDER BY total_selling DESC LIMIT 3");
       return $query;
    }
@@ -97,9 +117,9 @@ class Dashboard extends Connection
 
       foreach ($permissions as $permission) {
 
-         if ( !in_array($permission['id'], $_SESSION['permisos']) ) continue;
+         if (!in_array($permission['id'], $_SESSION['permisos'])) continue;
 
-         if ( $permission['icono'] != 'submodulo' ) {
+         if ($permission['icono'] != 'submodulo') {
             $modules .= '<li>
                            <a href="' . $permission['archivo'] . '">
                               <div class="parent-icon"><i class="' . $permission['icono'] . '"></i>
@@ -112,7 +132,7 @@ class Dashboard extends Connection
          }
       }
 
-      if ( count(array_intersect([11, 12, 13], $_SESSION['permisos'])) > 0 ) {
+      if (count(array_intersect([11, 12, 13], $_SESSION['permisos'])) > 0) {
          $modules .= '<li>
                         <a class="has-arrow" href="javascript:;">
                            <div class="parent-icon"><i class="fa-solid fa-chart-column me-1"></i>
@@ -128,36 +148,48 @@ class Dashboard extends Connection
       return $modules;
    }
 
-   public function getTotalProducts() {
+   public function getTotalBrands()
+   {
+      return $this->totalBrands;
+   }
+
+   public function getTotalProducts()
+   {
       return $this->totalProducts;
    }
 
-   public function getTotalCategories() {
+   public function getTotalCategories()
+   {
       return $this->totalCategories;
    }
 
-   public function getTotalCashboxes() {
+   public function getTotalCashboxes()
+   {
       return $this->totalCashboxes;
    }
 
-   public function getTotalUsers() {
+   public function getTotalUsers()
+   {
       return $this->totalUsers;
    }
 
-   public function getTotalStockMinimo() {
+   public function getTotalStockMinimo()
+   {
       return $this->totalStockMinimo;
    }
 
-   public function getTotalPurchasesPerMonth() {
+   public function getTotalPurchasesPerMonth()
+   {
       return $this->totalPurchasesPerMonth;
    }
 
-   public function getTotalSalesPerMonth() {
+   public function getTotalSalesPerMonth()
+   {
       return $this->totalSalesPerMonth;
    }
 
-   public function getTotalSalesPerDay() {
+   public function getTotalSalesPerDay()
+   {
       return $this->totalSalesPerDay;
    }
-
 }

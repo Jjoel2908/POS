@@ -44,6 +44,7 @@ const updateProduct = async (module, idProduct) => {
  */
 const duplicateProduct = async (module, idProduct) => {
    await updateRegister(module, idProduct);
-   $('#id').val("");
-   $('#codigo').val("").prop('readonly', false);
+   $('#modalTitle').html('Nueva Variante');
+   $('#id').val('');
+   $('#codigo').val('').prop('readonly', false);
 }
