@@ -1,5 +1,5 @@
 <?php
-require '../config/Connection.php';
+require_once '../config/Connection.php';
 
 class Test extends Connection
 {

@@ -1,5 +1,5 @@
 <?php
-require '../config/Connection.php';
+require_once '../config/Connection.php';
 date_default_timezone_set('America/Mexico_City');
 class Dashboard extends Connection
 {

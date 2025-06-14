@@ -1,20 +1,20 @@
 <?php
 session_start();
 
-  /** Zona horaria */
+/** Zona horaria */
 date_default_timezone_set('America/Mexico_City');
 
-  /** Obtenemos el módulo y la operación a realizar */
+/** Obtenemos el módulo y la operación a realizar */
 $module     = $_POST['module'] ?? null;
 $operation  = $_POST['operation'] ?? null;
 $id         = $_POST['id'] ?? null;
 $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
 
-  /** Verificamos que se haya enviado el módulo */
-if ($module === null)
+/** Verificamos que se haya enviado el módulo */
+if ($module === null || $operation === null)
     exit;
 
-  /** Mapeo de módulos con sus controladores */
+/** Mapeo de módulos con sus controladores */
 $controllers = [
     'Login'         => 'LoginController.php',
     'Categoría'     => 'CategoryController.php',
@@ -35,6 +35,12 @@ $controllers = [
 /** Verificamos si el módulo existe en la lista */
 if (!isset($controllers[$module]))
     exit;
+
+/** Eventos realizados por el usuario */
+require_once 'ActionController.php';
+$Action = new ActionController();
+if ($operation == "save" || $operation == "update" || $operation == "delete")
+    $Action->save();
 
 /** Cargamos el controlador correspondiente */
 require_once $controllers[$module];

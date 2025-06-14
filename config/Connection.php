@@ -54,7 +54,7 @@ class Connection
 
         /** Agregamos el usuario */
         if ($table != "usuarios")
-            $data['creado_por'] = filter_var($_SESSION['id'], FILTER_VALIDATE_INT) ?: 0;
+            $data['creado_por'] = filter_var($_SESSION['id'] ?? 1, FILTER_VALIDATE_INT) ?: 0;
 
         /** Escapar correctamente nombres de tabla y columna */
         $table = "`" . str_replace("`", "``", $table) . "`";

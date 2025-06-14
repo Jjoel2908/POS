@@ -169,7 +169,7 @@ class Product extends Connection
    /** Buscamos un producto por su nombre o código */
    public function searchProduct(string $text): array
    {
-      return $this::queryMySQL("SELECT id, codigo, nombre, stock FROM productos WHERE codigo LIKE '%$text%' OR nombre LIKE '%$text%'");
+      return $this::queryMySQL("SELECT id, codigo, nombre, stock, imagen FROM productos WHERE codigo LIKE '%$text%' OR nombre LIKE '%$text%'");
    }
 
    /** Función que guarda la imagen de un producto */
