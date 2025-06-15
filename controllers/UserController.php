@@ -80,7 +80,6 @@ class UserController
                     ? ['success' => true, 'message' => $this->messages['save_success']]
                     : ['success' => false, 'message' => $this->messages['save_failed']]
             );
-            
         } else {
             $save = $this->model::update($this->table, $this->id, $data);
             echo json_encode(
@@ -120,16 +119,18 @@ class UserController
 
         if (count($response) > 0) {
             foreach ($response as $row) {
-
-                if ($row['id'] == $this->idUser) continue;
-
                 list($day, $hour) = explode(" ", $row['fecha']);
                 $date = date("d/m/Y", strtotime($day));
 
+                if ($row['id'] == 1) continue;
+
                 $btn  = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateUser('Usuario', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-secondary mx-1\" onclick=\"updatePermissions('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-list-ol m-0\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-success mx-1\" onclick=\"updatePassword('{$row['id']}')\"><i class=\"bx bx-key m-0\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Usuario', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+                
+                if ($row['id'] != $this->idUser) {
+                    $btn .= "<button type=\"button\" class=\"btn btn-inverse-secondary mx-1\" onclick=\"updatePermissions('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-list-ol m-0\"></i></button>";
+                    $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Usuario', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
+                }
 
                 $data[] = [
                     "Usuario"            => $row['user'],
@@ -146,21 +147,19 @@ class UserController
     public function updatePassword()
     {
         /** Valida campos requeridos */
-        if (!$this->model::validateData(['idPassword', 'new_password', 'new_password_confirm'], $_POST)) {
+        if (!$this->model::validateData(['idPassword', 'new_password'], $_POST)) {
             echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
         }
 
-        $idUser          = $this->model::sanitizeInput('idPassword', 'int');
-        $newPassword     = $this->model::sanitizeInput('new_password', 'password');
-        $confirmPassword = $this->model::sanitizeInput('new_password_confirm', 'password');
+        /** Limpiamos la información */
+        $idUser         = $this->model::sanitizeInput('idPassword', 'int');
+        $newPassword    = $this->model::sanitizeInput('new_password', 'password');
 
-        if ($newPassword != $confirmPassword) {
-            echo json_encode(['success' => false, 'message' => $this->messages['password_failed']]);
-            return;
-        }
-
+        /** Hasheo de contraseña */
         $password       = $this->model->hashPassword($newPassword);
+
+        /** Actualización de contraseña */
         $updatePassword = $this->model::update($this->table, $idUser, ["password" => $password]);
         echo json_encode(
             $updatePassword
@@ -188,13 +187,13 @@ class UserController
         /** Permisos del usuario */
         $userPermissions = explode(",", $recoverRegister['permisos']);
 
-        foreach($permissions as $permission) {
+        foreach ($permissions as $permission) {
 
             $checked = in_array($permission['id'], $userPermissions) ? 'checked' : '';
-            
-            $html .= '<li class="list-group-item d-flex bg-transparent align-items-center border-0">
+
+            $html .= '<li class="list-group-item d-flex bg-transparent align-items-center border-0 pb-0">
                         <div class="form-check form-switch form-check-success">
-                            <input  class="form-check-input me-2" type="checkbox" role="switch" name="permisos[]" id="'. $permission['id'] . '" value="'. $permission['id'] . '" '. $checked . '>
+                            <input  class="form-check-input me-2" type="checkbox" role="switch" name="permisos[]" id="' . $permission['id'] . '" value="' . $permission['id'] . '" ' . $checked . '>
                             <label class="form-check-label" for="flexSwitchCheckSuccess">' . $permission['nombre'] . '</label>
                         </div>
                     </li>';
@@ -215,7 +214,7 @@ class UserController
         $userId         = $this->model::sanitizeInput('idPermissions', 'int');
         $permisos       = $_POST['permisos'];
         $newPermissions = (!empty($permisos) && is_array($permisos)) ? implode(',', $permisos) : $permisos;
-   
+
         /** Actualizamos los permisos del usuario */
         $updatePermissions = $this->model->updateUserPermissions($userId, $newPermissions);
         echo json_encode(

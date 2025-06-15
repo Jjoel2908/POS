@@ -1,5 +1,5 @@
 <!-- # [ U P D A T E   P A S S W O R D ] # -->
-<div class="modal fade" id="modalUpdatePassword" tabindex="-1" role="dialog">
+<div class="modal fade" id="modalUpdatePassword" data-bs-backdrop="static" tabindex="-1" role="dialog">
    <div class="modal-dialog" role="document">
       <div class="modal-content">
 
@@ -14,38 +14,17 @@
             <div class="modal-body">
                <div class="row px-2 gap-3">
 
-                  <!-- Mensaje de requisitos -->
-                  <div class="col-md-12">
-                     <div class="alert alert-warning fs-14">
-                        La nueva contraseña debe cumplir con los siguientes requisitos:<br>
-                        - Al menos <strong>6 caracteres</strong>.<br>
-                        - Incluir <strong>mayúsculas y minúsculas</strong>.<br>
-                        - Al menos <strong>un número</strong>.<br>
-                        - Al menos <strong>un carácter especial</strong> permitido:<br>
-                        <p class="mb-0 mt-1 fw-bold">@ # $ % & * ! . - _</p>
-                     </div>
-                  </div>
-
                   <input class="form-control" type="hidden" name="idPassword" id="idPassword">
 
-                  <div class="col-md-12">
-                     <label class="mb-1" for="password">Contraseña Nueva</label>
+                  <div class="col-md-12 view-form">
+                     <label class="mb-1" for="new_password">Contraseña</label>
                      <div class="input-group" id="show_hide_password_new">
-                        <input type="password" id="new_password" name="new_password" class="form-control" placeholder="Ingrese la contraseña nueva" minlength="6" required>
+                        <input type="password" id="new_password" name="new_password" class="form-control" placeholder="Ingrese la nueva contraseña" minlength="6" required>
                         <a href="javascript:;" class="input-group-text">
                            <i class="fa-solid fa-eye"></i>
                         </a>
                      </div>
-                  </div>
-
-                  <div class="col-md-12">
-                     <label class="mb-1" for="password">Confirmar Contraseña</label>
-                     <div class="input-group" id="show_hide_password_confirm">
-                        <input type="password" id="new_password_confirm" name="new_password_confirm" class="form-control" placeholder="Confirme la contraseña nueva" minlength="6" required>
-                        <a href="javascript:;" class="input-group-text">
-                           <i class="fa-solid fa-eye"></i>
-                        </a>
-                     </div>
+                     <p class="mb-0 pt-3 text-center font-14">Para la contraseña utiliza al menos 6 caracteres, con una mayúscula, una minúscula, un número y un símbolo (@ # $ % & * !).</p>
                   </div>
                </div>
             </div>

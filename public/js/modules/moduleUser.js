@@ -15,14 +15,6 @@ $(() => {
             $("#show_hide_password_new input").attr("type", "text");
     });
 
-    $("#show_hide_password_confirm a").on("click", function (event) {
-        event.preventDefault();
-        if ($("#show_hide_password_confirm input").attr("type") == "text")
-            $("#show_hide_password_confirm input").attr("type", "password");
-        else if ($("#show_hide_password_confirm input").attr("type") == "password")
-            $("#show_hide_password_confirm input").attr("type", "text");
-    });
-
     $("form#formUpdatePassword").submit(async function (event) {
         event.preventDefault();
 
@@ -124,9 +116,6 @@ const updatePermissions = async (idUser, nameUser) => {
         
         /** Limpiamos el formulario */
         clearForm("#modalUserPermissions");
-
-        /** Asignamos el nombre del usuario */
-        $('#nameUser').html(nameUser);
 
         /** Asignamos el identificador del usuario */
         $('#idPermissions').val(idUser);
