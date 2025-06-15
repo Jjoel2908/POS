@@ -2,12 +2,12 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 9,
-   'module'        => 'Cliente',
-   'title'        => 'Clientes',
-   'icon'         => 'fa-solid fa-users-line',
-   'addAction'    => "openModal('Cliente')",
-   'modals'       => [
+   'permission' => 10,
+   'module'     => 'Cliente',
+   'title'      => 'Clientes',
+   'icon'       => 'fa-solid fa-users-line',
+   'addAction'  => "openModal('Cliente')",
+   'modals'     => [
       'modal/modalCustomer.php',
    ],
 ];
