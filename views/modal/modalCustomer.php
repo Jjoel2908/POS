@@ -2,7 +2,6 @@
 <?php
 $formId = "formCustomer";
 $module = "Cliente";
-$modalClass = "view-modal";
 ?>      
 
 <?php require 'modalHeader.php'; ?>
@@ -25,7 +24,7 @@ $modalClass = "view-modal";
     </div>
 </div>
 
-<div class="col-md-6 view-form">
+<div class="col-md-12 view-form">
     <label class="mb-1" for="telefono">Teléfono</label>
     <div class="position-relative input-icon">
         <input class="form-control" type="number" name="telefono" id="telefono" placeholder="Número de teléfono" oninput="validatePhoneNumber(event)" required>
@@ -33,7 +32,7 @@ $modalClass = "view-modal";
     </div>
 </div>
 
-<div class="col-md-6 view-form">
+<div class="col-md-12 view-form">
     <label class="mb-1" for="correo">Correo</label>
     <div class="position-relative input-icon">
         <input class="form-control" type="email" name="correo" id="correo" placeholder="Correo electrónico">

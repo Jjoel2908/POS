@@ -102,7 +102,7 @@ class CustomerController
                 $data[] = [
                     "Nombre"        => $customerName,
                     "Teléfono"      => $row['telefono'],
-                    "Correo"        => $row['correo'] ?? "PENDIENTE",
+                    "Correo"        => $row['correo'] ?? "",
                     "Fecha de Alta" => $date,
                     "Acciones"      => $btn
                 ];
