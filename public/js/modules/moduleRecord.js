@@ -1,6 +1,5 @@
 const urlController = "../../../controllers/";
-const module = $(".card").data("module"); 
-const currentModule = $(".card").data("module"); 
+const currentModule = $(".card").data("module");
 let modalId;
 
 const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total", "compra", "venta"];
@@ -48,12 +47,11 @@ $(() => {
  */
 const loadModuleTable = (currentModule, tableSelector = "#module-table") => {
     if (currentModule === "Producto") {
-        loadDataTableServerSide(tableSelector, module);
+        loadDataTableServerSide(tableSelector, currentModule);
     } else {
-        loadDataTable(tableSelector, module);
+        loadDataTable(tableSelector, currentModule);
     }
 };
-
 
 /** Abre un modal para crear o actualizar un registro.
  * @param {string} [modal=""] - ID del modal a abrir. Por defecto 'modalRegister'.
@@ -194,14 +192,14 @@ const showAlert = (success, message) => {
  * Obtiene los datos desde el servidor usando `fetch` y renderiza las columnas automáticamente.
  *
  * @param {string} tableId - Selector de la tabla donde se mostrarán los datos.
- * @param {string} module - Nombre del módulo para la solicitud al controlador.
+ * @param {string} currentModule - Nombre del módulo para la solicitud al controlador.
  * @param {int} registerId - Identificador si se desea buscar registros de algo en particular.
  */
-const loadDataTable = async (tableId, module, registerId = null) => {
+const loadDataTable = async (tableId, currentModule, registerId = null) => {
     try {
         /** Creamos un objeto FormData para enviar la solicitud */
         let formData = new FormData();
-        formData.append("module", module);
+        formData.append("module", currentModule);
         formData.append("operation", "dataTable");
         formData.append("registerId", registerId);
 
@@ -260,10 +258,10 @@ const loadDataTable = async (tableId, module, registerId = null) => {
  * Es una función genérica reutilizable para cualquier módulo, renderizando columnas de forma dinámica.
  *
  * @param {string} tableId - Selector de la tabla donde se mostrarán los datos (ej: "#tabla").
- * @param {string} module - Nombre del módulo (se envía al controlador como identificador).
+ * @param {string} currentModule - Nombre del módulo (se envía al controlador como identificador).
  * @param {int|null} registerId - ID opcional si se requiere buscar un registro específico.
  */
-const loadDataTableServerSide = (tableId, module, registerId = null) => {
+const loadDataTableServerSide = (tableId, currentModule, registerId = null) => {
     /** Visulización de tablas */
     $("#table-empty").addClass("d-none");
     $("#table-data").removeClass("d-none");
@@ -279,7 +277,7 @@ const loadDataTableServerSide = (tableId, module, registerId = null) => {
         url: urlController,
         type: "POST",
         data: function(d) {
-            d.module     = module;
+            d.module     = currentModule;
             d.operation  = "dataTable";
             d.registerId = registerId;
             return d;
@@ -310,16 +308,16 @@ const loadDataTableServerSide = (tableId, module, registerId = null) => {
  * Muestra una alerta de confirmación antes de ejecutar la acción y, si el usuario confirma,
  * llama a la función submitForm para procesar la transacción.
  *
- * @param {string} module - Nombre del módulo para la generación de la transacción.
+ * @param {string} currentModule - Nombre del módulo para la generación de la transacción.
  */
-const saveTransaction = async (module) => {
+const saveTransaction = async (currentModule) => {
     try {
         Swal.fire({
-            title: 'Generar ' + module,
-            text: "¿Estás seguro de generar la siguiente " + module.toLowerCase() + "?",
+            title: 'Generar ' + currentModule,
+            text: "¿Estás seguro de generar la siguiente " + currentModule.toLowerCase() + "?",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: '<i class="fa-solid fa-cash-register me-1"></i> Sí, Generar ' + module,
+            confirmButtonText: '<i class="fa-solid fa-cash-register me-1"></i> Sí, Generar ' + currentModule,
             cancelButtonText: TextCancel,
         }).then(async (result) => {
             if (result.isConfirmed) {
@@ -333,7 +331,7 @@ const saveTransaction = async (module) => {
                 formData.append("customer", cliente ?? 0);
 
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
-                await submitForm(formData, "save", module, (data) => {
+                await submitForm(formData, "save", currentModule, (data) => {
                     loadDataTable("#module-table", data);
                     $('form #cantidad').prop('disabled', true);
                     $("#modalRegister").modal("toggle");
@@ -348,47 +346,47 @@ const saveTransaction = async (module) => {
 /** Carga los datos de un registro en un formulario para su edición.
  * Realiza una solicitud al servidor para obtener la información del registro y llena los campos del formulario.
  *
- * @param {string} module - Nombre del módulo para la solicitud al controlador.
+ * @param {string} currentModule - Nombre del módulo para la solicitud al controlador.
  * @param {number} id - ID del registro que se desea actualizar.
  * @param {string} [idModal=""] - ID del modal que se abrirá (opcional).
  */
-const updateRegister = async (module, id, idModal = "") => {
+const updateRegister = async (currentModule, id, idModal = "") => {
     const formdata = new FormData();
     formdata.append("id", id);
 
     /** Llamamos a submitForm pasando el módulo dinámicamente */
-    await submitForm(formdata, "update", module, (data) => {
-        openModal(module, true, idModal, data);
+    await submitForm(formdata, "update", currentModule, (data) => {
+        openModal(currentModule, true, idModal, data);
     }, false);
 };
 
 /** Elimina un registro tras la confirmación del usuario.
  * Muestra una alerta de confirmación con SweetAlert antes de proceder con la eliminación.
  *
- * @param {string} module - Nombre del módulo para la solicitud al controlador.
+ * @param {string} currentModule - Nombre del módulo para la solicitud al controlador.
  * @param {number} id - ID del registro que se desea eliminar.
  * @param {string} nombre - Nombre del registro para mostrar en la alerta.
  */
-const deleteRegister = async (module, id, nombre) => {
+const deleteRegister = async (currentModule, id, nombre) => {
     try {
-        if (module === "DetalleCompra" || module === "DetalleVenta") {
-            await processDelete(module, id);
+        if (currentModule === "DetalleCompra" || currentModule === "DetalleVenta") {
+            await processDelete(currentModule, id);
             return;
         }
 
         /** Determina si el texto es "la" o "el" dependiendo del módulo */
-        let text = ["Categoría", "Marca", "Caja"].includes(module) ? "la" : "el";
+        let text = ["Categoría", "Marca", "Caja"].includes(currentModule) ? "la" : "el";
 
         Swal.fire({
-            title: '<h3 class="mt-3">Eliminar ' + module + "</h3>",
+            title: '<h3 class="mt-3">Eliminar ' + currentModule + "</h3>",
             html: '<p class="font-size-20 mb-2">¿Estás seguro de eliminar ' +
-            text + " siguiente " + module.toLowerCase() + "?</p> <b>" + nombre + "</b>",
+            text + " siguiente " + currentModule.toLowerCase() + "?</p> <b>" + nombre + "</b>",
             confirmButtonText: TextDelete,
             cancelButtonText: TextCancel,
             showCancelButton: true,
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await processDelete(module, id);
+                await processDelete(currentModule, id);
             }
         });
     } catch (error) {
@@ -399,20 +397,20 @@ const deleteRegister = async (module, id, nombre) => {
 /** Elimina un registro del módulo especificado enviando una solicitud al servidor.
  * Tras la eliminación, recarga la tabla de datos correspondiente.
  *
- * @param {string} module - Nombre del módulo donde se encuentra el registro a eliminar.
+ * @param {string} currentModule - Nombre del módulo donde se encuentra el registro a eliminar.
  * @param {number} id - ID del registro que se desea eliminar.
  */
-const processDelete = async (module, id) => {
+const processDelete = async (currentModule, id) => {
     try {
         let formdata = new FormData();
         formdata.append("id", id);
 
         /** Llamamos a submitForm pasando el módulo dinámicamente */
-        await submitForm(formdata, "delete", module, () => {
-            if (module === "DetalleCompra" || module === "DetalleVenta")
-                loadTemporaryDetails(module);
+        await submitForm(formdata, "delete", currentModule, () => {
+            if (currentModule === "DetalleCompra" || currentModule === "DetalleVenta")
+                loadTemporaryDetails(currentModule);
             else
-                loadModuleTable(module);
+                loadModuleTable(currentModule);
         });
     } catch (error) {
         console.error("Error en processDelete:", error);
@@ -442,9 +440,9 @@ const calculateTotal = () => {
  *
  * @param {Event} e - Evento del teclado.
  * @param {string} formId - ID del formulario que contiene los datos.
- * @param {string} module - Nombre del módulo desde donde se llama la función.
+ * @param {string} currentModule - Nombre del módulo desde donde se llama la función.
  */
-const handleFormKeyPress = async (e, formId, module) => {
+const handleFormKeyPress = async (e, formId, currentModule) => {
     if (e.key === 'Enter') {
         e.preventDefault();
 
@@ -459,7 +457,7 @@ const handleFormKeyPress = async (e, formId, module) => {
         formdata.append("cantidad", cantidad);
 
         /** Llamamos a submitForm pasando el módulo dinámicamente */
-        await submitForm(formdata, "save", module, (data) => {
+        await submitForm(formdata, "save", currentModule, (data) => {
             clearForm('#modalRegister');
             loadTemporaryDetails(data);
             $('#search').select2('open');
@@ -472,13 +470,13 @@ const handleFormKeyPress = async (e, formId, module) => {
 /** Carga y muestra los detalles de productos (compra/venta) *antes* de ser registrados,
  * es decir, en un estado provisional o temporal (por ejemplo, dentro de un formulario).
  * 
- * @param {string} module - Nombre del módulo desde donde se llama la función.
+ * @param {string} currentModule - Nombre del módulo desde donde se llama la función.
  */
-const loadTemporaryDetails = async (module) => {
+const loadTemporaryDetails = async (currentModule) => {
     /** Llamamos a submitForm pasando el módulo dinámicamente */
     const formData = new FormData();
 
-    await submitForm(formData, "temporaryDataTable", module, (data) => {
+    await submitForm(formData, "temporaryDataTable", currentModule, (data) => {
         $('#details').html(data.data);
         $('#total-details').html('$' + data.total);
     }, false);
@@ -488,10 +486,10 @@ const loadTemporaryDetails = async (module) => {
  * es decir, cuando los datos ya están almacenados en la base de datos.
  * Muestra los detalles en un modal si se pasa un ID de compra.
  * 
- * @param {string} module - Nombre del módulo desde donde se llama la función.
+ * @param {string} currentModule - Nombre del módulo desde donde se llama la función.
  * @param {int} registerId - Identificador si se desea buscar registros de algo en particular.
  */
-const loadRegisteredDetails = async (module, registerId = null, date = null) => {
+const loadRegisteredDetails = async (currentModule, registerId = null, date = null) => {
     let purchaseDate;
 
     if (date) {
@@ -499,15 +497,15 @@ const loadRegisteredDetails = async (module, registerId = null, date = null) => 
               purchaseDate = getFechaActualLetras(newDate);
     }
 
-    const title = module == "ArqueoCaja"
+    const title = currentModule == "ArqueoCaja"
         ?  `Arqueo de Caja`
-        :  `Detalles de ${module == "DetalleCompra" ? "Compra" : "Venta"} del ${purchaseDate}`;
+        :  `Detalles de ${currentModule == "DetalleCompra" ? "Compra" : "Venta"} del ${purchaseDate}`;
 
     /** Asignamos el título para el modal */
     $("#modalViewDetails #modalTitle").html(title);
     
     /** Cargamos la información */
-    loadDataTable("#table-view-details", module, registerId);
+    loadDataTable("#table-view-details", currentModule, registerId);
 
     /** Mostramos el modal */
     $("#modalViewDetails").modal("toggle");

@@ -79,11 +79,11 @@ const addUser = () => {
 /** Carga los datos de un usuario existente en el formulario para su edición.
  * Oculta el campo 'password' para evitar su modificación.
  *
- * @param {string} module - Nombre del módulo (por lo general 'Producto').
+ * @param {string} currentModule - Nombre del módulo (por lo general 'Producto').
  * @param {number} idUser - ID del usuario que se desea actualizar.
  */
-const updateUser = async (module, idUser) => {
-    await updateRegister(module, idUser);
+const updateUser = async (currentModule, idUser) => {
+    await updateRegister(currentModule, idUser);
     $('#user').prop('readonly', true);
     $('#container-password').addClass('d-none');
 }
