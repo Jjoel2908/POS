@@ -1,101 +1,52 @@
 <?php
 require_once '../config/Connection.php';
-date_default_timezone_set('America/Mexico_City');
 class Dashboard extends Connection
 {
+   /** Almacena las métricas obtenidas de la base de datos 
+    * como el total de productos, marcas, usuarios, etc.
+    */
+   private $metrics = [];
 
-   private $totalProducts;
-   private $totalBrands;
-   private $totalCategories;
-   private $totalCashboxes;
-   private $totalUsers;
-   private $totalStockMinimo;
-   private $totalPurchasesPerMonth;
-   private $totalSalesPerMonth;
-   private $totalSalesPerDay;
-
+   /** Constructor de la clase.
+    * Inicializa la obtención de datos para las métricas del dashboard.
+    */
    public function __construct()
    {
       $this->fetchData();
    }
 
+   /** Ejecuta las consultas SQL definidas para obtener las métricas
+    * y almacena los resultados en la propiedad $metrics.
+    */
    private function fetchData()
    {
-      $this->resultProducts();
-      $this->resultBrands();
-      $this->resultCategories();
-      $this->resultCashboxes();
-      $this->resultUsers();
-      // $this->resultStockMinimo();
-      $this->resultPurchasesPerMonth();
-      $this->resultSalesPerMonth();
-      $this->resultSalesPerDay();
+      $queries = [
+         'products'  => "SELECT COUNT(*) AS total FROM productos WHERE estado = 1",
+         'brands'    => "SELECT COUNT(*) AS total FROM marcas WHERE estado = 1",
+         'customers' => "SELECT COUNT(*) AS total FROM clientes WHERE estado = 1",
+         'users'     => "SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1 AND id <> 1",
+                   // 'totalCategories'      => "SELECT COUNT(*) AS total FROM categorias WHERE estado = 1",
+                   // 'totalCashboxes'       => "SELECT COUNT(*) AS total FROM cajas WHERE estado = 1",
+                   // 'totalStockMinimo'  => "SELECT COUNT(*) AS total FROM productos WHERE stock <= stock_minimo",
+                   // 'totalPurchasesPerMonth' => "SELECT COUNT(*) AS total FROM compras WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())",
+                   // 'totalSalesPerMonth'   => "SELECT COUNT(*) AS total FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())",
+                   // 'totalSalesPerDay'     => "SELECT COUNT(*) AS total FROM ventas WHERE DATE(fecha) = CURRENT_DATE()"
+      ];
+
+      foreach ($queries as $key => $sql) {
+         $result = $this->queryMySQL($sql);
+         $this->metrics[$key] = $result[0]['total'];
+      }
    }
 
-   /** Recuperamos la cantidad de marcas registradas en el sistema */
-   private function resultBrands()
+   /** Obtiene el valor de una métrica específica almacenada en $metrics.
+    * 
+    * @param string $name Nombre de la métrica a obtener.
+    * @return mixed Valor de la métrica o null si no existe.
+    */
+   public function getMetric(string $name)
    {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM marcas WHERE estado = 1");
-      $this->totalBrands = $query[0]['total'];
-   }
-
-   private function resultProducts()
-   {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM productos WHERE estado = 1");
-      $this->totalProducts = $query[0]['total'];
-   }
-
-   private function resultCategories()
-   {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM categorias WHERE estado = 1");
-      $this->totalCategories = $query[0]['total'];
-   }
-
-   private function resultCashboxes()
-   {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM cajas WHERE estado = 1");
-      $this->totalCashboxes = $query[0]['total'];
-   }
-
-   private function resultUsers()
-   {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1");
-      $this->totalUsers = $query[0]['total'];
-   }
-
-   // private function resultStockMinimo() {
-   //    $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM productos WHERE stock <= stock_minimo");
-   //    $this->totalStockMinimo = $query[0]['total'];
-   // }
-
-   private function resultPurchasesPerMonth()
-   {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM compras WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())");
-      $this->totalPurchasesPerMonth = $query[0]['total'];
-   }
-
-   private function resultSalesPerMonth()
-   {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())");
-      $this->totalSalesPerMonth = $query[0]['total'];
-   }
-
-   private function resultSalesPerDay()
-   {
-      $query = $this->queryMySQL("SELECT COUNT(*) AS total FROM ventas WHERE DAY(fecha) = DAY(CURRENT_DATE())  ");
-      $this->totalSalesPerDay = $query[0]['total'];
-   }
-
-   public function getProductStockMinimo(): array
-   {
-      $query = $this->queryMySQL("SELECT * FROM productos WHERE stock <= stock_minimo");
-      return $query;
-   }
-
-   public function getProductBestSelling(): array
-   {
-      $query = $this->queryMySQL("SELECT dv.*, p.nombre AS nombre_producto, SUM(cantidad) AS total_selling FROM detalle_venta dv INNER JOIN productos p ON dv.id_producto = p.id GROUP BY nombre_producto ORDER BY total_selling DESC LIMIT 3");
-      return $query;
+      return $this->metrics[$name] ?? null;
    }
 
    private function generateInitialMenu(): string
@@ -146,50 +97,5 @@ class Dashboard extends Connection
       }
 
       return $modules;
-   }
-
-   public function getTotalBrands()
-   {
-      return $this->totalBrands;
-   }
-
-   public function getTotalProducts()
-   {
-      return $this->totalProducts;
-   }
-
-   public function getTotalCategories()
-   {
-      return $this->totalCategories;
-   }
-
-   public function getTotalCashboxes()
-   {
-      return $this->totalCashboxes;
-   }
-
-   public function getTotalUsers()
-   {
-      return $this->totalUsers;
-   }
-
-   public function getTotalStockMinimo()
-   {
-      return $this->totalStockMinimo;
-   }
-
-   public function getTotalPurchasesPerMonth()
-   {
-      return $this->totalPurchasesPerMonth;
-   }
-
-   public function getTotalSalesPerMonth()
-   {
-      return $this->totalSalesPerMonth;
-   }
-
-   public function getTotalSalesPerDay()
-   {
-      return $this->totalSalesPerDay;
    }
 }

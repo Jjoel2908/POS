@@ -65,7 +65,7 @@ const openModal = (title, isUpdate = false, idModal = "", data = null) => {
     modalId = idModal == "" ? "#modalRegister" : idModal;
 
     /** Determina si el texto es "Nueva" o "Nuevo" dependiendo del módulo */
-    let textNew = ["Categoría", "Marca", "Caja", "Compra"].includes(title) ? "Nueva " : "Nuevo ";
+    let textNew = ["Categoría", "Marca", "Caja", "Compra", "Venta"].includes(title) ? "Nueva " : "Nuevo ";
 
     /** Define el texto de acción: "Actualizar" o "Nuevo/Nueva". */
     let actionText = isUpdate ? "Actualizar " : textNew;
@@ -520,11 +520,16 @@ $("form #search").on('select2:select', async e => {
     const id       = e.params.data.id;
     const cantidad = $("form #cantidad");
 
-    if (id > 0) {
+    if (Number(id) > 0) {
         const formdata = new FormData();
         formdata.append("id", id);
         await submitForm(formdata, "update", 'Producto', (data) => {
             $.each(data, (key, value) => $("#" + key).val(value));
+
+            if (data?.pathImage)
+                $('#container-image').html(data.pathImage);
+            else
+                $('#container-image').html("");
 
             cantidad.prop('disabled', false);
             cantidad.focus();

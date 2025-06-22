@@ -39,8 +39,9 @@ if (!isset($controllers[$module]))
 /** Eventos realizados por el usuario */
 require_once 'ActionController.php';
 $Action = new ActionController();
-if ($operation == "save" || $operation == "update" || $operation == "delete")
+if (in_array($operation, ["login", "save", "update", "delete", "updatePassword", "updatePermissions"])) {
     $Action->save();
+}
 
 /** Cargamos el controlador correspondiente */
 require_once $controllers[$module];

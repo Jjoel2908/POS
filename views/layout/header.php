@@ -1,4 +1,4 @@
-<?php require '../config/global.php'; ?>
+<?php require_once '../config/global.php'; ?>
 <?php require_once '../models/Dashboard.php'; ?>
 <!DOCTYPE html>
 <html lang="es">

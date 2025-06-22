@@ -125,11 +125,11 @@ class SaleDetailsController
                 $HTML .= "<td>{$quantity} uds.</td>";
                 $HTML .= "<td class='text-end'>$" . number_format($price, 2) . "</td>";
                 $HTML .= "<td class='text-end'>$" . number_format($subTotal, 2) . "</td>";
-                $HTML .= "<td>{$btn}</td>";
+                $HTML .= "<td class='text-center'>{$btn}</td>";
                 $HTML .= "</tr>";
             }
         } else {
-            $HTML .= '<tr><td colspan="5">No hay detalles de venta disponibles.</td></tr>';
+            $HTML .= '<tr><td class="text-center py-3" colspan="5">No hay detalles de venta disponibles.</td></tr>';
         }
 
         echo json_encode([

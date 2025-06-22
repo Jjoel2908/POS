@@ -108,7 +108,7 @@ class TemplateView
                     <table class="table table-striped table-bordered view-table text-center">
                         <thead>
                             <tr>
-                                <th><?= $this->title ?></th>
+                                <th><?= $this->module ?></th>
                             </tr>
                         </thead>
                         <tbody>

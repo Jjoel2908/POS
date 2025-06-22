@@ -313,7 +313,7 @@ class Connection
             case 'phone':
                 return preg_replace('/\D/', '', $value);
             case 'email':
-                return filter_var($value, FILTER_VALIDATE_EMAIL) ?: null;
+                return filter_var($value, FILTER_VALIDATE_EMAIL) ? strtolower($value) : null;
             case 'password':
                 return preg_replace('/[^a-zA-Z0-9@#\$%\&\*\!\.\-\_]/', '', $value);
             case 'int':

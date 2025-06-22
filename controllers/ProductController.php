@@ -41,7 +41,6 @@ class ProductController
         $data = [
             'nombre'        => $this->model::sanitizeInput('nombre', 'text'),
             'modelo'        => $this->model::sanitizeInput('modelo', 'text'),
-            'codigo'        => $code,
             'id_marca'      => $this->model::sanitizeInput('id_marca', 'int'),
             'id_talla'      => $this->model::sanitizeInput('id_talla', 'int'),
             'id_color'      => $this->model::sanitizeInput('id_color', 'int'),
@@ -62,6 +61,9 @@ class ProductController
 
             /** Agregamos sucursal */
             $data['id_sucursal'] = $this->idSucursal;
+
+            /** Agregamos el código del producto */
+            $data['codigo'] = $code;
 
             $save = $this->model::insert($this->table, $data);
 
@@ -84,11 +86,17 @@ class ProductController
     {
         $recoverRegister = $this->model->select($this->table, $this->id);
 
-        echo json_encode(
-            count($recoverRegister) > 0
-                ? ['success' => true, 'message' => '', 'data' => $recoverRegister]
-                : ['success' => false, 'message' => 'No se encontró el registro.']
-        );
+        if (is_null($recoverRegister)) {
+            echo json_encode(['success' => false, 'message' => 'No se encontró el registro.']);
+            return;
+        }
+
+        if (!empty($recoverRegister['imagen'])) {
+            $imgUrl = "../media/products/{$recoverRegister['imagen']}";
+            $recoverRegister['pathImage'] = "<img src='$imgUrl' alt='Imagen de producto' width='260' height='260'>";
+        }
+
+        echo json_encode([ 'success' => true, 'message' => '', 'data' => $recoverRegister]);
     }
 
     public function delete()
@@ -223,9 +231,16 @@ class ProductController
 
                 if ($product['stock'] == 0) continue;
 
+                /** @var string $img - Nombre de la imagen (desde la base de datos). */
+                $img = $product['imagen'] ?? 'default.png';
+
+                /** @var string $imgUrl - Ruta completa a la imagen. */
+                $imgUrl = "../media/products/$img";
+
                 $formatted_products[] = [
-                    'id'   => $product['id'],
-                    'text' => $product['codigo'] . ' | ' . $product['nombre']
+                    'id'     => $product['id'],
+                    'text'   => $product['codigo'] . ' | ' . $product['nombre'],
+                    'imagen' => $imgUrl
                 ];
             }
         }
