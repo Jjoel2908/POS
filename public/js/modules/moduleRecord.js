@@ -6,6 +6,8 @@ const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", 
 const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Monto Inicial", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
 
 $(() => {
+    if (!currentModule || currentModule == "Compra" || currentModule == "Venta") return;
+
     loadModuleTable(currentModule);
 
     $("form").submit(async function (event) {
@@ -19,12 +21,8 @@ $(() => {
                 /** Deshabilitamos el botón de submit */
                 $('#btnSave').prop("disabled", true);
                 
-                const moduleRecord = $(this).data("module");
-
-                if (!moduleRecord || moduleRecord == "Compra" || moduleRecord == "Venta") return;
-                
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
-                await submitForm(this, "save", moduleRecord, () => {
+                await submitForm(this, "save", currentModule, () => {
                     loadModuleTable(currentModule);
                     $("#modalRegister").modal("toggle");
                 });
@@ -458,10 +456,18 @@ const handleFormKeyPress = async (e, formId, currentModule) => {
 
         /** Llamamos a submitForm pasando el módulo dinámicamente */
         await submitForm(formdata, "save", currentModule, (data) => {
-            clearForm('#modalRegister');
+
+            /** Limpiamos el formulario */
+            $('#container-image').html("");
+            $('#container-image-void').removeClass('d-none');
+            clearForm('');
+
+            /** Cargamos los detalles de la venta */
             loadTemporaryDetails(data);
+
+            /** Abrimos el buscador para nuevo producto */
             $('#search').select2('open');
-            $('#tipo_venta').val(tipoVenta);
+            $('#tipo_venta').val(cliente).trigger('change');
             $(`select#cliente`).val(cliente).trigger('change');
         }, false);
     }
@@ -524,11 +530,18 @@ $("form #search").on('select2:select', async e => {
         await submitForm(formdata, "update", 'Producto', (data) => {
             $.each(data, (key, value) => $("#" + key).val(value));
 
-            if (data?.pathImage)
+            /** Visualización de la imagen de producto */
+            if (data?.pathImage) {
+                $('#container-image-void').addClass('d-none');
                 $('#container-image').html(data.pathImage);
-            else
+            }
+            else {
                 $('#container-image').html("");
+                $('#container-image-void').removeClass('d-none');
+            }
 
+            /** Activamos el input de cantidad e insertamos una pieza automáticamente */
+            cantidad.val(1);
             cantidad.prop('disabled', false);
             cantidad.focus();
             calculateTotal();

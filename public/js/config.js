@@ -11,14 +11,19 @@ $(document).ready(function () {
 
     var placeholderText = "Selecciona una opción";
 
+    /** Configuración base */
+    var config = {
+      placeholder: placeholderText,
+      allowClear: true,
+      width: "100%",
+    };
+
     if ($modal.length) {
-      $select.css("width", "100%").select2({
-        dropdownParent: $modal,
-        placeholder: placeholderText,
-        allowClear: true,
-        // ORDENAR REGISTROS DE SELECTS sorter: data => data.sort((a, b) => a.text.localeCompare(b.text))
-      });
+      config.dropdownParent = $modal;
     }
+
+    /** Inicializar Select2 */
+    $select.select2(config);
   });
 });
 

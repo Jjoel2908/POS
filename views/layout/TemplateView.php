@@ -150,6 +150,51 @@ class TemplateView
 <?php
     }
 
+    /** Renderiza la vista utilizando los atributos de la clase.
+     * 
+     * - Verifica si el usuario tiene permiso para acceder a la vista.
+     * - Incluye la cabecera (`header.php`).
+     * - Muestra el título, los botones de acción (si aplica) y la tabla de datos.
+     * - Carga el modal correspondiente (si existe).
+     * - Incluye el pie de página (`footer.php`) y los scripts necesarios.
+     */
+    public function renderForm()
+    {
+        session_start();
+
+        if (empty($_SESSION['user']) || !in_array($this->permission, $_SESSION['permisos'])) {
+            header('Location: index.php');
+            exit;
+        }
+
+        require_once 'layout/header.php';
+?>
+
+        <div class="card bg-transparent shadow-0" data-module="<?= $this->module ?>">
+            <div class="card-body p-1">
+
+                <!-- # [ M O D A L S ] # -->
+                <?php 
+                    $module = $this->module;
+                    foreach ($this->modals as $modal): 
+                ?>
+                    <?php require $modal; ?>
+                <?php endforeach; ?>
+
+            </div>
+        </div>
+
+        <?php require_once 'layout/footer.php'; ?>
+
+        <!-- # [ S C R I P T ] # -->
+        <script src="../public/js/modules/moduleRecord.js"></script>
+        <?php if (!empty($this->moduleScript)): ?>
+            <script src="../public/js/modules/<?= $this->moduleScript ?>.js"></script>
+        <?php endif; ?>
+
+<?php
+    }
+
     /** Renderiza la vista de reporte utilizando los atributos de la clase.
      * 
      * - Verifica si el usuario tiene permiso para acceder a la vista.

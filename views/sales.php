@@ -6,7 +6,6 @@ $config = [
    'module'     => 'Venta',
    'title'      => 'Ventas',
    'icon'       => 'fa-solid fa-cart-shopping',
-   'addAction'  => "addSale(1)",
    'modals'     => [
       'modal/modalSale.php',
       'modal/modalViewDetails.php',
@@ -15,4 +14,4 @@ $config = [
 ];
 
 $view = new TemplateView($config);
-$view->render();
+$view->renderForm();

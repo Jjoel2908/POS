@@ -93,7 +93,7 @@ class ProductController
 
         if (!empty($recoverRegister['imagen'])) {
             $imgUrl = "../media/products/{$recoverRegister['imagen']}";
-            $recoverRegister['pathImage'] = "<img src='$imgUrl' alt='Imagen de producto' width='260' height='260'>";
+            $recoverRegister['pathImage'] = "<img src='$imgUrl' alt='Imagen de producto'>";
         }
 
         echo json_encode([ 'success' => true, 'message' => '', 'data' => $recoverRegister]);
