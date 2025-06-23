@@ -124,13 +124,13 @@
                             </div>
 
                             <!-- Cliente -->
-                            <div class="view-form mt-3 d-none" id="container-customer">
+                            <div class="view-form mt-3" id="customerField" style="display: none;">
                                 <label class="mb-1 font-15" for="id_cliente"><i class="fa-solid fa-user me-1"></i> Cliente</label>
                                 <select name="id_cliente" id="id_cliente" class="form-control select" required></select>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button class="btn btn-success btn-lg" type="button" onclick="generar(0)">Generar Venta</button>
+                                <button class="btn btn-success btn-lg" type="button" onclick="saveTransaction(0)">Generar Venta</button>
                             </div>
                         </div>
                     </div>

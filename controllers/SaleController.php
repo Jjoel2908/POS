@@ -32,18 +32,18 @@ class SaleController
     }
 
     public function save()
-    {        
+    {
         /** Valida campos requeridos */
-        if (!$this->model::validateData(['type'], $_POST)) {
+        if (!$this->model::validateData(['saleType'], $_POST)) {
             echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
         }
 
         /** Tipo de Venta */
-        $saleType = $this->model::sanitizeInput('type', 'int');
+        $saleType = $this->model::sanitizeInput('saleType', 'int');
 
         /** Valida campos requeridos */
-        if ($_POST['customer'] == 0 && $saleType == 2) {
+        if ($_POST['customerId'] == 0 && $saleType == 2) {
             echo json_encode(['success' => false, 'message' => $this->messages['required_customer']]);
             return;
         }
@@ -68,10 +68,10 @@ class SaleController
         }
 
         /** Cliente */
-        $customer = $this->model::sanitizeInput('customer', 'int');
+        $customerId = $this->model::sanitizeInput('customerId', 'int');
 
         /** Registrar venta en el modelo */
-        $save = $this->model->insertSale($this->idUser, $this->idSucursal, $cashbox, $saleType, $customer, $totalFormatted);
+        $save = $this->model->insertSale($this->idUser, $this->idSucursal, $cashbox, $saleType, $customerId, $totalFormatted);
 
         $module = $saleType == 1 ? "Venta" : "VentaCredito"; 
         echo json_encode(

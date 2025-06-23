@@ -1,40 +1,8 @@
+let customerLoaded = false; 
 $(() => {
     initializeSalesDropdown();
     loadTemporaryDetails("DetalleVenta");
 });
-
-/** Configura la interfaz según el tipo de venta.
- * Si es venta a crédito (2), muestra el selector de cliente y lo inicializa.
- *
- * @param {number} saleType - Tipo de venta (1: contado, 2: crédito).
- */
-const handleSaleTypeUI = async (saleType) => {
-  if (saleType == 2) {
-    $("#container-search").addClass("col-lg-7");
-    $("#container-customer").removeClass("d-none");
-
-    const formData = new FormData();
-    submitForm(
-      formData,
-      "droplist",
-      "Cliente",
-      (data) => {
-        $("#formSale #cliente").html(data);
-        $("#formSale #cliente").val("").trigger("change");
-
-        $("#formSale #cliente").css("width", "100%").select2({
-          dropdownParent: "#modalRegister",
-          placeholder: "Selecciona el cliente",
-          allowClear: true,
-        });
-      },
-      false
-    );
-  }
-
-  /** Actualiza el valor de tipo_venta */
-  $("#tipo_venta").val(saleType);
-};
 
 /** Inicializa el componente Select2 para realizar búsquedas de productos en tiempo real.
  *
@@ -171,3 +139,40 @@ const formatProductResult = (product) => {
 const formatProductSelection = (product) => {
   return product.text || product.id;
 };
+
+/** Ejecuta una acción adicional complementaria a un proceso principal.
+ *
+ * Esta función se utiliza para realizar tareas secundarias que deben llevarse a cabo
+ * después (o como consecuencia) de una acción principal, como actualizar la interfaz,
+ * mostrar mensajes, realizar validaciones extra o disparar eventos personalizados.
+ *
+ * Su propósito es mantener el código modular y evitar mezclar responsabilidades dentro
+ * de la lógica principal.
+ */
+const runAdditionalStep = () => {
+  const formdata = new FormData();
+         submitForm(formdata, "droplist", 'Cliente', (data) => {
+            $("#formAdd #id_cliente").html(data);
+            customerLoaded = true; // Marcar como ya cargados
+         }, false);
+}
+
+/** Detecta la opción seleccionada por el usuario en el campo de tipo de venta.
+ * y realiza acciones dinámicas en el formulario según el valor seleccionado.
+ */
+$("form#formAdd #tipo_venta").on("select2:select", (e) => {
+   const id = e.params.data.id;
+   const customerField = $("#customerField");
+   const customerId = $("#id_cliente");
+
+   if (id == creditSale.toString()) {
+    if (!customerLoaded)
+      runAdditionalStep();
+
+    customerField.show(); // Mostrar el campo
+    customerId.prop("required", true); // Agregar el atributo requerido
+   } else {
+      customerField.hide(); // Ocultar el campo
+      customerId.prop("required", false); // Quitar el atributo requerido
+   }
+});

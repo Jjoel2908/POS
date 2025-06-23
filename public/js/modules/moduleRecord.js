@@ -1,5 +1,6 @@
 const urlController = "../../../controllers/";
 const currentModule = $(".card").data("module");
+const creditSale = 2;
 let modalId;
 
 const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Subtotal", "Total", "compra", "venta"];
@@ -44,11 +45,12 @@ $(() => {
  * @param {string} [tableSelector="#module-table"] - Selector de la tabla donde se cargan los datos.
  */
 const loadModuleTable = (currentModule, tableSelector = "#module-table") => {
-    if (currentModule === "Producto") {
+    if (currentModule === "Venta")
+        runAdditionalStep();
+    else if (currentModule === "Producto")
         loadDataTableServerSide(tableSelector, currentModule);
-    } else {
+    else
         loadDataTable(tableSelector, currentModule);
-    }
 };
 
 /** Abre un modal para crear o actualizar un registro.
@@ -320,19 +322,21 @@ const saveTransaction = async (currentModule) => {
         }).then(async (result) => {
             if (result.isConfirmed) {
 
-                /** Información a enviar */
-                const type     = $("form #tipo_venta").val();
-                const cliente   = $(`form #cliente option:selected`).val();
-
                 const formData = new FormData();
-                formData.append("type", type);
-                formData.append("customer", cliente ?? 0);
+
+                /** Información adicional para venta */
+                if (currentModule === "Venta") {
+                    const saleType   = $(`#tipo_venta option:selected`).val();
+                    const customerId = $(`#id_cliente option:selected`).val();
+                    formData.append("saleType", saleType);
+
+                    if (customerId)
+                        formData.append("customerId", customerId);
+                }
 
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
                 await submitForm(formData, "save", currentModule, (data) => {
-                    loadDataTable("#module-table", data);
-                    $('form #cantidad').prop('disabled', true);
-                    $("#modalRegister").modal("toggle");
+                    $('#cantidad').prop('disabled', true);
                 });
             }
         });
@@ -446,13 +450,13 @@ const handleFormKeyPress = async (e, formId, currentModule) => {
 
         /** Obtiene los valores del formulario */
         const id        = $(`#${formId} #id`).val();
-        const cantidad  = $(`#${formId} #cantidad`).val();
-        const tipoVenta = $(`#${formId} #tipo_venta`).val();
-        const cliente   = $(`#${formId} #cliente option:selected`).val();
+        const quantity  = $(`#${formId} #cantidad`).val();
+        const saleType  = $(`#${formId} #tipo_venta option:selected`).val();
+        const customer  = $(`#${formId} #id_cliente option:selected`).val();
 
         const formdata = new FormData();
         formdata.append("id", id);
-        formdata.append("cantidad", cantidad);
+        formdata.append("cantidad", quantity);
 
         /** Llamamos a submitForm pasando el módulo dinámicamente */
         await submitForm(formdata, "save", currentModule, (data) => {
@@ -467,8 +471,8 @@ const handleFormKeyPress = async (e, formId, currentModule) => {
 
             /** Abrimos el buscador para nuevo producto */
             $('#search').select2('open');
-            $('#tipo_venta').val(cliente).trigger('change');
-            $(`select#cliente`).val(cliente).trigger('change');
+            $('select#tipo_venta').val(saleType).trigger('change');
+            $(`select#id_cliente`).val(customer).trigger('change');
         }, false);
     }
 };

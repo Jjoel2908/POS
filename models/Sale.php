@@ -5,6 +5,11 @@ require '../models/Cashbox.php';
 
 class Sale extends Connection
 {
+    public static $TALLAS = [
+      1 => "XXXS",
+      2 => "XXS"
+    ];
+    
     public function __construct() {}
 
 
