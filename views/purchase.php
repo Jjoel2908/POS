@@ -2,17 +2,16 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission' => 5,
+   'permission' => 6,
    'module'     => 'Compra',
    'title'      => 'Compras',
-   'icon'       => 'fa-solid fa-bag-shopping',
-   'addAction'  => "addPurchase()",
+   'icon'       => 'fa-solid fa-cart-shopping',
    'modals'     => [
-      'modal/modalPurchase.php',
+      'modal/modalSalePurchase.php',
       'modal/modalViewDetails.php',
    ],
    'moduleScript' => 'modulePurchase',
 ];
 
 $view = new TemplateView($config);
-$view->render();
+$view->renderForm();

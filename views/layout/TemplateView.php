@@ -176,6 +176,9 @@ class TemplateView
                 <!-- # [ M O D A L S ] # -->
                 <?php 
                     $module = $this->module;
+                    $title = $this->title;
+                    $field = 'precio_' . strtolower($module);
+
                     foreach ($this->modals as $modal): 
                 ?>
                     <?php require $modal; ?>

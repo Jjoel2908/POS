@@ -208,17 +208,6 @@ class ProductController
 
     public function droplist()
     {
-        $listRegister = "";
-        $list = $this->model->selectAll($this->table);
-        foreach ($list as $item) {
-            $listRegister .= '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
-        }
-
-        echo json_encode(['success' => true, 'data' => $listRegister]);
-    }
-
-    public function droplistSales()
-    {
         /** Producto a buscar */
         $text = $this->model::sanitizeInput('search', 'text');
 

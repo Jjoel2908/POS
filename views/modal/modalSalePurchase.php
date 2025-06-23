@@ -2,12 +2,12 @@
 <div class="card radius-10 border-start border-0 border-4 border-primary">
     <div class="card-header">
         <div class="d-flex align-items-center justify-content-center py-1">
-            <h5 class="mb-0">Ventas</h5>
+            <h5 class="mb-0"><?= $title ?></h5>
         </div>
     </div>
     <div class="card-body">
         <form class="validation" id="formAdd" method="POST" action="" name="" novalidate="" data-module="<?= $module ?>">
-            <!-- Identificador y tipo de venta a realizar -->
+            <!-- Identificador -->
             <input type="hidden" id="id" name="id">
 
             <div class="row pt-1">
@@ -70,8 +70,8 @@
 
                                 <div class="col-lg-6 view-form mb-0">
                                     <div class="form-floating">
-                                        <input id="precio_venta" class="form-control" type="text" name="precio_venta" readonly>
-                                        <label for="precio_venta"><i class="fa-solid fa-sack-dollar me-1"></i> Precio</label>
+                                        <input id="<?= $field ?>" class="form-control" type="text" name="<?= $field ?>" readonly>
+                                        <label for="<?= $field ?>"><i class="fa-solid fa-sack-dollar me-1"></i> Precio</label>
                                     </div>
                                 </div>
 
@@ -109,28 +109,30 @@
                     <div class="card radius-10 border-top border-0 border-5 border-success">
                         <div class="card-header">
                             <div class="d-flex align-items-center justify-content-center py-2">
-                                <p class="mb-0 font-22 fw-bold">Total Venta: <span class="ps-2" id="total-details">0.00</span></p>
+                                <p class="mb-0 font-22 fw-bold">Total <?= $module ?>: <span class="ps-2" id="total-details">0.00</span></p>
                             </div>
                         </div>
                         <div class="card-body">
 
-                            <!-- Tipo de Venta -->
-                            <div class="view-form">
-                                <label class="mb-1 font-15" for="tipo_venta"><i class="fa-solid fa-money-check me-1"></i> Tipo de Venta</label>
-                                <select name="tipo_venta" id="tipo_venta" class="form-control select" required>
-                                    <option value="1">CONTADO</option>
-                                    <option value="2">CRÉDITO</option>
-                                </select>
-                            </div>
+                            <?php if ($module != "Compra") { ?>
+                                <!-- Tipo de Venta -->
+                                <div class="view-form">
+                                    <label class="mb-1 font-15" for="tipo_venta"><i class="fa-solid fa-money-check me-1"></i> Tipo de Venta</label>
+                                    <select name="tipo_venta" id="tipo_venta" class="form-control select" required>
+                                        <option value="1">CONTADO</option>
+                                        <option value="2">CRÉDITO</option>
+                                    </select>
+                                </div>
 
-                            <!-- Cliente -->
-                            <div class="view-form mt-3" id="customerField" style="display: none;">
-                                <label class="mb-1 font-15" for="id_cliente"><i class="fa-solid fa-user me-1"></i> Cliente</label>
-                                <select name="id_cliente" id="id_cliente" class="form-control select" required></select>
-                            </div>
+                                <!-- Cliente -->
+                                <div class="view-form mt-3" id="customerField" style="display: none;">
+                                    <label class="mb-1 font-15" for="id_cliente"><i class="fa-solid fa-user me-1"></i> Cliente</label>
+                                    <select name="id_cliente" id="id_cliente" class="form-control select" required></select>
+                                </div>
+                            <?php } ?>
 
                             <div class="d-grid gap-2">
-                                <button class="btn btn-success btn-lg" type="button" onclick="saveTransaction(0)">Generar Venta</button>
+                                <button class="btn btn-success btn-lg" type="button" onclick="saveTransaction()">Generar <?= $module ?></button>
                             </div>
                         </div>
                     </div>

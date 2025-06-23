@@ -7,7 +7,7 @@ $config = [
    'title'      => 'Ventas',
    'icon'       => 'fa-solid fa-cart-shopping',
    'modals'     => [
-      'modal/modalSale.php',
+      'modal/modalSalePurchase.php',
       'modal/modalViewDetails.php',
    ],
    'moduleScript' => 'moduleSales',
