@@ -5,10 +5,11 @@ require '../models/Cashbox.php';
 
 class Sale extends Connection
 {
-    public static $TALLAS = [
-      1 => "XXXS",
-      2 => "XXS"
-    ];
+    /** Representa una venta realizada al contado (pagada en efectivo o en el momento) */
+    public static $cashSale = 1;
+
+    /** Representa una venta a crédito (el pago se realiza en una fecha posterior) */
+    public static $creditSale = 2;
     
     public function __construct() {}
 

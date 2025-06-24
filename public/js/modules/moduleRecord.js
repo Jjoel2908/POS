@@ -543,7 +543,6 @@ const initializeProductsDropdown = () => {
             data: function (params) {
             return {
                 module: "Producto",
-                action: currentModule.toLowerCase(),
                 operation: "droplist",
                 search: params.term || "",
             };

@@ -43,7 +43,7 @@ class SaleController
         $saleType = $this->model::sanitizeInput('saleType', 'int');
 
         /** Valida campos requeridos */
-        if ($_POST['customerId'] == 0 && $saleType == 2) {
+        if ($_POST['customerId'] == 0 && $saleType == $this->model::creditSale) {
             echo json_encode(['success' => false, 'message' => $this->messages['required_customer']]);
             return;
         }

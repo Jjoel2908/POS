@@ -8,7 +8,6 @@ $config = [
    'icon'       => 'fa-solid fa-cart-shopping',
    'modals'     => [
       'modal/modalSalePurchase.php',
-      'modal/modalViewDetails.php',
    ],
    'moduleScript' => 'moduleSales',
 ];

@@ -2,9 +2,9 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 6,
-   'module'        => 'Caja',
-   'title'        => 'Cajas',
+   'permission'   => 16,
+   'module'        => 'Gasto',
+   'title'        => 'Gastos',
    'icon'         => 'fa-solid fa-cash-register',
    'addAction'  => "openModal('Caja')",
    'modals'     => [

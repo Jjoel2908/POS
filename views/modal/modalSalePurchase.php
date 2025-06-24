@@ -127,7 +127,7 @@
                                 <!-- Cliente -->
                                 <div class="view-form mt-3" id="customerField" style="display: none;">
                                     <label class="mb-1 font-15" for="id_cliente"><i class="fa-solid fa-user me-1"></i> Cliente</label>
-                                    <select name="id_cliente" id="id_cliente" class="form-control select" required></select>
+                                    <select name="id_cliente" id="id_cliente" class="form-control select"></select>
                                 </div>
                             <?php } ?>
 
