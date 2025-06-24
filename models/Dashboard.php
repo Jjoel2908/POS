@@ -25,12 +25,12 @@ class Dashboard extends Connection
          'brands'    => "SELECT COUNT(*) AS total FROM marcas WHERE estado = 1",
          'customers' => "SELECT COUNT(*) AS total FROM clientes WHERE estado = 1",
          'users'     => "SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1 AND id <> 1",
+         'totalSalesPerDay' => "SELECT COUNT(*) AS total FROM ventas WHERE DATE(fecha) = CURRENT_DATE()"
                    // 'totalCategories'      => "SELECT COUNT(*) AS total FROM categorias WHERE estado = 1",
                    // 'totalCashboxes'       => "SELECT COUNT(*) AS total FROM cajas WHERE estado = 1",
                    // 'totalStockMinimo'  => "SELECT COUNT(*) AS total FROM productos WHERE stock <= stock_minimo",
                    // 'totalPurchasesPerMonth' => "SELECT COUNT(*) AS total FROM compras WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())",
                    // 'totalSalesPerMonth'   => "SELECT COUNT(*) AS total FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())",
-                   // 'totalSalesPerDay'     => "SELECT COUNT(*) AS total FROM ventas WHERE DATE(fecha) = CURRENT_DATE()"
       ];
 
       foreach ($queries as $key => $sql) {

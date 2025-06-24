@@ -5,11 +5,10 @@ $config = [
    'permission'   => 16,
    'module'        => 'Gasto',
    'title'        => 'Gastos',
-   'icon'         => 'fa-solid fa-cash-register',
-   'addAction'  => "openModal('Caja')",
+   'icon'         => 'fa-solid fa-coins',
+   'addAction'  => "openModal('Gasto')",
    'modals'     => [
-      'modal/modalCashbox.php',
-      'modal/modalViewDetails.php',
+      'modal/modalExpense.php',
    ],
    'moduleScript' => 'moduleCashbox',
 ];
