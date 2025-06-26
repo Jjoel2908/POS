@@ -94,6 +94,28 @@ class Product extends Connection
 
    public function __construct() {}
 
+   private function getBaseProductSelect(): string
+   {
+      return "
+         SELECT 
+            p.*, 
+            m.nombre AS marca,
+            pr.nombre AS presentacion,
+            co.nombre AS color
+         FROM 
+            productos p 
+         INNER JOIN marcas m ON p.id_marca = m.id 
+         INNER JOIN presentaciones pr ON p.id_presentacion = pr.id
+         INNER JOIN colores co ON p.id_color = co.id
+      ";
+   }
+
+   public function selectOne($idRegister)
+   {
+      $sql = $this->getBaseProductSelect() . "WHERE p.id = $idRegister AND p.estado = 1 LIMIT 1";
+      return $this->queryMySQL($sql)[0];
+   }
+
    /** Función para obtener los productos con paginación y búsqueda */
    public function dataTable($start, $length, $search): array
    {
@@ -104,27 +126,18 @@ class Product extends Connection
       if (!empty($search)) {
          /** Protege contra inyecciones básicas */
          $search = addslashes($search);
-         $where .= " AND (p.nombre LIKE '%$search%' OR p.codigo LIKE '%$search%' OR m.nombre LIKE '%$search%')";
+         $where .= " AND (
+            p.nombre LIKE '%$search%' OR 
+            p.codigo LIKE '%$search%' OR 
+            pr.nombre LIKE '%$search%' OR 
+            co.nombre LIKE '%$search%' OR 
+            m.nombre LIKE '%$search%')";
       }
 
-      /** Consulta SQL para contar los productos filtrados */
-      $query = $this->queryMySQL(
-         "SELECT 
-            p.*, 
-            m.nombre AS marca
-         FROM 
-            productos p 
-         INNER JOIN 
-            marcas m 
-         ON 
-            p.id_marca = m.id 
-         $where
-         LIMIT 
-            $start, 
-            $length"
-      );
+      /** Consulta SQL */
+      $sql = $this->getBaseProductSelect() . " $where LIMIT $start, $length";
 
-      return $query;
+      return $this->queryMySQL($sql);
    }
 
    /** Función para contar el total de productos (sin filtros) */

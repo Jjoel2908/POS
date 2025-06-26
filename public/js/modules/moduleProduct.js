@@ -1,9 +1,16 @@
 $(() => {
    const formdata = new FormData();
-   
-   submitForm(formdata, "droplist", 'Marca', (data) => {
-      $("#formProduct #id_marca").html(data);
-   }, false);
+   const droplists = [
+      { label: 'Marca', action: "droplist", target: '#id_marca' },
+      { label: 'Producto', action: "droplistPresentations", target: '#id_presentacion' },
+      { label: 'Producto', action: "droplistColors", target: '#id_color' },
+   ];
+
+   droplists.forEach(({ label, action, target }) => {
+      submitForm(formdata, action, label, (data) => {
+         $(target).html(data);
+      }, false);
+   });
 });
 
 /** Columnas que tendrá la tabla del módulo */

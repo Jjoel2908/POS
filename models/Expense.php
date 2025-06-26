@@ -16,6 +16,11 @@ class Expense extends Connection
       8 => 'Otros'
    ];
 
+   public function selectOne($idRegister)
+   {
+      return $this::queryMySQL("SELECT * FROM gastos WHERE id = $idRegister AND estado = 1 LIMIT 1");
+   }
+
    public function dataTable(): array
    {
       return $this->queryMySQL(
@@ -31,10 +36,5 @@ class Expense extends Connection
          AND
             g.estado = 1"
       );
-   }
-
-   public function selectOne($idRegister)
-   {
-      return $this::queryMySQL("SELECT * FROM gastos WHERE id = $idRegister AND estado = 1 LIMIT 1");
    }
 }

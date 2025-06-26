@@ -39,13 +39,13 @@ class ProductController
 
         /** Información a registrar o actualizar */
         $data = [
-            'nombre'        => $this->model::sanitizeInput('nombre', 'text'),
-            'modelo'        => $this->model::sanitizeInput('modelo', 'text'),
-            'id_marca'      => $this->model::sanitizeInput('id_marca', 'int'),
-            'id_talla'      => $this->model::sanitizeInput('id_talla', 'int'),
-            'id_color'      => $this->model::sanitizeInput('id_color', 'int'),
-            'precio_compra' => $this->model::sanitizeInput('precio_compra', 'float'),
-            'precio_venta'  => $this->model::sanitizeInput('precio_venta', 'float')
+            'nombre'          => $this->model::sanitizeInput('nombre', 'text'),
+            'modelo'          => $this->model::sanitizeInput('modelo', 'text'),
+            'id_marca'        => $this->model::sanitizeInput('id_marca', 'int'),
+            'id_presentacion' => $this->model::sanitizeInput('id_presentacion', 'int'),
+            'id_color'        => $this->model::sanitizeInput('id_color', 'int'),
+            'precio_compra'   => $this->model::sanitizeInput('precio_compra', 'float'),
+            'precio_venta'    => $this->model::sanitizeInput('precio_venta', 'float')
         ];
 
         /** Si el usuario adjunta una imagen al producto la guardamos y recuperamos su path */
@@ -84,7 +84,18 @@ class ProductController
 
     public function update()
     {
-        $recoverRegister = $this->model->select($this->table, $this->id);
+       $recoverRegister = $this->model->select($this->table, $this->id);
+
+        echo json_encode(
+            count($recoverRegister) > 0     
+                ? ['success' => true, 'message' => '', 'data' => $recoverRegister[0]] 
+                : ['success' => false, 'message' => 'No se encontró el registro.']
+        );
+    }
+
+    public function getRecord()
+    {
+        $recoverRegister = $this->model->selectOne($this->id);
 
         if (is_null($recoverRegister)) {
             echo json_encode(['success' => false, 'message' => 'No se encontró el registro.']);
@@ -167,7 +178,7 @@ class ProductController
             /** Cantidad de producto */
             $stock = $row['stock'] . ' ' . ($row['stock'] == 1 ? 'ud.' : 'uds.');
             $color = $row['id_color'] ? $this->model::$COLORES[$row['id_color']] : "-";
-            $talla = $row['id_talla'] ? $this->model::$TALLAS[$row['id_talla']] : "-";
+            $talla = $row['id_presentacion'] ? $this->model::$TALLAS[$row['id_presentacion']] : "-";
 
             /** Detalles del producto */
             $descripcion = "
@@ -235,5 +246,25 @@ class ProductController
         }
 
         echo json_encode(['results' => $formatted_products]);
+    }
+
+    public function droplistPresentations() {
+        $listRegister = "";
+        $list = $this->model->selectAll("presentaciones");
+        foreach ($list as $item) {
+            $listRegister .= '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
+        }
+
+        echo json_encode(['success' => true, 'data' => $listRegister]);
+    }
+
+    public function droplistColors() {
+        $listRegister = "";
+        $list = $this->model->selectAll("colores");
+        foreach ($list as $item) {
+            $listRegister .= '<option value="' . $item['id'] . '">' . $item['nombre'] . '</option>';
+        }
+
+        echo json_encode(['success' => true, 'data' => $listRegister]);
     }
 }

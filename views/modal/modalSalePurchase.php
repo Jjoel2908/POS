@@ -56,8 +56,8 @@
 
                                 <div class="col-lg-6 view-form mb-3">
                                     <div class="form-floating">
-                                        <input id="talla" class="form-control" type="text" name="talla" readonly>
-                                        <label for="talla"><i class="fa-solid fa-ruler me-2"></i>Talla</label>
+                                        <input id="presentacion" class="form-control" type="text" name="presentacion" readonly>
+                                        <label for="presentacion"><i class="fa-solid fa-ruler me-2"></i>Talla / Presentación</label>
                                     </div>
                                 </div>
 

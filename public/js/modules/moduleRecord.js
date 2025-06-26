@@ -604,7 +604,7 @@ $("form #search").on('select2:select', async e => {
     if (Number(id) > 0) {
         const formdata = new FormData();
         formdata.append("id", id);
-        await submitForm(formdata, "update", 'Producto', (data) => {
+        await submitForm(formdata, "getRecord", 'Producto', (data) => {
             $.each(data, (key, value) => $("#" + key).val(value));
 
             /** Visualización de la imagen de producto */
