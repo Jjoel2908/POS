@@ -12,8 +12,8 @@
    <ul class="metismenu pt-3" id="menu">
 
       <?php    
-         $Dashboard = new Dashboard();
-         echo $Dashboard->getMenu(); 
+         $MenuGenerator = new MenuGenerator();
+         echo $MenuGenerator->getMenu(); 
       ?>
    </ul>
 </div>

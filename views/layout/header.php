@@ -1,5 +1,5 @@
 <?php require_once '../config/global.php'; ?>
-<?php require_once '../models/Dashboard.php'; ?>
+<?php require_once '../models/MenuGenerator.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 

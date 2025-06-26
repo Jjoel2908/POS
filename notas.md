@@ -1,47 +1,21 @@
 # PARA HABILITAR NUEVAMENTE LAS CATEGORIAS DEBEMOS IR A LA BASE DE DATOS PARA PONER ID_CATEGORIA COMO OBLIGATORIO SIN QUE SEA NULLO, ADEMAS AGREGAR RELACION CON TABLA DE CATEGORIAS. TAMBIEN EN EL MODAL PARA AGREGAR PRODUCTO, AGREGAR EL CAMPO SELECT DE CATEGORIA Y EN EL MODULEPRODUCT CONSULTAR EL DROPLIST DE LA MISMA. CUANDO SE GUARDE EL PRODUCTO DEBEMOS VERIFICAR QUE LA CATEGORIA SE ESTE ENVIANDO CORRECTAMENTE.
 
-/** Función para obtener los productos con paginación y búsqueda */
-public function dataTable($start, $length, $search): array
-{
-   /** Condición base para los productos activos */
-   $where = "WHERE p.estado = 1";
+  // private function fetchData()
+   // {
+   //    $tables = [
+   //       'products'  => ['table' => 'productos', 'where' => 'estado = 1'],
+   //       'brands'    => ['table' => 'marcas', 'where' => 'estado = 1'],
+   //       'customers' => ['table' => 'clientes', 'where' => 'estado = 1'],
+   //       'users'     => ['table' => 'usuarios', 'where' => 'estado = 1 AND id <> 1'],
+   //       'totalSalesPerDay' => ['table' => 'ventas', 'where' => 'DATE(fecha) = CURRENT_DATE()'],
+   //    ];
 
-   /** Si hay búsqueda, agregarla a la condición */
-   if (!empty($search)) {
-      /** Protege contra inyecciones básicas */
-      $search = addslashes($search);
-      $where .= " AND (
-         p.nombre LIKE '%$search%' OR 
-         p.codigo LIKE '%$search%' OR 
-         m.nombre LIKE '%$search%' OR 
-         c.nombre LIKE '%$search%' OR 
-         t.nombre LIKE '%$search%'
-      )";
-   }
-
-   /** Consulta SQL para contar los productos filtrados */
-   $query = $this->queryMySQL(
-      "SELECT 
-         p.*, 
-         m.nombre AS marca,
-         c.nombre AS color,
-         t.nombre AS talla
-      FROM 
-         productos p 
-      INNER JOIN 
-         marcas m ON p.id_marca = m.id
-      LEFT JOIN 
-         colores c ON p.id_color = c.id
-      LEFT JOIN 
-         tallas t ON p.id_talla = t.id
-      $where
-      LIMIT 
-         $start, 
-         $length"
-   );
-
-   return $query;
-}
+   //    foreach ($tables as $key => $data) {
+   //       $sql = "SELECT COUNT(*) AS total FROM {$data['table']} WHERE {$data['where']}";
+   //       $result = $this->queryMySQL($sql);
+   //       $this->metrics[$key] = $result[0]['total'] ?? 0;
+   //    }
+   // }
 
 
 
