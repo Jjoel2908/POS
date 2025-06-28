@@ -3,95 +3,6 @@ require_once '../config/Connection.php';
 
 class Product extends Connection
 {
-   public static $TALLAS = [
-      1 => "XXXS",
-      2 => "XXS",
-      3 => "XS",
-      4 => "S",
-      5 => "M",
-      6 => "L",
-      7 => "XL",
-      8 => "XXL",
-      9 => "XXXL",
-      10 => "4XL",
-      11 => "5XL",
-      12 => "22",
-      13 => "22.5",
-      14 => "23",
-      15 => "23.5",
-      16 => "24",
-      17 => "24.5",
-      18 => "25",
-      19 => "25.5",
-      20 => "26",
-      21 => "26.5",
-      22 => "27",
-      23 => "27.5",
-      24 => "28",
-      25 => "28.5",
-      26 => "29",
-      27 => "29.5",
-      28 => "30",
-      29 => "30.5",
-      30 => "31",
-      31 => "32",
-      32 => "33",
-      33 => "34",
-      34 => "35",
-      35 => "36",
-      36 => "37",
-      37 => "38",
-      38 => "39",
-      39 => "40",
-      40 => "15 ML",
-      41 => "30 ML",
-      42 => "50 ML",
-      43 => "75 ML",
-      44 => "100 ML",
-      45 => "125 ML",
-      46 => "150 ML",
-      47 => "200 ML",
-      48 => "CHICA",
-      49 => "MEDIANA",
-      50 => "GRANDE",
-      51 => "UNITALLA",
-      52 => "SIN TALLA",
-      53 => "OTRO",
-   ];
-
-   public static $COLORES = [
-      1 => "NEGRO",
-      2 => "BLANCO",
-      3 => "ROJO",
-      4 => "AZUL",
-      5 => "VERDE",
-      6 => "AMARILLO",
-      7 => "NARANJA",
-      8 => "ROSA",
-      9 => "MORADO",
-      10 => "GRIS",
-      11 => "CAFÉ",
-      12 => "BEIGE",
-      13 => "TURQUESA",
-      14 => "VINO",
-      15 => "DORADO",
-      16 => "PLATEADO",
-      17 => "FUCSIA",
-      18 => "AQUA",
-      19 => "CORAL",
-      20 => "LILA",
-      21 => "MARFIL",
-      22 => "OLIVA",
-      23 => "MOSTAZA",
-      24 => "CELESTE",
-      25 => "LAVANDA",
-      26 => "GRANATE",
-      27 => "PÚRPURA",
-      28 => "TERRACOTA",
-      29 => "CIAN",
-      30 => "OTRO",
-   ];
-
    public function __construct() {}
 
    private function getBaseProductSelect(): string
@@ -104,9 +15,23 @@ class Product extends Connection
             co.nombre AS color
          FROM 
             productos p 
-         INNER JOIN marcas m ON p.id_marca = m.id 
-         INNER JOIN presentaciones pr ON p.id_presentacion = pr.id
-         INNER JOIN colores co ON p.id_color = co.id
+         LEFT JOIN marcas m ON p.id_marca = m.id
+         LEFT JOIN presentaciones pr ON p.id_presentacion = pr.id
+         LEFT JOIN colores co ON p.id_color = co.id
+      ";
+   }
+
+   private function getTotalProductosQuery(string $where = ''): string
+   {
+      return "
+         SELECT 
+            COUNT(*) AS total
+         FROM 
+            productos p
+         LEFT JOIN marcas m ON p.id_marca = m.id
+         LEFT JOIN presentaciones pr ON p.id_presentacion = pr.id
+         LEFT JOIN colores co ON p.id_color = co.id
+         $where
       ";
    }
 
@@ -156,13 +81,18 @@ class Product extends Connection
       if (!empty($search)) {
          /** Protege contra inyecciones básicas */
          $search = addslashes($search);
-         $where .= " AND (p.nombre LIKE '%$search%' OR p.codigo LIKE '%$search%' OR m.nombre LIKE '%$search%')";
+         $where .= " AND (
+            p.nombre LIKE '%$search%' OR 
+            p.codigo LIKE '%$search%' OR 
+            pr.nombre LIKE '%$search%' OR 
+            co.nombre LIKE '%$search%' OR 
+            m.nombre LIKE '%$search%')";
       }
 
-      /** Consulta SQL para contar los productos filtrados */
-      $query = $this->queryMySQL("SELECT COUNT(*) as total FROM productos p INNER JOIN marcas m ON p.id_marca = m.id $where");
+      /** Consulta SQL */
+      $sql = $this->getTotalProductosQuery($where);
 
-      return $query[0]['total'];
+      return $this->queryMySQL($sql)[0]['total'];
    }
 
    /** Función para recuperar el precio compra de un producto */
@@ -221,7 +151,8 @@ class Product extends Connection
          if ($oldImage) {
             $oldPath = rtrim($folder, '/') . '/' . $oldImage;
             if (file_exists($oldPath)) {
-               unlink($oldPath); /** Borra la imagen anterior */
+               unlink($oldPath);
+               /** Borra la imagen anterior */
             }
          }
 

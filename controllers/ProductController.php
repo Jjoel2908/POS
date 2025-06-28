@@ -88,7 +88,7 @@ class ProductController
 
         echo json_encode(
             count($recoverRegister) > 0     
-                ? ['success' => true, 'message' => '', 'data' => $recoverRegister[0]] 
+                ? ['success' => true, 'message' => '', 'data' => $recoverRegister] 
                 : ['success' => false, 'message' => 'No se encontró el registro.']
         );
     }
@@ -177,8 +177,6 @@ class ProductController
 
             /** Cantidad de producto */
             $stock = $row['stock'] . ' ' . ($row['stock'] == 1 ? 'ud.' : 'uds.');
-            $color = $row['id_color'] ? $this->model::$COLORES[$row['id_color']] : "-";
-            $talla = $row['id_presentacion'] ? $this->model::$TALLAS[$row['id_presentacion']] : "-";
 
             /** Detalles del producto */
             $descripcion = "
@@ -186,8 +184,8 @@ class ProductController
                     <div class='fw-bold fs-6 mb-2 text-primary'>{$row['nombre']}</div>
                     <div class='mb-1 font-15'><strong>Marca:</strong> {$row['marca']}</div>
                     <div class='mb-1 font-15'><strong>Código:</strong> {$row['codigo']}</div>
-                    <div class='mb-1 font-15'><strong>Color:</strong> {$color}</div>
-                    <div class='mb-1 font-15'><strong>Talla:</strong> {$talla}</div>
+                    <div class='mb-1 font-15'><strong>Color:</strong> {$row['color']}</div>
+                    <div class='mb-1 font-15'><strong>Talla:</strong> {$row['presentacion']}</div>
                     <div class='mb-1 font-15'><strong>Modelo:</strong> " . ($row['modelo'] ?? "-") . "</div>
                     <div class='mb-1 font-15'><strong>Precio Compra:</strong> $" . number_format($row['precio_compra'], 2) . "</div>
                     <div class='mb-1 font-15'><strong>Precio Venta:</strong> $" . number_format($row['precio_venta'], 2) . "</div>

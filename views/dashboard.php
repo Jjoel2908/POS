@@ -43,14 +43,6 @@ $cards = [
       'link'  => 'user.php',
       'color' => 'primary',
    ],
-   [
-      'key'   => 'users',
-      'perm'  => 10,
-      'title' => 'Usuarios',
-      'icon'  => 'fa-solid fa-users',
-      'link'  => 'user.php',
-      'color' => 'primary',
-   ]
 ];
 ?>
 
