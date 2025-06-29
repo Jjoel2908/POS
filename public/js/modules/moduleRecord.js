@@ -44,7 +44,7 @@ $(() => {
  * @param {string} [tableSelector="#module-table"] - Selector de la tabla donde se cargan los datos.
  */
 const loadModuleTable = (currentModule, tableSelector = "#module-table") => {
-    if (currentModule === "Venta")
+    if (currentModule === "Venta" || currentModule === "Compra")
         runAdditionalStep();
     else if (currentModule === "Producto")
         loadDataTableServerSide(tableSelector, currentModule);
@@ -461,7 +461,7 @@ const handleFormKeyPress = async (e, formId, currentModule) => {
         const quantity  = $(`#${formId} #cantidad`).val();
         const saleType  = $(`#${formId} #tipo_venta option:selected`).val();
         const customer  = $(`#${formId} #id_cliente option:selected`).val();
-         const cantidad = $("form #cantidad");
+        const cantidad = $("form #cantidad");
 
         const formdata = new FormData();
         formdata.append("id", id);
@@ -472,7 +472,7 @@ const handleFormKeyPress = async (e, formId, currentModule) => {
 
             /** Limpiamos el formulario */
             $('#container-image').html("");
-            $('#container-image-void').removeClass('d-none');
+            $('#container-image-void').removeClass('d-none');   
             clearForm('');
 
             /** Cargamos los detalles de la venta */

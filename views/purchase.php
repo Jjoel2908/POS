@@ -2,10 +2,10 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission' => 6,
+   'permission' => 5,
    'module'     => 'Compra',
    'title'      => 'Compras',
-   'icon'       => 'fa-solid fa-cart-shopping',
+   'icon'       => 'fa-solid fa-bag-shopping',
    'modals'     => [
       'modal/modalSalePurchase.php',
    ],

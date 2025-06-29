@@ -2,7 +2,10 @@ let customerLoaded = false;
 $(() => {
     initializeProductsDropdown();
     loadTemporaryDetails("DetalleVenta");
+    isCashboxOpen();
 });
+
+const isCashboxOpen = async () => await submitForm(new FormData(), "isCashboxOpen", "Caja", () => {}, false);
 
 /** Función encargada de mostrar un input para agregar un pago a venta de crédito.
  * @param {int} saleId - Identificador de la venta a crédito.

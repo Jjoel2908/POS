@@ -178,6 +178,7 @@ class TemplateView
                     $module = $this->module;
                     $title = $this->title;
                     $field = 'precio_' . strtolower($module);
+                    $details = 'Detalle' . $module;
 
                     foreach ($this->modals as $modal): 
                 ?>

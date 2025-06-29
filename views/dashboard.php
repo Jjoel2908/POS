@@ -44,12 +44,40 @@ $cards = [
       'color' => 'primary',
    ],
    [
-      'key'   => 'totalSalesPerDay',
-      'perm'  => 7,
-      'title' => 'Ventas Por Día',
-      'icon'  => 'fa-solid fa-cart-shopping',
-      'link'  => 'sales.php',
-      'color' => 'primary',
+      'key'    => 'daily_sales',
+      'perm'   => 7,
+      'title'  => 'Ventas Por Día',
+      'icon'   => 'fa-solid fa-cart-shopping',
+      'link'   => 'sales.php',
+      'color'  => 'primary',
+      'border' => 'bottom',
+   ],
+   [
+      'key'    => 'monthly_sales',
+      'perm'   => 7,
+      'title'  => 'Ventas Por Mes',
+      'icon'   => 'fa-solid fa-cart-shopping',
+      'link'   => 'sales.php',
+      'color'  => 'primary',
+      'border' => 'bottom',
+   ],
+   [
+      'key'    => 'monthly_purchases',
+      'perm'   => 7,
+      'title'  => 'Compras Por Mes',
+      'icon'   => 'fa-solid fa-bag-shopping',
+      'link'   => 'sales.php',
+      'color'  => 'primary',
+      'border' => 'bottom',
+   ],
+   [
+      'key'    => 'pending_credit',
+      'perm'   => 7,
+      'title'  => 'Pendiente por Cobrar',
+      'icon'   => 'fa-solid fa-money-bill-wave',
+      'link'   => 'sales.php',
+      'color'  => 'primary',
+      'border' => 'bottom',
    ],
 ];
 ?>
@@ -64,11 +92,11 @@ $cards = [
          <?php foreach ($cards as $card): ?>
             <?php if (in_array($card['perm'], $_SESSION['permisos'])): ?>
                <div class="col pe-0">
-                  <div class="card radius-10 border-start border-0 border-5 border-<?= $card['color'] ?>">
+                  <div class="card radius-10 border-<?= $card['border'] ?? 'start' ?> border-0 border-5 border-<?= $card['color'] ?>">
                      <div class="card-body">
                         <div class="d-flex align-items-center">
                            <div>
-                              <p class="mb-0 text-secondary font-16"><?= $card['title'] ?></p>
+                              <p class="mb-0 text-secondary font-15"><?= $card['title'] ?></p>
                               <h3 class="my-1 text-<?= $card['color'] ?>">
                                  <?= $Dashboard->getMetric($card['key']) ?>
                               </h3>

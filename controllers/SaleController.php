@@ -20,7 +20,7 @@ class SaleController
         "required"          => "Debe completar la información obligatoria de la venta.",
         "required_customer" => "Debe seleccionar un cliente para la venta a crédito.",
         "empty"             => "Aún no hay información de venta disponible.",
-        "empty_cashbox"     => "Es necesario abrir una caja para las ventas."
+        "empty_cashbox"     => "Es necesario abrir una caja para realizar una venta."
     ];
 
     public function __construct($id = null, $idSucursal = null)

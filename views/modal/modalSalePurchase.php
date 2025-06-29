@@ -63,7 +63,7 @@
 
                                 <div class="col-lg-6 view-form mb-3">
                                     <div class="form-floating">
-                                        <input id="cantidad" class="form-control" type="number" name="cantidad" oninput="validateInt(event)" onkeypress="handleFormKeyPress(event, 'formAdd', 'DetalleVenta')" disabled>
+                                        <input id="cantidad" class="form-control" type="number" name="cantidad" oninput="validateInt(event)" onkeypress="handleFormKeyPress(event, 'formAdd', '<?= $details ?>')" disabled>
                                         <label for="cantidad"><i class="bx bx-cube me-1"></i> Cantidad</label>
                                     </div>
                                 </div>
@@ -109,7 +109,7 @@
                     <div class="card radius-10 border-top border-0 border-5 border-success">
                         <div class="card-body">
                             <div class="text-center">
-                                <p class="mb-0 font-26">Total a Pagar</p>
+                                <p class="mb-0 font-26">Total</p>
                                 <hr>
                                 <h1 class="mb-4" id="total-details">0.00</h1>
                             </div>
@@ -142,6 +142,8 @@
                                         </div>
                                     </div>
                                 </div>
+                            <?php } else if ($module == "Compra") { ?>
+                                <p class="font-14 text-justify px-1">Revisa los productos y cantidades antes de finalizar. Esta compra se registrará en el sistema y actualizará el inventario automáticamente.</p>
                             <?php } ?>
 
                             <div class="d-grid mt-4 mb-2">

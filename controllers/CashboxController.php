@@ -23,7 +23,7 @@ class CashboxController
         "close_failed"   => "Error al cerrar la caja.",
         "required"       => "Debe completar la información obligatoria.",
         "box_open_error" => "Es necesario cerrar la caja para eliminar.",
-        "empty_cashbox"  => "Es necesario abrir una caja para las ventas."
+        "empty_cashbox"  => "Es necesario abrir una caja para realizar una venta."
     ];
 
     public function __construct($id = null, $idSucursal = null)
@@ -173,7 +173,7 @@ class CashboxController
         );
     }
 
-    public function hasOpenCashbox() 
+    public function isCashboxOpen() 
     {
         $hasOpen = $this->model->hasOpen($this->idSucursal);
 
