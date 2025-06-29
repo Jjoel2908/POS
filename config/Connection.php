@@ -370,6 +370,9 @@ class Connection
     public static function insertWithTransaction(mysqli $conexion, string $table, array $data): bool
     {
         try {
+            if ($table == "abonos_credito")
+                $data['creado_por'] = filter_var($_SESSION['id'] ?? 1, FILTER_VALIDATE_INT) ?: 0;
+
             $columns = implode(', ', array_keys($data));
             $values  = str_repeat('?, ', count($data) - 1) . '?';
             $types   = str_repeat('s', count($data));

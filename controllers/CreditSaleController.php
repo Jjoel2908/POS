@@ -32,16 +32,17 @@ class CreditSaleController
 
         /** Limpiamos el monto a pagar y verificamos que sea mayor a 0 */
         $amountPayment = $this->model::sanitizeInput('monto', 'float');
-        if ($amountPayment < 1) {
-           echo json_encode(['success' => false, 'message' => $this->messages['amount_required']]);
-           break;
+        if ($amountPayment <= 0) {
+            echo json_encode(['success' => false, 'message' => $this->messages['amount_required']]);
+            return;
         }
-  
+
         /** Procesamos el pago del cliente */
-        $response = $this->model->processPayment($this->id, $amountPayment);
+        $saleData = $this->model::select("ventas", $this->id);
+        $response = $this->model->processPayment($this->id, $saleData, $amountPayment);
         echo json_encode($response);
-   }
-   
+    }
+
     public function dataTable()
     {
         $response = $this->model->dataTable();
@@ -55,9 +56,11 @@ class CreditSaleController
                 $time  = date("h:i A", strtotime($hour));
 
                 $btn  = "";
+                $btn .= "<button type=\"button\" class=\"btn btn-inverse-warning mx-1\" onclick=\"loadRegisteredDetails('DetalleVenta', '{$row['id']}', '{$date}')\"><i class=\"fa-solid fa-folder-open\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-success mx-1 px-3\" onclick=\"addPayment(" . $row['id'] . ")\"><i class=\"fa-solid fa-dollar\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"loadRegisteredDetails('DetalleVenta', '{$row['id']}', '{$date}')\"><i class=\"fa-solid fa-folder-open\"></i></button>";
-                
+                // $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"loadDetailsPayment(" . $row['id'] . ", '" . htmlspecialchars($row['cliente'], ENT_QUOTES) . "')\"><i class=\"fa-solid fa-calendar-days\"></i></button>";
+            
+
                 $data[] = [
                     "Fecha"           => $date,
                     "Hora"            => $time,
@@ -66,6 +69,29 @@ class CreditSaleController
                     "Total Pagado"    => "$" . number_format($row['total_pagado'], 2),
                     "Deuda Pendiente" => "$" . number_format($row['pendiente_pago'], 2),
                     "Acciones"        => $btn
+                ];
+            }
+        }
+        echo json_encode($data);
+    }
+
+    public function dataTablePayment()
+    {
+        $saleId   = $this->model::sanitizeInput('saleId', 'int');
+        $response = $this->model->dataTablePayment($saleId);
+        $data     = array();    
+
+        if (count($response) > 0) {
+
+            foreach ($response as $row) {
+                list($day, $hour) = explode(" ", $row['fecha']);
+                $date  = date("d/m/Y", strtotime($day));
+                $time  = date("h:i A", strtotime($hour));
+
+                $data[] = [
+                    "Fecha" => $date,
+                    "Hora"  => $time,
+                    "Monto" => "$" . number_format($row['monto'], 2),
                 ];
             }
         }

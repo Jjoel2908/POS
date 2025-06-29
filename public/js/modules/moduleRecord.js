@@ -3,7 +3,7 @@ const currentModule = $(".card").data("module");
 const creditSale = 2;
 let modalId;
 
-const columnsEndTable = ["Precio Compra", "Precio Venta", "Monto", "Precio", "Subtotal", "Total", "compra", "venta"];
+const columnsEndTable = ["Precio Compra", "Precio Venta", "Monto", "Precio", "Subtotal", "Total", "Total Venta", "Total Pagado", "Deuda Pendiente", "compra", "venta"];
 const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Monto Inicial", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
 
 $(() => {
@@ -338,6 +338,7 @@ const saveTransaction = async () => {
                     await submitForm(formData, "save", currentModule, (data) => {
                         loadTemporaryDetails("Detalle" + currentModule);
                         $('#cantidad').prop('disabled', true);
+                        $('select#tipo_venta').val(1).trigger('change');
                         $("#customerField").hide();
                     });
                 } catch (error) {

@@ -26,16 +26,31 @@ class CreditSale extends Connection
             AND 
                 v.tipo_venta = 2
             AND
-                v.total_pagado < v.total_venta
+                v.estado_pago IN (2,3)
             ORDER BY 
-                v.id DESC 
-            LIMIT 5"
+                v.id DESC"
         );
     }
 
-    public function updateSaleAsPaid(int $saleId): bool
+    public function dataTablePayment(int $saleId): array
     {
-        return $this->queryWithTransaction(
+        return $this->queryMySQL(
+            "SELECT 
+                ac.fecha,
+                ac.monto
+            FROM 
+                abonos_credito ac
+            WHERE 
+                ac.id_venta_credito = $saleId
+            ORDER BY 
+                ac.fecha ASC"
+        );
+    }
+
+    public function updateSaleAsPaid(mysqli $conexion, int $saleId): bool
+    {
+        return $this->executeQueryWithTransaction(
+            $conexion,
             "UPDATE 
                 ventas 
             SET 
@@ -46,46 +61,47 @@ class CreditSale extends Connection
         );
     }
 
-    public function updatePartialPayment(int $saleId, float $newAmount): bool
+    public function updatePartialPayment(mysqli $conexion, int $saleId, float $newAmount): bool
     {
-        return $this->queryWithTransaction(
+        return $this->executeQueryWithTransaction(
+            $conexion,
             "UPDATE 
                 ventas
             SET 
-                total_pagado = $newAmount 
+                total_pagado = $newAmount,
+                estado_pago = 2
             WHERE 
                 id = $saleId"
         );
     }
         
-    public function processPayment(int $saleId, float $amount): array
+    public function processPayment(int $saleId, array $saleData, float $amount): array
     {
+        $conexion = self::conectionMySQL();
         try {
-            $conexion = self::conectionMySQL();
             $conexion->begin_transaction();
-
-            $saleData = self::select("ventas", $saleId);
-            $pendingAmount = round($venta['total_venta'] - $venta['total_pagado'], 2);
+            $pendingAmount = round($saleData['total_venta'] - $saleData['total_pagado'], 2);
 
             /** Si el monto a pagar es mayor o igual al pendiente, completamos la venta como pagada */
             if ($amount >= $pendingAmount) {
-                if (!$this->updateSaleAsPaid($saleId))
+                if (!$this->updateSaleAsPaid($conexion, $saleId))
                     throw new Exception("Error al completar la venta como pagada.");
             } else {
                 /** Abonar parcialmente */
-                $newAmount = round($venta['total_pagado'] + $amount, 2);
-                if (!$this->updatePartialPayment($saleId, $newAmount))
+                $newAmount = round($saleData['total_pagado'] + $amount, 2);
+                if (!$this->updatePartialPayment($conexion, $saleId, $newAmount))
                     throw new Exception("Error al actualizar la venta como parcial.");
             }
 
             /** Registramos el abono para el historial de pagos */
             $abonoData = [
-                'id_venta' => $saleId,
-                'fecha'    => date('Y-m-d H:i:s'),
-                'monto'    => $amount,
+                'id_venta_credito' => $saleId,
+                'fecha'            => date('Y-m-d H:i:s'),
+                'monto'            => $amount,
+                'creado_por'       => $amount,
             ];
 
-            $insertAbono = $this::insertWithTransaction($conexion, 'abonos_ventas', $abonoData);
+            $insertAbono = $this::insertWithTransaction($conexion, 'abonos_credito', $abonoData);
 
             if (!$insertAbono)
                 throw new Exception('Error al registrar el abono en la base de datos.');
