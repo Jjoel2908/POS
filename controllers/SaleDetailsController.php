@@ -40,7 +40,7 @@ class SaleDetailsController
         }
 
         /** Verificamos si el producto ya existe en los detalles de venta */
-        $existDetail        = $this->model->existSaleDetails($this->id, $this->idUser);
+        $existDetail = $this->model->existSaleDetails($this->id, $this->idUser);
 
         /** Cantidad nueva ingresada por el usuario */
         $quantityInput = $this->model::sanitizeInput('cantidad', 'int');
@@ -136,8 +136,9 @@ class SaleDetailsController
             'success' => true,
             'message' => '',
             'data' => [
-                'data' => $HTML, 
-                'total' => number_format($total, 2)
+                'data'  => $HTML,
+                'count' => count($response),
+                'total' => number_format($total, 2),
             ]
         ]);
     }

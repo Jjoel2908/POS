@@ -2,7 +2,7 @@
 <div class="card radius-10 border-start border-0 border-4 border-primary">
     <div class="card-header">
         <div class="d-flex align-items-center justify-content-center py-1">
-            <h5 class="mb-0"><?= $title ?></h5>
+            <h5 class="mb-0 pt-1"><?= $title ?></h5>
         </div>
     </div>
     <div class="card-body">
@@ -10,10 +10,10 @@
             <!-- Identificador -->
             <input type="hidden" id="id" name="id">
 
-            <div class="row pt-1">
+            <div class="row">
 
                 <!-- Busqueda de producto y detalles -->
-                <div class="col-md-8 text-center" id="container-search">
+                <div class="col-md-8 text-center pt-2" id="container-search">
                     <div class="row g-0">
 
                         <!-- Buscador -->
@@ -105,14 +105,14 @@
                 </div>
 
                 <!-- Configuraciones de venta -->
-                <div class="col-md-4">
+                <div class="col-md-4 ps-lg-4 ps-sm-0 pt-2">
                     <div class="card radius-10 border-top border-0 border-5 border-success">
-                        <div class="card-header">
-                            <div class="d-flex align-items-center justify-content-center py-2">
-                                <p class="mb-0 font-22 fw-bold">Total <?= $module ?>: <span class="ps-2" id="total-details">0.00</span></p>
-                            </div>
-                        </div>
                         <div class="card-body">
+                            <div class="text-center">
+                                <p class="mb-0 font-26">Total a Pagar</p>
+                                <hr>
+                                <h1 class="mb-4" id="total-details">0.00</h1>
+                            </div>
 
                             <?php if ($module != "Compra") { ?>
                                 <!-- Tipo de Venta -->
@@ -127,12 +127,31 @@
                                 <!-- Cliente -->
                                 <div class="view-form mt-3" id="customerField" style="display: none;">
                                     <label class="mb-1 font-15" for="id_cliente"><i class="fa-solid fa-user me-1"></i> Cliente</label>
-                                    <select name="id_cliente" id="id_cliente" class="form-control select"></select>
+
+                                    <div class="row">
+                                        <!-- Columna del select -->
+                                        <div class="col-10 pe-0">
+                                            <select name="id_cliente" id="id_cliente" class="form-control select"></select>
+                                        </div>
+
+                                        <!-- Columna del botón -->
+                                        <div class="col-2 ps-0">
+                                            <button type="button" class="btn btn-success h-100 w-100 radius-0 text-center" title="Agregar nuevo cliente" onclick="openModal('Cliente')">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             <?php } ?>
 
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-success btn-lg" type="button" onclick="saveTransaction()">Generar <?= $module ?></button>
+                            <div class="d-grid mt-4 mb-2">
+                                <div id="loadingSpinner" class="d-flex justify-content-center align-items-center d-none">
+                                    <div class="spinner-border text-success me-3" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="font-16 mb-0">Espera un momento...</p>
+                                </div>
+                                <button id="btnSaveTransaction" class="btn btn-success btn-lg" type="button" onclick="saveTransaction()">Generar <?= $module ?></button>
                             </div>
                         </div>
                     </div>

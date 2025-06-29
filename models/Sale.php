@@ -5,12 +5,25 @@ require '../models/Cashbox.php';
 
 class Sale extends Connection
 {
+    /** Tipos de venta disponibles en el sistema */
+    public static $SALE_TYPE = [
+        1 => 'Contado',  // Pago inmediato en el momento de la venta
+        2 => 'Crédito'   // Pago aplazado, el cliente paga después
+    ];
+
+    /** Estados posibles del pago de una venta */
+    public static $PAYMENT_STATUS = [
+        1 => 'Pagado',    // La venta ya fue pagada completamente
+        2 => 'Parcial',   // Solo se ha pagado una parte del total
+        3 => 'Pendiente'  // No se ha recibido ningún pago aún
+    ];
+
     /** Representa una venta realizada al contado (pagada en efectivo o en el momento) */
     public static $cashSale = 1;
 
     /** Representa una venta a crédito (el pago se realiza en una fecha posterior) */
     public static $creditSale = 2;
-    
+
     public function __construct() {}
 
 
@@ -36,8 +49,8 @@ class Sale extends Connection
                 v.id DESC 
             LIMIT 5"
         );
-    }  
-    
+    }
+
     public function isCartEmpty(int $userId): array
     {
         $SaleDetails = new SaleDetails();
@@ -106,27 +119,28 @@ class Sale extends Connection
 
     /** Registra una nueva venta y actualiza stock de productos
      *
-     * @param int $userId - ID del usuario que genera la venta
-     * @param int $branchId - ID de la sucursal donde se realiza la venta
+     * @param int $userId - ID del usuario que genera la venta.
+     * @param int $branchId - ID de la sucursal donde se realiza la venta.
      * @param int $cashboxId - ID de la caja abierta.
-     * @param float $total - Total de la venta
-     * @return array - Respuesta de éxito o error
+     * @param int $saleType - Tipo de venta a realizar.
+     * @param int $customerId - ID del cliente.
+     * @param float $total - Total de la venta.
      */
-    public function insertSale(int $userId, int $branchId, int $cashboxId, int $saleType, int $customer, float $total): bool
+    public function insertSale(int $userId, int $branchId, int $cashboxId, int $saleType, int|null $customerId, float $total): bool
     {
+        $conexion = self::conectionMySQL();
         try {
-            $conexion = self::conectionMySQL();
             $conexion->begin_transaction();
 
             /** Información a registrar */
             $data = [
                 'id_sucursal'  => $branchId,
                 'id_caja'      => $cashboxId,
-                'id_cliente'   => $saleType == 2 ? $customer : 1,
+                'id_cliente'   => $customerId ?? 1,
                 'total_venta'  => $total,
                 'total_pagado' => $saleType == 1 ? $total : 0.00,
                 'tipo_venta'   => $saleType,
-                'estado_pago'  => $saleType,
+                'estado_pago'  => $saleType == 1 ? 1 : 3,
                 'fecha'        => date('Y-m-d H:i:s'),
                 'creado_por'   => $userId
             ];

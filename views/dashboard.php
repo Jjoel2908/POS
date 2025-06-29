@@ -43,6 +43,14 @@ $cards = [
       'link'  => 'user.php',
       'color' => 'primary',
    ],
+   [
+      'key'   => 'totalSalesPerDay',
+      'perm'  => 7,
+      'title' => 'Ventas Por Día',
+      'icon'  => 'fa-solid fa-cart-shopping',
+      'link'  => 'sales.php',
+      'color' => 'primary',
+   ],
 ];
 ?>
 

@@ -21,15 +21,15 @@ class Dashboard extends Connection
    private function fetchData()
    {
       $queries = [
-         'products'  => "SELECT COUNT(*) AS total FROM productos WHERE estado = 1",
-         'brands'    => "SELECT COUNT(*) AS total FROM marcas WHERE estado = 1",
-         'customers' => "SELECT COUNT(*) AS total FROM clientes WHERE estado = 1",
-         'users'     => "SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1 AND id <> 1",
-         'cashbox'   => "SELECT COUNT(*) AS total FROM cajas WHERE estado = 1",
-         // 'totalSalesPerDay' => "SELECT COUNT(*) AS total FROM ventas WHERE DATE(fecha) = CURRENT_DATE()"
-         // 'totalStockMinimo'  => "SELECT COUNT(*) AS total FROM productos WHERE stock <= stock_minimo",
-         // 'totalPurchasesPerMonth' => "SELECT COUNT(*) AS total FROM compras WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())",
-         // 'totalSalesPerMonth'   => "SELECT COUNT(*) AS total FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())",
+         'products'         => "SELECT COUNT(*) AS total FROM productos WHERE estado = 1",
+         'brands'           => "SELECT COUNT(*) AS total FROM marcas WHERE estado = 1",
+         'customers'        => "SELECT COUNT(*) AS total FROM clientes WHERE estado = 1",
+         'users'            => "SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1 AND id <> 1",
+         'totalSalesPerDay' => "SELECT COUNT(*) AS total FROM ventas WHERE fecha >= CURDATE() AND fecha < CURDATE() + INTERVAL 1 DAY"
+           // 'totalStockMinimo'  => "SELECT COUNT(*) AS total FROM productos WHERE stock <= stock_minimo",
+           // 'cashbox'   => "SELECT COUNT(*) AS total FROM cajas WHERE estado = 1",
+           // 'totalPurchasesPerMonth' => "SELECT COUNT(*) AS total FROM compras WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())",
+           // 'totalSalesPerMonth'   => "SELECT COUNT(*) AS total FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())",
       ];
 
       foreach ($queries as $key => $sql) {

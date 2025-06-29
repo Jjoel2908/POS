@@ -7,8 +7,6 @@ const columnsEndTable = ["Precio Compra", "Precio Venta", "Monto", "Precio", "Su
 const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Monto Inicial", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
 
 $(() => {
-    if (!currentModule || currentModule == "Compra" || currentModule == "Venta") return;
-
     loadModuleTable(currentModule);
 
     $("form").submit(async function (event) {
@@ -23,7 +21,8 @@ $(() => {
                 $('#btnSave').prop("disabled", true);
                 
                 /** Llamamos a submitForm pasando el módulo dinámicamente */
-                await submitForm(this, "save", currentModule, () => {
+                const moduleRecord = $(this).data("module");
+                await submitForm(this, "save", moduleRecord, () => {
                     loadModuleTable(currentModule);
                     $("#modalRegister").modal("toggle");
                 });
@@ -307,10 +306,8 @@ const loadDataTableServerSide = (tableId, currentModule, registerId = null) => {
 /** Genera una transacción para un módulo específico mediante una confirmación previa.
  * Muestra una alerta de confirmación antes de ejecutar la acción y, si el usuario confirma,
  * llama a la función submitForm para procesar la transacción.
- *
- * @param {string} currentModule - Nombre del módulo para la generación de la transacción.
  */
-const saveTransaction = async (currentModule) => {
+const saveTransaction = async () => {
     try {
         Swal.fire({
             title: 'Generar ' + currentModule,
@@ -321,23 +318,34 @@ const saveTransaction = async (currentModule) => {
             cancelButtonText: TextCancel,
         }).then(async (result) => {
             if (result.isConfirmed) {
+                try {
+                    /** Mostramos el spinner y ocultamos botón de guardar */
+                    $("#loadingSpinner").removeClass('d-none');
+                    $('#btnSaveTransaction').addClass('d-none');
+                    
+                    const formData = new FormData();
+                    /** Información adicional para venta */
+                    if (currentModule === "Venta") {
+                        const saleType   = $(`#tipo_venta option:selected`).val();
+                        const customerId = $(`#id_cliente option:selected`).val();
+                        formData.append("saleType", saleType);
 
-                const formData = new FormData();
+                        if (customerId)
+                            formData.append("customerId", customerId);
+                    }
 
-                /** Información adicional para venta */
-                if (currentModule === "Venta") {
-                    const saleType   = $(`#tipo_venta option:selected`).val();
-                    const customerId = $(`#id_cliente option:selected`).val();
-                    formData.append("saleType", saleType);
-
-                    if (customerId)
-                        formData.append("customerId", customerId);
+                    /** Llamamos a submitForm pasando el módulo dinámicamente */
+                    await submitForm(formData, "save", currentModule, (data) => {
+                        loadTemporaryDetails("Detalle" + currentModule);
+                        $('#cantidad').prop('disabled', true);
+                        $("#customerField").hide();
+                    });
+                } catch (error) {
+                    console.error("Error en la función saveTransaction del archivo moduleRecord:", error);
+                } finally {
+                    $("#loadingSpinner").addClass('d-none');
+                    $('#btnSaveTransaction').removeClass('d-none');
                 }
-
-                /** Llamamos a submitForm pasando el módulo dinámicamente */
-                await submitForm(formData, "save", currentModule, (data) => {
-                    $('#cantidad').prop('disabled', true);
-                });
             }
         });
     } catch (error) {
@@ -453,6 +461,7 @@ const handleFormKeyPress = async (e, formId, currentModule) => {
         const quantity  = $(`#${formId} #cantidad`).val();
         const saleType  = $(`#${formId} #tipo_venta option:selected`).val();
         const customer  = $(`#${formId} #id_cliente option:selected`).val();
+         const cantidad = $("form #cantidad");
 
         const formdata = new FormData();
         formdata.append("id", id);
@@ -473,6 +482,7 @@ const handleFormKeyPress = async (e, formId, currentModule) => {
             $('#search').select2('open');
             $('select#tipo_venta').val(saleType).trigger('change');
             $(`select#id_cliente`).val(customer).trigger('change');
+            cantidad.prop('disabled', true);
         }, false);
     }
 };
@@ -484,11 +494,17 @@ const handleFormKeyPress = async (e, formId, currentModule) => {
  */
 const loadTemporaryDetails = async (currentModule) => {
     /** Llamamos a submitForm pasando el módulo dinámicamente */
+    const btnSaveTransaction = $("#btnSaveTransaction");
     const formData = new FormData();
 
     await submitForm(formData, "temporaryDataTable", currentModule, (data) => {
         $('#details').html(data.data);
         $('#total-details').html('$' + data.total);
+
+        if (Number(data.count) === 0)
+            btnSaveTransaction.prop('disabled', true);
+        else
+            btnSaveTransaction.prop('disabled', false);
     }, false);
 };
 

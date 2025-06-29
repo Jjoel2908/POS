@@ -43,7 +43,7 @@ class SaleController
         $saleType = $this->model::sanitizeInput('saleType', 'int');
 
         /** Valida campos requeridos */
-        if ($_POST['customerId'] == 0 && $saleType == $this->model::$creditSale) {
+        if ($saleType == $this->model::$creditSale && empty($_POST['customerId'])) {
             echo json_encode(['success' => false, 'message' => $this->messages['required_customer']]);
             return;
         }
@@ -68,16 +68,14 @@ class SaleController
         }
 
         /** Cliente */
-        $customerId = $this->model::sanitizeInput('customerId', 'int');
+        $customerId = !empty($_POST['customerId']) ? $this->model::sanitizeInput('customerId', 'int') : null;
 
         /** Registrar venta en el modelo */
         $save = $this->model->insertSale($this->idUser, $this->idSucursal, $cashbox, $saleType, $customerId, $totalFormatted);
-
-        $module = $saleType == 1 ? "Venta" : "VentaCredito"; 
         echo json_encode(
             $save
-                ? ['success' => true, 'message' => $this->messages['save_success'], 'data' => $module]
-                : ['success' => false, 'message' => $this->messages['save_failed'], 'data' => $module]
+                ? ['success' => true, 'message' => $this->messages['save_success']]
+                : ['success' => false, 'message' => $this->messages['save_failed']]
         );
     }
 
