@@ -146,6 +146,7 @@ class CashboxController
         $startDate = date('Y-m-d H:i:s');
         $initialAmount = $this->model::sanitizeInput('monto', 'float');
 
+        /** Abrimos la caja con el usuario que está en sesión */
         $openCashbox = $this->model->open($this->id, $this->idUser, $startDate, $initialAmount);
         echo json_encode(
             $openCashbox
