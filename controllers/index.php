@@ -27,6 +27,7 @@ $controllers = [
     'Caja'          => 'CashboxController.php',
     'Venta'         => 'SaleController.php',
     'VentaCredito'  => 'CreditSaleController.php',
+    'AbonosVentaCredito'  => 'CreditSalePaymentController.php',
     'DetalleVenta'  => 'SaleDetailsController.php',
     'Usuario'       => 'UserController.php',
     'Gasto'         => 'ExpenseController.php',

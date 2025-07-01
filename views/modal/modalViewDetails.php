@@ -11,7 +11,7 @@
          <!-- # [ B O D Y ] # -->
          <div class="modal-body pt-0">
             <div class="table-responsive">
-               <table class="table table-striped table-bordered view-table" id="table-view-details"></table>
+               <table class="table table-striped table-bordered view-table" id="table-details"></table>
             </div>
          </div>
       </div>

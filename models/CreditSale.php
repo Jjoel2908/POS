@@ -32,21 +32,6 @@ class CreditSale extends Connection
         );
     }
 
-    public function dataTablePayment(int $saleId): array
-    {
-        return $this->queryMySQL(
-            "SELECT 
-                ac.fecha,
-                ac.monto
-            FROM 
-                abonos_credito ac
-            WHERE 
-                ac.id_venta_credito = $saleId
-            ORDER BY 
-                ac.fecha ASC"
-        );
-    }
-
     public function updateSaleAsPaid(mysqli $conexion, int $saleId): bool
     {
         return $this->executeQueryWithTransaction(

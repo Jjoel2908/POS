@@ -509,33 +509,61 @@ const loadTemporaryDetails = async (currentModule) => {
     }, false);
 };
 
-/** Carga y muestra los detalles de una compra/venta *ya registrada* en el sistema,
- * es decir, cuando los datos ya están almacenados en la base de datos.
- * Muestra los detalles en un modal si se pasa un ID de compra.
- * 
- * @param {string} currentModule - Nombre del módulo desde donde se llama la función.
- * @param {int} registerId - Identificador si se desea buscar registros de algo en particular.
+/** Convierte una fecha en formato 'DD/MM/YYYY' a texto legible.
+ * @param {string} dateStr - Fecha en formato 'DD/MM/YYYY'
+ * @returns {string} Fecha en formato legible, o string vacío si no se puede convertir.
  */
-const loadRegisteredDetails = async (currentModule, registerId = null, date = null) => {
-    let purchaseDate;
+const formatDateForTitle = (dateStr) => {
+    if (!dateStr) return "";
 
-    if (date) {
-        const newDate      = parseFechaDMY(date);
-              purchaseDate = getFechaActualLetras(newDate);
+    try {
+        const parsedDate = parseFechaDMY(dateStr);
+        return getFechaActualLetras(parsedDate); // e.g., "1 de Julio de 2025"
+    } catch (e) {
+        return "";
     }
+};
 
-    const title = currentModule == "ArqueoCaja"
-        ?  `Arqueo de Caja`
-        :  `Detalles de ${currentModule == "DetalleCompra" ? "Compra" : "Venta"} del ${purchaseDate}`;
+/** Genera un título de modal según el módulo y la fecha.
+ * @param {string} module - Nombre del módulo (DetalleCompra, DetalleVenta, ArqueoCaja, etc.)
+ * @param {string|null} formattedDate - Fecha ya formateada para el título.
+ * @returns {string} Título para el modal.
+ */
+const getTitleByModuleAndDate = (module, formattedDate = "") => {
+    switch (module) {
+        case "DetalleCompra":
+            return "Detalles de Compra del " + formattedDate;
+        case "DetalleVenta":
+            return "Detalles de Venta del " + formattedDate;
+        case "ArqueoCaja":
+            return "Arqueo de Caja";
+        case "AbonosVentaCredito":
+            return "Detalles de Pago";
+        default:
+            return `Detalles de ${module}${formattedDate ? " del " + formattedDate : ""}`;
+    }
+};
+
+/** Carga y muestra los detalles de una compra/venta ya registrada en el sistema.
+ * Muestra los detalles en un modal si se pasa un ID de registro.
+ *
+ * @param {string} currentModule - Nombre del módulo desde donde se llama la función.
+ * @param {number|null} registerId - ID del registro a cargar (opcional).
+ * @param {string|null} date - Fecha en formato 'DD/MM/YYYY' (opcional).
+ * @param {string} modalSelector - Selector del modal a mostrar (por defecto '#modalViewDetails').
+ */
+const loadRegisteredDetails = async (currentModule, registerId = null, date = null, modalSelector = "#modalViewDetails") => {
+    const formattedDate = formatDateForTitle(date);
+    const title = getTitleByModuleAndDate(currentModule, formattedDate);
 
     /** Asignamos el título para el modal */
-    $("#modalViewDetails #modalTitle").html(title);
-    
+    $(`${modalSelector} #modalTitle`).html(title);
+
     /** Cargamos la información */
-    loadDataTable("#table-view-details", currentModule, registerId);
+    loadDataTable("#table-details", currentModule, registerId);
 
     /** Mostramos el modal */
-    $("#modalViewDetails").modal("toggle");
+    $(modalSelector).modal("toggle");
 };
 
 /** Inicializa el componente Select2 para realizar búsquedas de productos en tiempo real.

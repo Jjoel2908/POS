@@ -6,9 +6,9 @@ const addPayment = async (saleId) => {
         title: '<h4 class="mt-3">Ingrese el monto del pago</h4>',
         input: "number",
         inputAttributes: {
-        min: 0,
-        step: 0.01,
-        placeholder: "Monto del pago",
+            min: 0,
+            step: 0.01,
+            placeholder: "Monto del pago",
         },
         showCancelButton: true,
         confirmButtonText:
@@ -60,8 +60,3 @@ const addPayment = async (saleId) => {
         }
     });
 };
-
-
-const loadDetailsPayment = async (saleId, customerName) => {
-    
-}
