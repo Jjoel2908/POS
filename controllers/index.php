@@ -31,6 +31,7 @@ $controllers = [
     'DetalleVenta'  => 'SaleDetailsController.php',
     'Usuario'       => 'UserController.php',
     'Gasto'         => 'ExpenseController.php',
+    'TipoGasto'         => 'ExpenseTypeController.php',
     'Test'          => 'TestController.php',
 ];
 
