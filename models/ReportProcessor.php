@@ -3,18 +3,23 @@ require_once '../config/Connection.php';
 
 class ReportProcessor extends Connection
 {
+    private string $startDate = '';
+    private string $endDate   = '';
+
     public function __construct(private ?string $dateRange = '')
     {
         $this->setRange($dateRange);
     }
 
-    private function setRange(string $dateRange): void {
-        if (!empty($dateRange)) {
-            $param = explode(' - ', $dateRange);
-            $this->startDate = date('Y-m-d 00:00:00', strtotime(str_replace('/', '-', $param[0])));
-            $this->endDate   = date('Y-m-d 23:59:59', strtotime(str_replace('/', '-', $param[1])));
+    public function __construct(private ?string $dateRange = '')
+    {
+        $cleanedData = self::sanitizeInput('dateRange', 'daterange');
+
+        if ($cleanedData) {
+            $this->startDate = $cleanedData['start'];
+            $this->endDate   = $cleanedData['end'];
         }
-    }  
+    }
 
     public function getAllPurchases(){}
     public function getAllSales(){}

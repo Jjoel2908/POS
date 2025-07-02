@@ -328,6 +328,21 @@ class Connection
                     return 0.00;
 
                 return number_format((float)$value, 2, '.', '');
+            case 'daterange':
+                /** Espera un string tipo "01/07/2025 - 02/07/2025" */
+                $dates = explode(' - ', $value);
+
+                if (count($dates) !== 2) return null;
+
+                $start = DateTime::createFromFormat('d/m/Y', trim($dates[0]));
+                $end   = DateTime::createFromFormat('d/m/Y', trim($dates[1]));
+
+                if (!$start || !$end) return null;
+
+                return [
+                    'start' => $start->format('Y-m-d 00:00:00'),
+                    'end'   => $end->format('Y-m-d 23:59:59')
+                ];
             case 'image':
                 /** Elimina rutas o intentos de navegación de directorios */
                 $value = basename($value);
