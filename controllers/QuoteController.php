@@ -33,29 +33,33 @@ class QuoteController
     public function save()
     {
         /** Valida campos requeridos */
-        if (!$this->model::validateData(['saleType'], $_POST)) {
+        if (!$this->model::validateData(['customerId', 'fecha_vencimiento', 'descripcion'], $_POST)) {
             echo json_encode(['success' => false, 'message' => $this->messages['required']]);
             return;
         }
 
-        /** Tipo de Venta */
-        $saleType = $this->model::sanitizeInput('saleType', 'int');
-
-        /** Valida campos requeridos */
-        if ($saleType == $this->model::$creditSale && empty($_POST['customerId'])) {
-            echo json_encode(['success' => false, 'message' => $this->messages['required_customer']]);
-            return;
-        }
-
         /** Validamos si hay productos en el carrito del usuario */
-        $details = $this->model->isCartEmpty($this->idUser);
+        $QuoteDetails = new QuoteDetails();
+        $details      = $QuoteDetails->getDetails($userId);
         if (empty($details)) {
             echo json_encode(['success' => false, 'message' => $this->messages['empty']]);
             return;
         }
 
         /** Calcular total de la venta */
-        $totalFormatted = $this->model->calculateSaleTotal($details);
+        $totalFormatted = $this->model->calculateTotal($details);
+
+        /** Información a registrar o actualizar */
+        $data = [
+            'id_cliente'        => $this->model::sanitizeInput('customerId', 'int'),
+            'id_sucursal'       => $this->idSucursal,
+            'fecha'             => date('Y-m-d H:i:s');,
+            'fecha_creacion'    => date('Y-m-d'),
+            'fecha_vencimiento' => $this->model::sanitizeInput('fecha_vencimiento', 'date'),
+            'estado_cotizacion' => 1,
+            'descripcion'       => $this->model::sanitizeInput('descripcion', 'text'),
+            'total' => $totalFormatted,
+        ];
 
         /** Obtener ID de caja abierta */
         $Cashbox = new Cashbox();
@@ -87,15 +91,18 @@ class QuoteController
         if (count($response) > 0) {
             foreach ($response as $row) {
 
-                $status = $row['estado_cotizacion'] == 1 && $row['fecha_vencimiento'] < $now
+                $estadoId = ($row['estado_cotizacion'] == 1 && $row['fecha_vencimiento'] < $now)
                     ? 5
-                    : $row['estado_cotizacion']
+                    : $row['estado_cotizacion'];
+
+                $estado = $this->model::$BADGES_STATUS[$estadoId];
+                $badge = "<span class=\"badge {$estado['clase']} font-14 px-3 fw-normal\">{$estado['texto']}</span>";
                     
                 $data[] = [
                     "Cliente" => $row['cliente'],
                     "Fecha Creación"       => date("d/m/Y", strtotime($row['fecha_creacion'])),
                     "Fecha Vencimiento"       => date("d/m/Y", strtotime($row['fecha_vencimiento'])),
-                    "Estado" => $status
+                    "Estado" => $badge,
                     "Total"        => "$" . number_format($row['total'], 2),
                 ];
             }

@@ -16,17 +16,23 @@ class Qoute extends Connection
       6 => 'rechazada',     // Rechazada explícitamente por el cliente
    ];
 
+   public static $BADGES_STATUS = [
+      1 => ['texto' => 'Pendiente',  'clase' => 'bg-warning'],
+      2 => ['texto' => 'Aceptada',   'clase' => 'bg-primary'],
+      3 => ['texto' => 'Convertida', 'clase' => 'bg-success'],
+      4 => ['texto' => 'Cancelada',  'clase' => 'bg-danger'],
+      5 => ['texto' => 'Expirada',   'clase' => 'bg-secondary'],
+      6 => ['texto' => 'Rechazada',  'clase' => 'bg-dark'],
+   ];
+
     // id (PK)
     // numero_cotizacion (único)
-    // cliente_id (FK)
+    // id_cliente (FK)
     // usuario_id (FK)
     // sucursal_id (FK)
     // fecha_creacion
     // fecha_vencimiento
     // estado (ENUM: 'pendiente', 'convertida', 'cancelada')
-    // subtotal
-    // descuento_total
-    // impuesto_total
     // total
     // notas
     // terminos
@@ -49,11 +55,25 @@ class Qoute extends Connection
             INNER JOIN 
                 clientes c 
             ON 
-                q.cliente_id = c.id 
+                q.id_cliente = c.id 
             WHERE 
                 q.estado = 1
         ");
    }
+
+   public function calculateTotal(array $details): float
+    {
+        $total = 0;
+        foreach ($details as $detail) {
+            $total += $detail['cantidad'] * $detail['precio'];
+        }
+
+        return number_format(floatval($total), 2, '.', '');
+    }
+
+
+
+
 
    /** Actualizamos las compras que estan pendientes con respecto al usuario */
    public function updatePurchaseDetails(mysqli $conexion, int $idPurchase, int $idUser): bool

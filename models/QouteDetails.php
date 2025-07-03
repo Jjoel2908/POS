@@ -74,4 +74,22 @@ class PurchaseDetails extends Connection
          AND
             creado_por = $idUser");
    }
+
+   public function getDetails(int $idUser): array {
+      return $this->queryMySQL(
+         "SELECT 
+            id, 
+            id_producto,
+            precio_venta AS precio,
+            cantidad
+         FROM 
+            detalle_cotizacion
+         WHERE 
+            estado = 0 
+         AND 
+            id_cotizacion IS NULL
+         AND
+            creado_por = $idUser"
+      );
+   }
 }

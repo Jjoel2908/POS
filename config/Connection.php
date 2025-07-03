@@ -328,6 +328,13 @@ class Connection
                     return 0.00;
 
                 return number_format((float)$value, 2, '.', '');
+            case 'date':
+                /** Quitar cualquier carácter que no sea dígito o guion */
+                $value = preg_replace('/[^0-9\-\/]/', '', $value);
+
+                /** Intentar convertir la fecha al formato Y-m-d */
+                $date = date_create_from_format('Y-m-d', $value) ?: date_create_from_format('d/m/Y', $value);
+                return $date ? $date->format('Y-m-d') : null;
             case 'daterange':
                 /** Espera un string tipo "01/07/2025 - 02/07/2025" */
                 $dates = explode(' - ', $value);
@@ -385,7 +392,7 @@ class Connection
     public static function insertWithTransaction(mysqli $conexion, string $table, array $data): bool
     {
         try {
-            if ($table == "abonos_credito")
+            if ($table == "abonos_credito" || $table == "cotizaciones")
                 $data['creado_por'] = filter_var($_SESSION['id'] ?? 1, FILTER_VALIDATE_INT) ?: 0;
 
             $columns = implode(', ', array_keys($data));
