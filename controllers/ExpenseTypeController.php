@@ -3,7 +3,7 @@ require '../models/ExpenseType.php';
 class ExpenseTypeController
 {
     /** @var string Nombre de la tabla en la base de datos */
-    private $table = "tipos_gastos";
+    private $table = "tipos_gasto";
     private $model;
     private $id;
     private $idSucursal;

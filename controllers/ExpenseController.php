@@ -38,8 +38,9 @@ class ExpenseController
         /** Información a registrar o actualizar */
         $data = [
             'monto'         => $this->model::sanitizeInput('monto', 'float'),
+            'id_sucursal'   => $this->idSucursal,
             'id_tipo_gasto' => $this->model::sanitizeInput('id_tipo_gasto', 'int'),
-            'descripcion'   => $this->model::sanitizeInput('descripcion', 'text'),
+            'observaciones' => $this->model::sanitizeInput('observaciones', 'text'),
         ];
 
         if (!$this->id) {
@@ -90,18 +91,18 @@ class ExpenseController
         if (count($response) > 0) {
             foreach ($response as $row) {
                 list($day, $hour) = explode(" ", $row['fecha']);
-                $date             = date("d/m/Y", strtotime($day));
+                $date  = date("d/m/Y", strtotime($day));
+                $time  = date("h:i A", strtotime($hour));
 
                 $btn  = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Gasto', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Gasto', '{$row['id']}', '')\"><i class=\"bx bx-trash m-0\"></i></button>";
 
                 $data[] = [ 
-                    "Fecha de Creación" => $date,
-                    "Hora"     => $time,
-                    "Concepto" => $row['tipo_gasto'],
-                    "Monto"    => "$" . number_format($row['monto'], 2),
-                    "Descripción" => $row['descripcion'],
-                    "Acciones" => $btn
+                    "Concepto"     => $row['tipo_gasto'],
+                    "Hora"              => $time,
+                    "Monto"             => "$" . number_format($row['monto'], 2),
+                    "Observaciones"     => $row['observaciones'],
+                    "Acciones"          => $btn
                 ];
             }
         }

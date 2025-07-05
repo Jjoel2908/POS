@@ -1,8 +1,7 @@
 <!-- # [ H E A D E R ] # -->
 <?php
-$formId = "formProduct";
-$module = "Producto";
-$modalClass = "view-modal";
+$formId = "formExpense";
+$module = "Gasto";
 ?>
 
 <?php require 'modalHeader.php'; ?>
@@ -16,7 +15,7 @@ $modalClass = "view-modal";
     </select>
 </div>
 
-<div class="col-md-6 view-form">
+<div class="col-md-12 col-lg-6 view-form">
     <label class="mb-1" for="monto">Monto</label>
     <div class="position-relative input-icon">
         <input class="form-control" type="number" step="0.01" min="0" name="monto" id="monto" placeholder="Monto del Gasto" required>
@@ -25,9 +24,9 @@ $modalClass = "view-modal";
 </div>
 
 <div class="col-md-12 view-form">
-    <label class="mb-1" for="descripcion">Descripción</label>
+    <label class="mb-1" for="observaciones">Observaciones</label>
     <div class="position-relative input-icon">
-        <input class="form-control" type="text" name="descripcion" id="descripcion" maxlength="150" placeholder="Escribe una breve descripción" oninput="validateWithCommasAndDots(event)" required>
+        <input class="form-control" type="text" name="observaciones" id="observaciones" maxlength="150" placeholder="Escribe una breve observación" oninput="validateWithCommasAndDots(event)">
         <span class="position-absolute top-50 translate-middle-y"><i class="fa-solid fa-chevron-right"></i></span>
     </div>
 </div>

@@ -7,6 +7,6 @@ class ExpenseType extends Connection
 
    public function selectOne($idRegister)
    {
-      return $this::queryMySQL("SELECT id, nombre FROM tipos_gastos WHERE id = $idRegister AND estado = 1 LIMIT 1");
+      return $this::queryMySQL("SELECT id, nombre FROM tipos_gasto WHERE id = $idRegister AND estado = 1 LIMIT 1");
    }
 }

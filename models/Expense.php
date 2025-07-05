@@ -5,17 +5,6 @@ class Expense extends Connection
 {
    public function __construct() {}
 
-   public static $tiposDeGasto = [
-      1 => 'Comida',
-      2 => 'Transporte',
-      3 => 'Servicios Básicos',
-      4 => 'Papelería y oficina',
-      5 => 'Mantenimiento / reparaciones',
-      6 => 'Renta / alquiler',
-      7 => 'Gastos bancarios',
-      8 => 'Otros'
-   ];
-
    public function selectOne($idRegister)
    {
       return $this::queryMySQL("SELECT * FROM gastos WHERE id = $idRegister AND estado = 1 LIMIT 1");
@@ -30,7 +19,7 @@ class Expense extends Connection
          FROM 
             gastos g 
          INNER JOIN 
-            tipos_gastos tg
+            tipos_gasto tg
          ON 
             g.id_tipo_gasto = tg.id 
          AND
