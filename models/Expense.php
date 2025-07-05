@@ -1,5 +1,7 @@
 <?php
 require_once '../config/Connection.php';
+require_once '../models/Cashbox.php';
+require_once '../models/CashboxCount.php';
 
 class Expense extends Connection
 {
@@ -10,7 +12,7 @@ class Expense extends Connection
       return $this::queryMySQL("SELECT * FROM gastos WHERE id = $idRegister AND estado = 1 LIMIT 1");
    }
 
-   public function dataTable(): array
+   public function dataTable(int $idSucursal): array
    {
       return $this->queryMySQL(
          "SELECT 
@@ -22,8 +24,13 @@ class Expense extends Connection
             tipos_gasto tg
          ON 
             g.id_tipo_gasto = tg.id 
+         WHERE 
+            g.estado = 1
          AND
-            g.estado = 1"
+            g.id_sucursal = $idSucursal
+         AND 
+            DATE(g.fecha) = CURDATE() 
+         ORDER BY g.id DESC"
       );
    }
 }

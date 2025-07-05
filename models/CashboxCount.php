@@ -23,4 +23,22 @@ class CashboxCount extends Connection
             fecha_fin IS NULL"
       );
    }
+
+   public static function updateSaleTotal(mysqli $conexion, int $cashboxId, float $total, string $field = "total_contado"): bool
+   {
+      return self::executeQueryWithTransaction(
+         $conexion,
+         "UPDATE 
+               arqueo_caja 
+            SET 
+               monto_fin = monto_fin + $total, 
+               $field = $field + $total
+            WHERE 
+               ISNULL(fecha_fin) 
+            AND 
+               estado = 0
+            AND
+               id_caja = $cashboxId"
+      );
+   }
 }

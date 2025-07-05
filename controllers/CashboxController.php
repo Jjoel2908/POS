@@ -108,19 +108,32 @@ class CashboxController
     {
         $response = $this->model::selectAllBySucursal($this->table, $this->idSucursal);
         $data     = array();
+        $hasOpenByCurrentUser = false;
 
         if (count($response) > 0) {
+
+            /** Verificamos si hay alguna caja abierta por el usuario actual */
+            foreach ($response as $row) {
+                if ($row['abierta'] == 1 && $row['id_usuario'] == $this->idUser) {
+                    $hasOpenByCurrentUser = true;
+                    break;
+                }
+            }
+
             foreach ($response as $row) {
                 list($day, $hour) = explode(" ", $row['fecha']);
                 $date             = date("d/m/Y", strtotime($day));
 
                 $isOpen  = $row['abierta'] == 1;
+                $isClose = $row['abierta'] == 0;
                 $estado  = $isOpen
                     ? "<span class=\"badge bg-success font-14 px-3 fw-normal cursor-pointer\" onclick=\"loadRegisteredDetails('ArqueoCaja', '{$row['id']}')\">Abierta</span>"
                     : "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Cerrada</span>";
 
                 $btn  = "";
-                $btn .= $row['abierta'] == 0 ? "<button type=\"button\" class=\"btn btn-inverse-success mx-1\" onclick=\"openCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-box m-0\"></i></button>" : "";
+                if (!$hasOpenByCurrentUser && $isClose)
+                    $btn .= "<button type=\"button\" class=\"btn btn-inverse-success mx-1\" onclick=\"openCashbox('{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-box m-0\"></i></button>";
+
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Caja', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger mx-1\" onclick=\"deleteRegister('Caja', '{$row['id']}', '{$row['nombre']}')\"><i class=\"bx bx-trash m-0\"></i></button>";
 
@@ -174,13 +187,12 @@ class CashboxController
         );
     }
 
-    public function isCashboxOpen() 
+    public function isCashboxOpen()
     {
-        $hasOpen = $this->model->hasOpen($this->idSucursal);
-
+        $hasOpen = $this->model->hasOpen($this->idSucursal, $this->idUser);
         echo json_encode(
             $hasOpen > 0
-                ? ['success' => true ]
+                ? ['success' => true]
                 : ['success' => false, 'data' => false, 'message' => $this->messages['empty_cashbox']]
         );
     }

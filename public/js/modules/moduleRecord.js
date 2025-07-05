@@ -3,8 +3,8 @@ const currentModule = $(".card").data("module");
 const creditSale = 2;
 let modalId;
 
-const columnsEndTable = ["Precio Compra", "Precio Venta", "Monto", "Precio", "Subtotal", "Total", "Total Venta", "Total Pagado", "Deuda Pendiente", "compra", "venta"];
-const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Creación", "Fecha Vencimiento", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Monto Inicial", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
+const columnsEndTable = ["Precio Compra", "Precio Venta", "Monto", "Monto Inicial", "Monto Final", "Precio", "Subtotal", "Total", "Total Venta", "Total Pagado", "Deuda Pendiente", "compra", "venta"];
+const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Creación", "Fecha Vencimiento", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
 
 $(() => {
     loadModuleTable(currentModule);

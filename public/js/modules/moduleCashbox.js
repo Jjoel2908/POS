@@ -8,7 +8,7 @@ const openCashbox = async (cashboxId, cashboxName) => {
     try {
         Swal.fire( {
             title: `<h3 class="mt-3">Abrir Caja</h3>`,
-            html: `<p class="font-20 mb-2">Indique el efectivo inicial para comenzar operaciones con la caja ${cashboxName.toLowerCase()}.</p>`,
+            html: `<p class="font-20 mb-2">Indique el efectivo inicial para comenzar operaciones con la caja "${cashboxName.toLowerCase()}".</p>`,
             confirmButtonText: `<i class="bx bx-box me-1"></i> Abrir Caja`,
             cancelButtonText: TextCancel,
             showCancelButton: true,
@@ -43,10 +43,10 @@ const closeCashbox = async (cashboxCountId, cashboxId, finalAmount) => {
    const text  = `<p class="font-20 mb-3">Asegúrese que el arqueo de caja sea correcto antes de confirmar.</p>`;
    const table = `<table class="font-size-15 w-100 table-bordered">
                      <tr>
-                        <td class = "p-2 bg-primary text-white border-dark">Total de Ventas</td>
+                        <td class = "p-2 bg-primary text-white border-dark text-center">Total</td>
                      </tr>
                      <tr>
-                        <td class = "p-2 border-dark">${finalAmount}</td>
+                        <td class = "py-3 border-dark text-center font-20 text-success fw-bold">${finalAmount}</td>
                      </tr>
                   </table>`;
 

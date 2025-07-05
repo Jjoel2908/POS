@@ -1,5 +1,7 @@
 <?php
 require_once '../config/Connection.php';
+require_once '../models/Cashbox.php';
+require_once '../models/CashboxCount.php';
 
 class CreditSale extends Connection
 {
@@ -59,8 +61,8 @@ class CreditSale extends Connection
                 id = $saleId"
         );
     }
-        
-    public function processPayment(int $saleId, array $saleData, float $amount): array
+
+    public function processPayment(int $saleId, int $cashboxId, array $saleData, float $amount): array
     {
         $conexion = self::conectionMySQL();
         try {
@@ -83,13 +85,17 @@ class CreditSale extends Connection
                 'id_venta_credito' => $saleId,
                 'fecha'            => date('Y-m-d H:i:s'),
                 'monto'            => $amount,
-                'creado_por'       => $amount,
             ];
 
             $insertAbono = $this::insertWithTransaction($conexion, 'abonos_credito', $abonoData);
 
             if (!$insertAbono)
                 throw new Exception('Error al registrar el abono en la base de datos.');
+
+            /** Actualizar total de caja activa */
+            $updateCashbox = CashboxCount::updateSaleTotal($conexion, $cashboxId, $amount, 'total_credito');
+            if (!$updateCashbox)
+                throw new Exception('Error al actualizar la caja');
 
             $this::commit();
 

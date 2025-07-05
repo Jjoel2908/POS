@@ -85,7 +85,7 @@ class ExpenseController
 
     public function dataTable()
     {
-        $response = $this->model->dataTable();
+        $response = $this->model->dataTable($this->idSucursal);
         $data = array();
 
         if (count($response) > 0) {

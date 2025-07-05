@@ -60,9 +60,9 @@ class SaleController
 
         /** Obtener ID de caja abierta */
         $Cashbox = new Cashbox();
-        $cashbox = $Cashbox->hasOpen($this->idSucursal);
+        $cashboxId = $Cashbox->hasOpen($this->idSucursal, $this->idUser);
 
-        if ($cashbox == 0) {
+        if ($cashboxId == 0) {
             echo json_encode(['success' => false, 'message' => $this->messages['empty_cashbox']]);
             return;
         }
@@ -71,7 +71,7 @@ class SaleController
         $customerId = !empty($_POST['customerId']) ? $this->model::sanitizeInput('customerId', 'int') : null;
 
         /** Registrar venta en el modelo */
-        $save = $this->model->insertSale($this->idUser, $this->idSucursal, $cashbox, $saleType, $customerId, $totalFormatted);
+        $save = $this->model->insertSale($this->idUser, $this->idSucursal, $cashboxId, $saleType, $customerId, $totalFormatted);
         echo json_encode(
             $save
                 ? ['success' => true, 'message' => $this->messages['save_success']]

@@ -8,11 +8,6 @@ class ReportProcessor extends Connection
 
     public function __construct(private ?string $dateRange = '')
     {
-        $this->setRange($dateRange);
-    }
-
-    public function __construct(private ?string $dateRange = '')
-    {
         $cleanedData = self::sanitizeInput('dateRange', 'daterange');
 
         if ($cleanedData) {
@@ -39,7 +34,7 @@ class ReportProcessor extends Connection
         $totalResult = $this->queryMySQL("
             SELECT SUM(g.monto) AS total_expenses
             FROM gastos g
-            INNER JOIN tipos_gastos tg ON g.id_tipo_gasto = tg.id
+            INNER JOIN tipos_gasto tg ON g.id_tipo_gasto = tg.id
             WHERE $where
         ");
 
@@ -49,7 +44,7 @@ class ReportProcessor extends Connection
                 tg.nombre AS concepto,
                 s.nombre AS sucursal
             FROM gastos g
-            INNER JOIN tipos_gastos tg ON g.id_tipo_gasto = tg.id
+            INNER JOIN tipos_gasto tg ON g.id_tipo_gasto = tg.id
             INNER JOIN sucursales s ON g.id_sucursal = s.id
             WHERE $where
             ORDER BY g.fecha ASC
@@ -84,7 +79,7 @@ class ReportProcessor extends Connection
             FROM 
                 gastos g
             INNER JOIN 
-                tipos_gastos tg ON g.id_tipo_gasto = tg.id
+                tipos_gasto tg ON g.id_tipo_gasto = tg.id
             WHERE 
                 g.fecha >= '{$this->startDate}' AND 
                 g.fecha <= '{$this->endDate}' AND 
@@ -102,7 +97,7 @@ class ReportProcessor extends Connection
             FROM 
                 gastos g
             INNER JOIN 
-                tipos_gastos tg ON g.id_tipo_gasto = tg.id
+                tipos_gasto tg ON g.id_tipo_gasto = tg.id
             INNER JOIN 
                 sucursales s ON g.id_sucursal = s.id
             WHERE

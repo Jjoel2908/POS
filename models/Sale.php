@@ -1,7 +1,8 @@
 <?php
 require_once '../config/Connection.php';
-require '../models/SaleDetails.php';
-require '../models/Cashbox.php';
+require_once '../models/SaleDetails.php';
+require_once '../models/Cashbox.php';
+require_once '../models/CashboxCount.php';
 
 class Sale extends Connection
 {
@@ -25,7 +26,6 @@ class Sale extends Connection
     public static $creditSale = 2;
 
     public function __construct() {}
-
 
     public function dataTable(): array
     {
@@ -99,24 +99,6 @@ class Sale extends Connection
         );
     }
 
-    public function updateCashboxCount(mysqli $conexion, int $cashboxId, float $total): bool
-    {
-        return $this->executeQueryWithTransaction(
-            $conexion,
-            "UPDATE 
-                arqueo_caja 
-            SET 
-                monto_fin = monto_fin + $total, 
-                total_ventas = total_ventas + 1 
-            WHERE 
-                ISNULL(fecha_fin) 
-            AND 
-                estado = 0
-            AND
-                id_caja = $cashboxId"
-        );
-    }
-
     /** Registra una nueva venta y actualiza stock de productos
      *
      * @param int $userId - ID del usuario que genera la venta.
@@ -172,8 +154,8 @@ class Sale extends Connection
                     throw new Exception('Error al actualizar el stock del producto ID: ' . $detail['id_producto']);
             }
 
-            /** Actualizar caja (monto y número de ventas) */
-            $updateCashbox = $this->updateCashboxCount($conexion, $cashboxId, $total);
+            /** Actualizar total de caja activa */
+            $updateCashbox = CashboxCount::updateSaleTotal($conexion, $cashboxId, $total);
             if (!$updateCashbox)
                 throw new Exception('Error al actualizar la caja');
 

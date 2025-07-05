@@ -31,20 +31,18 @@ class CashboxCountController
 
                 $finalAcount = $row['monto_fin'] ? "$" . number_format($row['monto_fin'], 2) : "$0.00";
 
-                $btn  = "<button type=\"button\" class=\"btn btn-inverse-success mx-1\" onclick=\"closeCashbox( '{$row['id']}','{$row['id_caja']}', '{$finalAcount}')\"><i class=\"fa-solid fa-folder-closed me-1\"></i> Cerrar Caja</button>";
+                $btn  = "<button type=\"button\" class=\"btn btn-inverse-secondary mx-1\" onclick=\"closeCashbox( '{$row['id']}','{$row['id_caja']}', '{$finalAcount}')\"><i class=\"fa-solid fa-folder-closed me-1\"></i> Cerrar Caja</button>";
 
                 list($day, $hour) = explode(" ", $row['fecha_inicio']);
                 $date  = date("d/m/Y", strtotime($day));
                 $time  = date("h:i A", strtotime($hour));
-
-                $sales = ($row['total_ventas'] == 1) ? ' Venta' : ' Ventas';
 
                 $data[] = [
                     "Caja"          => $row['caja'],
                     "Fecha Inicio"  => $date,
                     "Hora Inicio"   => $time,
                     "Monto Inicial" => "$" . number_format($row['monto_inicial'], 2),
-                    "Ventas"        => $row['total_ventas'] . $sales,
+                    "Monto Final"   => "$" . number_format($row['monto_fin'], 2),
                     "Acciones"      => $btn
                 ];
             }

@@ -18,18 +18,19 @@ class Cashbox extends Connection
          $conexion->begin_transaction();
 
          /** Abrimos la caja */
-         $cashbox = $this::executeQueryWithTransaction($conexion, "UPDATE cajas SET abierta = 1 WHERE id = $cashboxId");
+         $cashbox = $this::executeQueryWithTransaction($conexion, "UPDATE cajas SET abierta = 1, id_usuario = $userId WHERE id = $cashboxId");
 
          if (!$cashbox)
             throw new Exception('Error al abrir la caja');
 
          /** Información a registrar */
          $data = [
-            'id_caja'       => $cashboxId,
-            'creado_por'    => $userId,
-            'fecha_inicio'  => $date,
-            'monto_inicial' => $amount,
-            'estado'        => 0
+            'id_caja'        => $cashboxId,
+            'fecha_inicio'   => $date,
+            'monto_inicial'  => $amount,
+            'estado'         => 0,
+            'usuario_inicio' => $userId,
+            'creado_por'     => $userId,
          ];
 
          /** Registramos el arqueo de caja */
@@ -56,7 +57,7 @@ class Cashbox extends Connection
          $conexion->begin_transaction();
 
          /** Cerramos la caja */
-         $cashbox = $this::executeQueryWithTransaction($conexion, "UPDATE cajas SET abierta = 0 WHERE id = $cashboxId");
+         $cashbox = $this::executeQueryWithTransaction($conexion, "UPDATE cajas SET abierta = 0, id_usuario = null WHERE id = $cashboxId");
 
          if (!$cashbox)
             throw new Exception('Error al abrir la caja');
@@ -77,8 +78,12 @@ class Cashbox extends Connection
       }
    }
 
-   public function hasOpen(int $branchId): int
+   public function hasOpen(int $branchId, int $userId): int
    {
+      $openCashboxByUser = $this::queryMySQL("SELECT id FROM cajas WHERE abierta = 1 AND id_usuario = $userId AND id_sucursal = $branchId AND estado = 1 LIMIT 1");
+      if (count($openCashboxByUser) > 0) 
+         $openCashboxByUser[0]['id'];
+
       $openCashbox = $this::queryMySQL("SELECT id FROM cajas WHERE abierta = 1 AND id_sucursal = $branchId AND estado = 1 LIMIT 1");
       return count($openCashbox) > 0 ? $openCashbox[0]['id'] : 0;
    }

@@ -37,9 +37,18 @@ class CreditSaleController
             return;
         }
 
+        /** Obtener ID de caja abierta */
+        $Cashbox = new Cashbox();
+        $cashboxId = $Cashbox->hasOpen($this->idSucursal, $this->idUser);
+
+        if ($cashboxId == 0) {
+            echo json_encode(['success' => false, 'message' => $this->messages['empty_cashbox']]);
+            return;
+        }
+
         /** Procesamos el pago del cliente */
         $saleData = $this->model::select("ventas", $this->id);
-        $response = $this->model->processPayment($this->id, $saleData, $amountPayment);
+        $response = $this->model->processPayment($this->id, $cashboxId, $saleData, $amountPayment);
         echo json_encode($response);
     }
 
