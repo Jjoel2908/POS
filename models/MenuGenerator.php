@@ -25,7 +25,7 @@ class MenuGenerator extends Connection
 
       foreach ($permissions as $permission) {
 
-         if (!in_array($permission['id'], $_SESSION['permisos'])) continue;
+         if (!in_array($permission['id'], $_SESSION['permisos']) || $permission['id'] == 1) continue;
 
          if ($permission['icono'] != 'submodulo') {
             $modules .= '<li>
