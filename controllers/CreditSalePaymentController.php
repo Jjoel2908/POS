@@ -26,7 +26,7 @@ class CreditSalePaymentController
     {
         $registerId   = $this->model::sanitizeInput('registerId', 'int');
         $response = $this->model->dataTable($registerId);
-        $data     = array();    
+        $data     = array();
 
         if (count($response) > 0) {
 
@@ -41,6 +41,12 @@ class CreditSalePaymentController
                     "Monto" => "$" . number_format($row['monto'], 2),
                 ];
             }
+        } else {
+            $data[] = [
+                "Fecha" => "-",
+                "Hora"  => "-",
+                "Monto" => "-"
+            ];
         }
         echo json_encode($data);
     }

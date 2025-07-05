@@ -538,7 +538,7 @@ const getTitleByModuleAndDate = (module, formattedDate = "") => {
         case "ArqueoCaja":
             return "Arqueo de Caja";
         case "AbonosVentaCredito":
-            return "Detalles de Pago";
+            return "Pagos Realizados";
         default:
             return `Detalles de ${module}${formattedDate ? " del " + formattedDate : ""}`;
     }
@@ -552,7 +552,7 @@ const getTitleByModuleAndDate = (module, formattedDate = "") => {
  * @param {string|null} date - Fecha en formato 'DD/MM/YYYY' (opcional).
  * @param {string} modalSelector - Selector del modal a mostrar (por defecto '#modalViewDetails').
  */
-const loadRegisteredDetails = async (currentModule, registerId = null, date = null, modalSelector = "#modalViewDetails") => {
+const loadRegisteredDetails = async (currentModule, registerId = null, date = null, modalSelector = "#modalViewDetails", tableSelector = "#table-details") => {
     const formattedDate = formatDateForTitle(date);
     const title = getTitleByModuleAndDate(currentModule, formattedDate);
 
@@ -560,7 +560,7 @@ const loadRegisteredDetails = async (currentModule, registerId = null, date = nu
     $(`${modalSelector} #modalTitle`).html(title);
 
     /** Cargamos la información */
-    loadDataTable("#table-details", currentModule, registerId);
+    loadDataTable(tableSelector, currentModule, registerId);
 
     /** Mostramos el modal */
     $(modalSelector).modal("toggle");

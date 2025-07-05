@@ -170,7 +170,7 @@ class SaleDetailsController
                     "Producto" => $product,
                     "Cantidad" => $quantity . " uds.",
                     "Precio"   => "$" . number_format($price, 2),
-                    "Subtotal" => "$" . number_format($subTotal, 2),
+                    "Total"    => "$" . number_format($subTotal, 2),
                 ];
             }
         }

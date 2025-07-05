@@ -58,7 +58,7 @@ class CreditSaleController
                 $btn  = "";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-warning mx-1\" onclick=\"loadRegisteredDetails('DetalleVenta', '{$row['id']}', '{$date}')\"><i class=\"fa-solid fa-folder-open\"></i></button>";
                 $btn .= "<button type=\"button\" class=\"btn btn-inverse-success mx-1 px-3\" onclick=\"addPayment(" . $row['id'] . ")\"><i class=\"fa-solid fa-dollar\"></i></button>";
-                $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"loadRegisteredDetails('AbonosVentaCredito', '{$row['id']}', '', '#modalViewPayment')\"><i class=\"fa-solid fa-calendar-days\"></i></button>";
+                $btn .= "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"loadRegisteredDetails('AbonosVentaCredito', '{$row['id']}', '', '#modalViewPayment', '#table-payments')\"><i class=\"fa-solid fa-calendar-days\"></i></button>";
             
                 $data[] = [
                     "Fecha"           => $date,
