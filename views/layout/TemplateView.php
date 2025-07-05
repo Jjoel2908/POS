@@ -9,6 +9,9 @@ class TemplateView
     /** @var string $title Título de la vista que se mostrará en la interfaz */
     private string $title;
 
+    /** @var string $title Descripción de la vista que se mostrará en la interfaz */
+    private string $description;
+
     /** @var string $icon Icono que se mostrará junto al título */
     private string $icon;
 
@@ -38,18 +41,17 @@ class TemplateView
 
     /** @var array $modulePermissions Identificador para el permiso del módulo */
     private array $modulePermissions = [
+        'Categoría'    => 2,
         'Marca'        => 3,
         'Producto'     => 4,
-        'Categoría'    => 2,
-        'Caja'         => 6,
-        'VentaCredito' => 8,
-        'Cliente'      => 10,
-        'Gasto'        => 16,
-        'Producto'     => 4,
         'Compra'       => 5,
-        'Devolución'   => 9,
+        'Caja'         => 6,
         'Venta'        => 7,
-        'Usuario'      => 10,
+        'VentaCredito' => 8,
+        'Devolución'   => 9,
+        'Cliente'      => 10,
+        'Usuario'      => 11,
+        'Gasto'        => 12,
     ];
 
     /** Obtenemos el permiso del módulo */
@@ -67,6 +69,7 @@ class TemplateView
     {
         $this->module        = $config['module'] ?? '';
         $this->title         = $config['title'] ?? 'Módulo';
+        $this->description   = $config['description'] ?? "";
         $this->icon          = $config['icon'] ?? '';
         $this->permission    = $config['permission'] ?? $this->getPermissionFromModule($this->module);
         $this->showAddButton = $config['showAddButton'] ?? true;
@@ -110,6 +113,11 @@ class TemplateView
                         </h5>
                     </div>
                 </div>
+
+                <!-- # [ D E S C R I P T I O N ] # -->
+                <?php if ($this->description): ?>
+                    <p class="font-16 mb-0"><?= $this->description ?></p>
+                <?php endif; ?>
 
                 <!-- # [ A C T I O N S ] # -->
                 <?php if ($this->showAddButton): ?>
