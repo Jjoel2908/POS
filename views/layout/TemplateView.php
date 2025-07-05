@@ -41,6 +41,7 @@ class TemplateView
 
     /** @var array $modulePermissions Identificador para el permiso del módulo */
     private array $modulePermissions = [
+        'Dashboard'    => 1,
         'Categoría'    => 2,
         'Marca'        => 3,
         'Producto'     => 4,
@@ -49,9 +50,9 @@ class TemplateView
         'Venta'        => 7,
         'VentaCredito' => 8,
         'Devolución'   => 9,
-        'Cliente'      => 10,
-        'Usuario'      => 11,
-        'Gasto'        => 12,
+        'Gasto'        => 10,
+        'Cliente'      => 30,
+        'Usuario'      => 31,
     ];
 
     /** Obtenemos el permiso del módulo */
