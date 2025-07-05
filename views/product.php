@@ -2,7 +2,6 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission' => 4,
    'module'     => 'Producto',
    'title'      => 'Productos',
    'icon'       => 'fa-solid fa-chevron-right',

@@ -2,12 +2,11 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'   => 6,
-   'module'        => 'Caja',
-   'title'        => 'Cajas',
-   'icon'         => 'fa-solid fa-cash-register',
-   'addAction'  => "openModal('Caja')",
-   'modals'     => [
+   'module'    => 'Caja',
+   'title'     => 'Cajas',
+   'icon'      => 'fa-solid fa-cash-register',
+   'addAction' => "openModal('Caja')",
+   'modals'    => [
       'modal/modalCashbox.php',
       'modal/modalViewDetails.php',
    ],

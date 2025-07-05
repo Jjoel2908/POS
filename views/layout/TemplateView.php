@@ -36,6 +36,28 @@ class TemplateView
     /** @var string $moduleScript Nombre del script de JavaScript que maneja la lógica del módulo */
     private string $moduleScript;
 
+    /** @var array $modulePermissions Identificador para el permiso del módulo */
+    private array $modulePermissions = [
+        'Marca'        => 3,
+        'Producto'     => 4,
+        'Categoría'    => 2,
+        'Caja'         => 6,
+        'VentaCredito' => 8,
+        'Cliente'      => 10,
+        'Gasto'        => 16,
+        'Producto'     => 4,
+        'Compra'       => 5,
+        'Devolución'   => 9,
+        'Venta'        => 7,
+        'Usuario'      => 10,
+    ];
+
+    /** Obtenemos el permiso del módulo */
+    private function getPermissionFromModule($module)
+    {
+        return $this->modulePermissions[$module] ?? null;
+    }
+
     /** Constructor de la clase TemplateView
      * Inicializa los atributos con los valores proporcionados en el array de configuración.
      * 
@@ -46,7 +68,7 @@ class TemplateView
         $this->module        = $config['module'] ?? '';
         $this->title         = $config['title'] ?? 'Módulo';
         $this->icon          = $config['icon'] ?? '';
-        $this->permission    = $config['permission'] ?? 0;
+        $this->permission    = $config['permission'] ?? $this->getPermissionFromModule($this->module);
         $this->showAddButton = $config['showAddButton'] ?? true;
         $this->addAction     = $config['addAction'] ?? '';
         $this->addIcon       = $config['addIcon'] ?? 'fa-solid fa-plus';
@@ -123,7 +145,7 @@ class TemplateView
                         </tbody>
                     </table>
                 </div>
-                    
+
                 <div id="table-data" class="row d-none">
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered view-table" id="<?= $this->tableId ?>"></table>
@@ -147,7 +169,7 @@ class TemplateView
         <?php endif; ?>
 
 
-<?php
+    <?php
     }
 
     /** Renderiza la vista utilizando los atributos de la clase.
@@ -168,19 +190,19 @@ class TemplateView
         }
 
         require_once 'layout/header.php';
-?>
+    ?>
 
         <div class="card bg-transparent shadow-0" data-module="<?= $this->module ?>">
             <div class="card-body p-1">
 
                 <!-- # [ M O D A L S ] # -->
-                <?php 
-                    $module = $this->module;
-                    $title = $this->title;
-                    $field = 'precio_' . strtolower($module);
-                    $details = 'Detalle' . $module;
+                <?php
+                $module = $this->module;
+                $title = $this->title;
+                $field = 'precio_' . strtolower($module);
+                $details = 'Detalle' . $module;
 
-                    foreach ($this->modals as $modal): 
+                foreach ($this->modals as $modal):
                 ?>
                     <?php require $modal; ?>
                 <?php endforeach; ?>
@@ -196,7 +218,7 @@ class TemplateView
             <script src="../public/js/modules/<?= $this->moduleScript ?>.js"></script>
         <?php endif; ?>
 
-<?php
+    <?php
     }
 
     /** Renderiza la vista de reporte utilizando los atributos de la clase.
@@ -217,7 +239,7 @@ class TemplateView
         }
 
         require_once 'layout/header.php';
-?>
+    ?>
 
         <div id="container-report" class="card bg-transparent shadow-0 radius-10" data-module="<?= $this->module ?>">
             <div class="card-body mt-2">
@@ -264,15 +286,15 @@ class TemplateView
                             <div class="col">
                                 <div class="card radius-10 view-bg mb-2">
                                     <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-auto">
-                                            <p class="mb-0 text-white font-16">Total Ventas</p>
-                                            <h4 class="my-1 text-white">$<span id="total">0.00</span></h4>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-auto">
+                                                <p class="mb-0 text-white font-16">Total Ventas</p>
+                                                <h4 class="my-1 text-white">$<span id="total">0.00</span></h4>
+                                            </div>
+                                            <div class="font-50 text-white">
+                                                <i class="fa-solid fa-sack-dollar"></i>
+                                            </div>
                                         </div>
-                                        <div class="font-50 text-white">
-                                            <i class="fa-solid fa-sack-dollar"></i>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -281,15 +303,15 @@ class TemplateView
                             <div class="col">
                                 <div class="card radius-10 bg-gradient-ohhappiness mb-2">
                                     <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-auto">
-                                            <p class="mb-0 text-white font-16">Ganancias</p>
-                                            <h4 class="my-1 text-white">$<span id="earnings">0.00</span></h4>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-auto">
+                                                <p class="mb-0 text-white font-16">Ganancias</p>
+                                                <h4 class="my-1 text-white">$<span id="earnings">0.00</span></h4>
+                                            </div>
+                                            <div class="font-50 text-white">
+                                                <i class="fa-solid fa-cash-register"></i>
+                                            </div>
                                         </div>
-                                        <div class="font-50 text-white">
-                                            <i class="fa-solid fa-cash-register"></i>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
                             </div>

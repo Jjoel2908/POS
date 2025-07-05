@@ -2,16 +2,15 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission'    => 8,
    'module'        => 'VentaCredito',
    'title'         => 'Ventas a Crédito',
    'icon'          => 'fa-solid fa-hand-holding-dollar',
    'showAddButton' => false,
-   'modals'     => [
+   'modals'        => [
       'modal/modalViewDetails.php',
       'modal/modalViewPayment.php',
    ],
-   'moduleScript'  => 'moduleCreditSale',
+   'moduleScript' => 'moduleCreditSale',
 ];
 
 // El módulo de ventas a crédito permite consultar

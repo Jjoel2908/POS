@@ -2,7 +2,6 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'permission' => 10,
    'module'     => 'Usuario',
    'title'      => 'Usuarios',
    'icon'       => 'fa-solid fa-users',
