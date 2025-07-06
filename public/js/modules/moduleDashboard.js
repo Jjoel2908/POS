@@ -1,183 +1,83 @@
-let URL_DASHBOARD = "../../../controllers/dashboard.php?";
+const urlController = "../../../controllers/";
 
 $(() => {
-   moduleDashboard.productStockMin();
-   moduleDashboard.productBestSelling();
+   fetchTopSellingProducts();
 });
 
-let moduleDashboard = {
+const fetchTopSellingProducts = async () => {
+   try {
+      /** Creamos un objeto FormData para enviar la solicitud */
+      let formData = new FormData();
+      formData.append("module", "Dashboard");
+      formData.append("operation", "fetchTopSellingProducts");
 
-   /**  S T O C K   M I N I M U M  */
-   productStockMin: () => {
-      $.post(URL_DASHBOARD + 'op=productStockMin', e => {
+      /** Enviamos la solicitud al servidor */
+      const response = await fetch(urlController, {
+         method: "POST",
+         body: formData,
+      });
 
-         let response = JSON.parse(e);
-         if (response.success) {
+      /** Verificamos si la respuesta es válida */
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-            var ctx = document.getElementById("chart-stock-minimo").getContext("2d");
+      /** Convertimos la respuesta a JSON */
+      const data = await response.json();
 
-            var gradientStroke8 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke8.addColorStop(0, "#84fab0");
-            gradientStroke8.addColorStop(1, "#8fd3f4");
+      if (data.success) {
+         /** Extraemos los productos y cantidades desde el array 'data' */
+         const products = data.data.map(item => item.product); // Extraemos los nombres de los productos
+         const quantities = data.data.map(item => item.quantity); // Extraemos las cantidades de los productos
 
-            var gradientStroke9 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke9.addColorStop(0, "#f093fb");
-            gradientStroke9.addColorStop(1, "#f5576c");
+         /** Obtenemos el contexto del gráfico */
+         const ctx = document.getElementById("products-best-selling").getContext("2d");
 
-            var gradientStroke10 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke10.addColorStop(0, "#4facfe");
-            gradientStroke10.addColorStop(1, "#00f2fe");
+         /** Función para generar gradientes dinámicos */
+         const createGradient = (colorStart, colorEnd) => {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, colorStart);
+            gradient.addColorStop(1, colorEnd);
+            return gradient;
+         };
 
-            var gradientStroke11 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke11.addColorStop(0, "#4481eb");
-            gradientStroke11.addColorStop(1, "#04befe");
+         /** Generamos gradientes dinámicos basados en la cantidad de productos */
+         const gradients = [];
+         const colors = [
+            ["#f093fb", "#f5576c"],
+            ["#00c6fb", "#005bea"],
+            ["#2af598", "#009efd"]
+         ];
 
-            var gradientStroke12 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke12.addColorStop(0, "#FFFEFF");
-            gradientStroke12.addColorStop(1, "#D7FFFE");
+         for (let i = 0; i < products.length; i++) {
+            const colorPair = colors[i % colors.length]; // Repite los colores si son menos que los productos
+            gradients.push(createGradient(colorPair[0], colorPair[1]));
+         }
 
-            var gradientStroke13 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke13.addColorStop(0, "#f9d5e5");
-            gradientStroke13.addColorStop(1, "#ee9ca7");
-   
-            var gradientStroke14 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke14.addColorStop(0, "#90f7ec");
-            gradientStroke14.addColorStop(1, "#32CCBC");
-   
-            var gradientStroke15 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke15.addColorStop(0, "#fff1eb");
-            gradientStroke15.addColorStop(1, "#ace0f9");
-   
-            var gradientStroke16 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke16.addColorStop(0, "#ff758c");
-            gradientStroke16.addColorStop(1, "#ff7eb3");
-   
-            var gradientStroke17 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke17.addColorStop(0, "#f6d365");
-            gradientStroke17.addColorStop(1, "#fda085");
-   
-            var gradientStroke18 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke18.addColorStop(0, "#b8cbb8");
-            gradientStroke18.addColorStop(1, "#b8cbb8");
-   
-            var gradientStroke19 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke19.addColorStop(0, "#f093fb");
-            gradientStroke19.addColorStop(1, "#f5576c");
-   
-            var gradientStroke20 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke20.addColorStop(0, "#f6e4ea");
-            gradientStroke20.addColorStop(1, "#f6e4ea");
-
-            let product  = response.product;
-            let quantity = response.quantity;
-
-            new Chart(ctx, {
-               type: 'pie',
-               data: {
-                  labels: product,
-                  datasets: [{
-                     backgroundColor: [
-                        gradientStroke8,
-                        gradientStroke9,
-                        gradientStroke10,
-                        gradientStroke11,
-                        gradientStroke13,
-                        gradientStroke14,
-                        gradientStroke15,
-                        gradientStroke16,
-                        gradientStroke17,
-                        gradientStroke18,
-                        gradientStroke19,
-                        gradientStroke20
-                     ],
-
-                     hoverBackgroundColor: [
-                        gradientStroke8,
-                        gradientStroke9,
-                        gradientStroke10,
-                        gradientStroke11,
-                        gradientStroke13,
-                        gradientStroke14,
-                        gradientStroke15,
-                        gradientStroke16,
-                        gradientStroke17,
-                        gradientStroke18,
-                        gradientStroke19,
-                        gradientStroke20
-                     ],
-                     data: quantity
-                  }]
+         /** Crear el gráfico */
+         new Chart(ctx, {
+            type: 'pie',
+            data: {
+               labels: products,
+               datasets: [{
+                  backgroundColor: gradients,
+                  hoverBackgroundColor: gradients,
+                  data: quantities
+               }]
+            },
+            options: {
+               maintainAspectRatio: false,
+               legend: {
+                  display: true,
                },
-               options: {
-                  maintainAspectRatio: false,
-                  legend: {
-                     display: true,
-                  },
-                  tooltips: {
-                     displayColors: false
-                  }
+               tooltips: {
+                  displayColors: false
                }
-            });
-
-         } else $("#message").html(response.message);
-      })
-   },
-
-   /**  B E S T   S E L L I N G  */
-   productBestSelling: () => {
-      $.post(URL_DASHBOARD + 'op=productBestSelling', e => {
-
-         let response = JSON.parse(e);
-         if (response.success) {
-
-            var ctx = document.getElementById("products-best-selling").getContext("2d");
-
-            var gradientStroke8 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke8.addColorStop(0, "#f093fb");
-            gradientStroke8.addColorStop(1, "#f5576c");
-
-            var gradientStroke9 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke9.addColorStop(0, "#00c6fb");
-            gradientStroke9.addColorStop(1, "#005bea");
-
-            var gradientStroke10 = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientStroke10.addColorStop(0, "#2af598");
-            gradientStroke10.addColorStop(1, "#009efd");
-
-            let product  = response.product;
-            let quantity = response.quantity;
-
-            new Chart(ctx, {
-               type: 'doughnut',
-               data: {
-                  labels: product,
-                  datasets: [{
-                     backgroundColor: [
-                           gradientStroke8,
-                           gradientStroke9,
-                           gradientStroke10
-                     ],
-
-                     hoverBackgroundColor: [
-                           gradientStroke8,
-                           gradientStroke9,
-                           gradientStroke10
-                     ],
-                     data: quantity
-                  }]
-               },
-               options: {
-                  maintainAspectRatio: false,
-                  legend: {
-                     display: true,
-                  },
-                  tooltips: {
-                     displayColors: false
-                  }
-               }
-            });
-
-         } else $("#message-product").html(response.message);
-      })
+            }
+         });
+      } else {
+         /** Mostrar mensaje si no hay datos */
+         document.getElementById("message-product").innerHTML = "No existe información disponible";
+      }
+   } catch (error) {
+      document.getElementById("message-product").innerHTML = "Hubo un error al cargar los productos más vendidos. Intenta de nuevo más tarde.";
    }
-};
+}

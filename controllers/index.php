@@ -17,6 +17,7 @@ if ($module === null || $operation === null)
 /** Mapeo de módulos con sus controladores */
 $controllers = [
     'Login'               => 'LoginController.php',
+    'Dashboard'           => 'DashboardController.php',
     'Categoría'           => 'CategoryController.php',
     'Marca'               => 'BrandController.php',
     'Producto'            => 'ProductController.php',

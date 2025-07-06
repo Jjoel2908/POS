@@ -50,7 +50,7 @@ class Cashbox extends Connection
       }
    }
 
-   public function close(int $cashboxId, int $cashboxCountId, string $date): bool
+   public function close(int $cashboxId, int $userId, int $cashboxCountId, string $date): bool
    {
       try {
          $conexion = self::conectionMySQL();
@@ -63,7 +63,7 @@ class Cashbox extends Connection
             throw new Exception('Error al abrir la caja');
 
          /** Actualizamos el arqueo de caja */
-         $cashboxCount = $this::executeQueryWithTransaction($conexion, "UPDATE arqueo_caja SET fecha_fin = '$date' WHERE id = $cashboxCountId");
+         $cashboxCount = $this::executeQueryWithTransaction($conexion, "UPDATE arqueo_caja SET fecha_fin = '$date', usuario_fin = $userId, estado = 1 WHERE id = $cashboxCountId");
 
          if (!$cashboxCount)
             throw new Exception('Error al actualizar el arqueo de caja');

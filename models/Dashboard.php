@@ -6,12 +6,14 @@ class Dashboard extends Connection
     * como el total de productos, marcas, usuarios, etc.
     */
    private $metrics = [];
+   private $idSucursal;
 
    /** Constructor de la clase.
     * Inicializa la obtención de datos para las métricas del dashboard.
     */
    public function __construct()
    {
+      $this->idSucursal = (filter_var($_SESSION['sucursal'], FILTER_VALIDATE_INT) ?: 0);
       $this->fetchData();
    }
 
@@ -21,10 +23,12 @@ class Dashboard extends Connection
    private function fetchData()
    {
       $queries = [
-         'products'         => "SELECT COUNT(*) AS total FROM productos WHERE estado = 1",
-         'brands'           => "SELECT COUNT(*) AS total FROM marcas WHERE estado = 1",
-         'customers'        => "SELECT COUNT(*) AS total FROM clientes WHERE estado = 1",
-         'users'            => "SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1 AND id <> 1",
+         'products'   => "SELECT COUNT(*) AS total FROM productos WHERE estado = 1",
+         'categories' => "SELECT COUNT(*) AS total FROM categorias WHERE estado = 1",
+         'brands'     => "SELECT COUNT(*) AS total FROM marcas WHERE estado = 1",
+         'customers'  => "SELECT COUNT(*) AS total FROM clientes WHERE estado = 1",
+         'users'      => "SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1 AND id <> 1",
+         'cashboxes'  => "SELECT COUNT(*) AS total FROM cajas WHERE estado = 1",
       ];
 
       foreach ($queries as $key => $sql) {
@@ -35,6 +39,7 @@ class Dashboard extends Connection
       /** Métricas adicionales con funciones */
       $this->metrics['monthly_purchases'] = $this->getMonthlyPurchases();
       $this->metrics['daily_sales']       = $this->getDailySales();
+      $this->metrics['daily_expenses']    = $this->getDailyExpenses();
       $this->metrics['monthly_sales']     = $this->getMonthlySales();
       $this->metrics['pending_credit']    = $this->getPendingCredit();
    }
@@ -56,6 +61,7 @@ class Dashboard extends Connection
          WHERE MONTH(fecha) = MONTH(CURDATE()) 
          AND YEAR(fecha) = YEAR(CURDATE()) 
          AND estado = 1
+         AND id_sucursal = " . $this->idSucursal . " 
       ";
 
       $total = $this->queryMySQL($sql)[0]['total'] ?? 0;
@@ -68,6 +74,20 @@ class Dashboard extends Connection
       $sql = "SELECT SUM(total_venta) AS total FROM ventas 
          WHERE DATE(fecha) = CURDATE() 
          AND estado = 1
+         AND id_sucursal = " . $this->idSucursal . " 
+      ";
+
+      $total = $this->queryMySQL($sql)[0]['total'] ?? 0;
+      return '$' . number_format($total, 2);
+   }
+
+   /** Total de gastos del día */
+   private function getDailyExpenses(): string
+   {
+      $sql = "SELECT SUM(monto) AS total FROM gastos 
+         WHERE DATE(fecha) = CURDATE() 
+         AND estado = 1
+         AND id_sucursal = " . $this->idSucursal . " 
       ";
 
       $total = $this->queryMySQL($sql)[0]['total'] ?? 0;
@@ -81,6 +101,7 @@ class Dashboard extends Connection
          WHERE MONTH(fecha) = MONTH(CURDATE()) 
          AND YEAR(fecha) = YEAR(CURDATE()) 
          AND estado = 1
+         AND id_sucursal = " . $this->idSucursal . " 
       ";
 
       $total = $this->queryMySQL($sql)[0]['total'] ?? 0;
@@ -94,9 +115,29 @@ class Dashboard extends Connection
          WHERE estado = 1 
          AND tipo_venta = 2 
          AND estado_pago IN (2, 3)
+         AND id_sucursal = " . $this->idSucursal . " 
       ";
 
       $total = $this->queryMySQL($sql)[0]['total'] ?? 0;
       return '$' . number_format($total, 2);
+   }
+
+   /** Productos más vendidos en el sistema */
+   public static function getTopSellingProducts(): array
+   {
+      return self::queryMySQL(
+         "SELECT 
+            p.nombre AS nombre_producto, 
+            SUM(dv.cantidad) AS total_selling
+         FROM 
+            detalle_venta dv
+         INNER JOIN 
+            productos p ON dv.id_producto = p.id
+         GROUP BY 
+            p.id, p.nombre
+         ORDER BY 
+            total_selling DESC
+         LIMIT 3"
+      );
    }
 }

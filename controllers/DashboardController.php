@@ -13,25 +13,24 @@ class DashboardController
         $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
     }
 
-    public function getProductBestSelling()
+    public function fetchTopSellingProducts()
     {
-        $dataProduct  = [];
-        $dataQuantity = [];
-        $products     = $Dashboard->getProductBestSelling();
+        /** Llamada al modelo para obtener los productos más vendidos */
+        $products = $this->model::getTopSellingProducts();
 
-        if (count($products) > 0) {
-
-            foreach ($products as $row) {
-                $dataProduct[] = [
-                $row['nombre_producto']
+        /** Si hay productos, procesamos la respuesta */
+        if (!empty($products)) {
+            /** Preparamos la estructura de la respuesta */
+            $data = array_map(function ($row) {
+                return [
+                    'product'  => $row['nombre_producto'],
+                    'quantity' => $row['total_selling']
                 ];
+            }, $products);
 
-                $dataQuantity[] = [
-                $row['total_selling']
-                ];
-            }
-
-            echo json_encode(["success" => true, "message" => "", "product" => $dataProduct, "quantity" => $dataQuantity]);
-        } else echo json_encode(["success" => false, "message" => "No se encontraron productos mejor vendidos"]);
+            /** Devolvemos los resultados en formato JSON */
+            echo json_encode(["success" => true, "message" => "", "data" => $data]);
+        } else
+            echo json_encode(["success" => false]);
     }
 }
