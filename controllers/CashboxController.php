@@ -179,7 +179,7 @@ class CashboxController
         $cashboxCountId = $this->model::sanitizeInput('cashboxCountId', 'int');
         $endDate = date('Y-m-d H:i:s');
 
-        $closeCashbox = $this->model->close($this->id, $cashboxCountId, $endDate);
+        $closeCashbox = $this->model->close($this->id, $this->idUser, $cashboxCountId, $endDate);
         echo json_encode(
             $closeCashbox
                 ? ['success' => true, 'message' => $this->messages['close_success']]
