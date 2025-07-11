@@ -9,7 +9,8 @@ class ReportProcessorController
 
     public function __construct($id = null, $idSucursal = null)
     {
-        $this->model = new ReportProcessor();
+        $cleanedData = self::sanitizeInput('dateRange', 'daterange');
+        $this->model = new ReportProcessor($cleanedData);
         $this->module = $module;
         $this->id = $id !== null ? (filter_var($id, FILTER_VALIDATE_INT) ?: 0) : null;
         $this->idSucursal = $idSucursal !== null ? (filter_var($idSucursal, FILTER_VALIDATE_INT) ?: 0) : null;
@@ -18,7 +19,7 @@ class ReportProcessorController
     public function tableName() {
         $modules = [
             'ReporteCompra' => 'compras',
-            'ReporteVenta' => 'ventas',
+            'ReporteVenta'  => 'ventas',
             'ReporteGastos' => 'gastos',
         ];
 
