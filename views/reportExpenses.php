@@ -2,8 +2,8 @@
 require_once 'layout/TemplateView.php';
 
 $config = [
-   'module'     => 'ReporteCompra',
-   'title'      => 'Reporte de Compras',
+   'module'     => 'ReporteGastos',
+   'title'      => 'Reporte de Gastos',
    'modals'     => [
       'modal/modalViewDetails.php',
    ],

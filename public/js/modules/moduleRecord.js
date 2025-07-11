@@ -509,41 +509,6 @@ const loadTemporaryDetails = async (currentModule) => {
     }, false);
 };
 
-/** Convierte una fecha en formato 'DD/MM/YYYY' a texto legible.
- * @param {string} dateStr - Fecha en formato 'DD/MM/YYYY'
- * @returns {string} Fecha en formato legible, o string vacío si no se puede convertir.
- */
-const formatDateForTitle = (dateStr) => {
-    if (!dateStr) return "";
-
-    try {
-        const parsedDate = parseFechaDMY(dateStr);
-        return getFechaActualLetras(parsedDate); // e.g., "1 de Julio de 2025"
-    } catch (e) {
-        return "";
-    }
-};
-
-/** Genera un título de modal según el módulo y la fecha.
- * @param {string} module - Nombre del módulo (DetalleCompra, DetalleVenta, ArqueoCaja, etc.)
- * @param {string|null} formattedDate - Fecha ya formateada para el título.
- * @returns {string} Título para el modal.
- */
-const getTitleByModuleAndDate = (module, formattedDate = "") => {
-    switch (module) {
-        case "DetalleCompra":
-            return "Detalles de Compra del " + formattedDate;
-        case "DetalleVenta":
-            return "Detalles de Venta del " + formattedDate;
-        case "ArqueoCaja":
-            return "Arqueo de Caja";
-        case "AbonosVentaCredito":
-            return "Pagos Realizados";
-        default:
-            return `Detalles de ${module}${formattedDate ? " del " + formattedDate : ""}`;
-    }
-};
-
 /** Carga y muestra los detalles de una compra/venta ya registrada en el sistema.
  * Muestra los detalles en un modal si se pasa un ID de registro.
  *
