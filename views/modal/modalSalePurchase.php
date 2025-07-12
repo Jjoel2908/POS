@@ -87,7 +87,7 @@
                         <!-- Productos agregados al carrito -->
                         <div class="col-md-12 mt-4">
                             <div class="table-responsive">
-                                <table class="table table-striped table-bordered view-table">
+                                <table class="table table-striped table-bordered">
                                     <thead>
                                         <tr class="text-center">
                                             <th>Producto</th>

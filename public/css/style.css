@@ -1,7 +1,7 @@
 :root {
   --main: #2a2185;
   --white: #fafafa;
-  --gray: #f5f5f5;
+  --gray: #eeeeee;
   --black1: #222;
   --black2: #999;
 }
@@ -222,9 +222,10 @@ button.btn.btn-secondary {
    border-color: #3180c5;
 } */
 
-/* .view-table > thead {
-   background-color: rgba(0, 140, 255, 0.12);
-} */
+.view-table >thead {
+  background-color: var(--main);
+  color: var(--white);
+}
 
 .view-table > thead > tr > th {
   padding: 12px 0;

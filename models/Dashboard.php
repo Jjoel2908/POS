@@ -23,12 +23,13 @@ class Dashboard extends Connection
    private function fetchData()
    {
       $queries = [
-         'products'   => "SELECT COUNT(*) AS total FROM productos WHERE estado = 1",
-         'categories' => "SELECT COUNT(*) AS total FROM categorias WHERE estado = 1",
-         'brands'     => "SELECT COUNT(*) AS total FROM marcas WHERE estado = 1",
-         'customers'  => "SELECT COUNT(*) AS total FROM clientes WHERE estado = 1",
-         'users'      => "SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1 AND id <> 1",
-         'cashboxes'  => "SELECT COUNT(*) AS total FROM cajas WHERE estado = 1",
+         'products'       => "SELECT COUNT(*) AS total FROM productos WHERE estado = 1",
+         'categories'     => "SELECT COUNT(*) AS total FROM categorias WHERE estado = 1",
+         'brands'         => "SELECT COUNT(*) AS total FROM marcas WHERE estado = 1",
+         'customers'      => "SELECT COUNT(*) AS total FROM clientes WHERE estado = 1",
+         'users'          => "SELECT COUNT(*) AS total FROM usuarios WHERE estado = 1 AND id <> 1",
+         'cashboxes'      => "SELECT COUNT(*) AS total FROM cajas WHERE estado = 1",
+         'open_cashboxes' => "SELECT COUNT(*) AS total FROM cajas WHERE estado = 1 AND abierta = 1",
       ];
 
       foreach ($queries as $key => $sql) {
@@ -40,6 +41,7 @@ class Dashboard extends Connection
       $this->metrics['monthly_purchases'] = $this->getMonthlyPurchases();
       $this->metrics['daily_sales']       = $this->getDailySales();
       $this->metrics['daily_expenses']    = $this->getDailyExpenses();
+      $this->metrics['monthly_expenses']  = $this->getMonthlyExpenses();
       $this->metrics['monthly_sales']     = $this->getMonthlySales();
       $this->metrics['pending_credit']    = $this->getPendingCredit();
    }
@@ -86,6 +88,20 @@ class Dashboard extends Connection
    {
       $sql = "SELECT SUM(monto) AS total FROM gastos 
          WHERE DATE(fecha) = CURDATE() 
+         AND estado = 1
+         AND id_sucursal = " . $this->idSucursal . " 
+      ";
+
+      $total = $this->queryMySQL($sql)[0]['total'] ?? 0;
+      return '$' . number_format($total, 2);
+   }
+
+   /** Total de gastos del mes */
+   private function getMonthlyExpenses(): string
+   {
+      $sql = "SELECT SUM(monto) AS total FROM gastos 
+         WHERE MONTH(fecha) = MONTH(CURDATE()) 
+         AND YEAR(fecha) = YEAR(CURDATE()) 
          AND estado = 1
          AND id_sucursal = " . $this->idSucursal . " 
       ";

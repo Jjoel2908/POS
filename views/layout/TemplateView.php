@@ -272,7 +272,7 @@ class TemplateView
                     <div class="row justify-content-center">
                         <div class="col-sm-12 col-md-4 text-center">
                             <label class="mb-2 font-16" for="date">Selecciona un rango de fechas</label>
-                            <div class="d-flex">
+                            <div class="d-flex px-lg-4 px-md-0">
                                 <div class="flex-grow-1 position-relative input-icon">
                                     <input class="form-control font-16" type="text" name="date" id="date" required>
                                     <span class="position-absolute top-50 translate-middle-y"><i class="fa-solid fa-calendar-days font-20"></i></span>

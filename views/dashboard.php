@@ -36,6 +36,12 @@ $generalInformation = [
       'icon'  => 'fa-solid fa-cash-register',
    ],
    [
+      'key'   => 'open_cashboxes',
+      'perm'  => 6,
+      'title' => 'Cajas Abiertas',
+      'icon'  => 'fa-solid fa-cash-register',
+   ],
+   [
       'key'   => 'customers',
       'perm'  => 30,
       'title' => 'Clientes',
@@ -73,6 +79,12 @@ $metrics = [
       'perm'   => 7,
       'title'  => 'Compras Por Mes',
       'icon'   => 'fa-solid fa-bag-shopping',
+   ],
+   [
+      'key'    => 'monthly_expenses',
+      'perm'   => 10,
+      'title'  => 'Gastos Por Mes',
+      'icon'   => 'fa-solid fa-coins',
    ],
    [
       'key'    => 'pending_credit',
@@ -125,7 +137,7 @@ $metrics = [
             <div class="d-flex align-items-center justify-content-center">
                <h6 class="mb-0 mt-1 font-18">Los 3 Productos Más Vendidos</h6>
             </div>
-            <div class="chart-container-1">
+            <div class="chart-container-0">
                <div class="text-center font-17 mt-4 text-danger" id="message-product"></div>
                <canvas id="products-best-selling"></canvas>
             </div>
