@@ -3,8 +3,8 @@ require '../models/Login.php';
 class LoginController
 {
    private $model;
-
-   public function __construct($id = null, $idSucursal = null)
+   
+   public function __construct()
    {
       $this->model = new Login();
    }
@@ -22,6 +22,10 @@ class LoginController
       }
 
       if (count($validateUser) > 0) {
+
+            /** Regenerar el session_id después de un login exitoso */
+            session_regenerate_id(true);
+
             $_SESSION['id']        = $validateUser['id'];
             $_SESSION['user']      = $validateUser['user'];
             $_SESSION['user_name'] = $validateUser['nombre'];
