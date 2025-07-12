@@ -85,11 +85,11 @@ $metrics = [
 
 <!-- # [ M O D U L E  |  D A S H B O A R D ] # -->
 <div class="row justify-content-center mx-auto w-100">
-   <div class="col-sm-12 mb-4">
+   <div class="col-sm-12 mb-3">
       <h3 class="mt-1 mb-2 text-center"><span class="text-success">Bienvenido</span>, <?php echo $_SESSION['user_name'] ?>.</h3>
    </div>
 
-   <div class="col-sm-12 col-lg-3">
+   <div class="col-sm-12 col-lg-3 mb-3">
       <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-1">
          <div class="col">
             <div class="card bg-gradient-deepblue mb-0 radius-10">
@@ -119,7 +119,7 @@ $metrics = [
    </div>
 
    <!-- # [   P R O D U C T S   B E S T   S E L L I  N G   ] # -->
-   <div class="col-12 col-lg-5">
+   <div class="col-12 col-lg-5 mb-3">
       <div class="card radius-10 mb-0">
          <div class="card-body">
             <div class="d-flex align-items-center justify-content-center">
@@ -133,7 +133,7 @@ $metrics = [
       </div>
    </div>
 
-   <div class="col-sm-12 col-lg-4">
+   <div class="col-sm-12 col-lg-4 mb-3">
       <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-1">
          <div class="col">
             <div class="card bg-gradient-moonlit mb-0 radius-10">

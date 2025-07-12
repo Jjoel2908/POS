@@ -46,7 +46,7 @@ body {
 }
 
 .container-left {
-  background: url('../images/beauty.jpg') no-repeat center center/cover;
+  background: url('../images/gastalon.png') no-repeat center center/cover;
   background-color: rgba(0, 0, 0, 0.1);
   background-blend-mode: darken;
   clip-path: polygon(100% 0, 100% 85%, 50% 100%, 0 85%, 0 0);

@@ -35,9 +35,9 @@ $controllers = [
     'TipoGasto'           => 'ExpenseTypeController.php',
     'Cotizacion'          => 'QuoteController.php',
     'DetalleCotizacion'   => 'QuoteDetailsController.php',
-    'ReporteCompra'       => 'ReportProcessorController.php',
-    'ReporteVenta'        => 'ReportProcessorController.php',
-    'ReporteGastos'       => 'ReportProcessorController.php',
+    'ReporteCompra'       => 'ReportPurchaseController.php',
+    'ReporteVenta'        => 'ReportSaleController.php',
+    'ReporteGastos'       => 'ReportExpenseController.php',
     'ReporteGeneral'      => 'ReportProcessorController.php',
     'Test'                => 'TestController.php',
 ];

@@ -3,140 +3,175 @@ require_once '../config/Connection.php';
 
 class ReportProcessor extends Connection
 {
+    /** @var string $startDate Fecha de inicio del reporte en formato 'Y-m-d */
     private string $startDate = '';
+
+    /** @var string $endDate Fecha de fin del reporte en formato 'Y-m-d' */
     private string $endDate   = '';
 
-    public function __construct(private ?string $dateRange = '')
+    /** Tipos de venta disponibles en el sistema */
+    public static $SALE_TYPE = [
+        1 => 'Contado',  // Pago inmediato en el momento de la venta
+        2 => 'Crédito'   // Pago aplazado, el cliente paga después
+    ];
+
+    /** Estados posibles del pago de una venta */
+    public static $PAYMENT_STATUS = [
+        1 => 'Pagado',    // La venta ya fue pagada completamente
+        2 => 'Parcial',   // Solo se ha pagado una parte del total
+        3 => 'Pendiente'  // No se ha recibido ningún pago aún
+    ];
+
+    /** Colores por tipo de venta */
+    public static $SALE_TYPE_COLORS = [
+        1 => 'bg-success',         // Contado
+        2 => 'bg-info text-black'  // Crédito
+    ];
+
+    /** Colores por estado de pago */
+    public static $PAYMENT_STATUS_COLORS = [
+        1 => 'bg-success',             // Pagado
+        2 => 'bg-warning text-dark',   // Parcial
+        3 => 'bg-danger'               // Pendiente
+    ];
+
+    /** Constructor que inicializa las fechas de inicio y fin del reporte.
+     *
+     * Utiliza el método `sanitizeInput` para limpiar y validar los datos de entrada.
+     * Si las fechas son válidas, se asignan a las propiedades `startDate` y `endDate`.
+     */
+    public function __construct()
     {
         $cleanedData = self::sanitizeInput('dateRange', 'daterange');
-
         if ($cleanedData) {
             $this->startDate = $cleanedData['start'];
             $this->endDate   = $cleanedData['end'];
         }
     }
 
-    public function getAllPurchases(){}
-    public function getAllSales(){}
-    public function getAllExpenses(){}
-    public function getAllReport(){}
-
-    public function getReportExpenses(?int $expenseType = null, ?int $idSucursal = null): array
-    {
-        $where = "g.fecha BETWEEN '{$this->startDate}' AND '{$this->endDate}' AND g.estado = 1";
-        if ($idSucursal) {
-            $where .= " AND g.id_sucursal = {$idSucursal}";
-        }
-        if ($expenseType) {
-            $where .= " AND g.id_tipo_gasto = {$expenseType}";
-        }
-
-        $totalResult = $this->queryMySQL("
-            SELECT SUM(g.monto) AS total_expenses
-            FROM gastos g
-            INNER JOIN tipos_gasto tg ON g.id_tipo_gasto = tg.id
-            WHERE $where
-        ");
-
-        $table = $this->queryMySQL("
-            SELECT 
-                g.*,
-                tg.nombre AS concepto,
-                s.nombre AS sucursal
-            FROM gastos g
-            INNER JOIN tipos_gasto tg ON g.id_tipo_gasto = tg.id
-            INNER JOIN sucursales s ON g.id_sucursal = s.id
-            WHERE $where
-            ORDER BY g.fecha ASC
-        ");
-
-        $total = $totalResult[0]['total_expenses'] ?? 0.0;
-        $dateDiff = (new DateTime($this->startDate))->diff(new DateTime($this->endDate))->days + 1;
-        $averagePerDay = $dateDiff > 0 ? $total / $dateDiff : 0.0;
-
-        return [
-            "total"          => number_format($total, 2),
-            "averagePerDay"  => number_format($averagePerDay, 2),
-            "table"          => $table
-        ];
-    }
-
-    /** Obtiene los detalles de los gastos filtrados por rango de fechas, sucursal y tipo de gasto.
-     * @param int|null $expenseType (Opcional) Identificador del tipo de gasto para filtrar. Si es null, incluye todos los tipos.
-     * @param int|null $idSucursal (Opcional) Identificador de la sucursal para filtrar. Si es null, incluye todas las sucursales.
-     * @return array Lista de gastos que cumplen con los filtros aplicados.
+    /** Genera un reporte de compras realizadas en un rango de fechas específico.
+     *
+     * Obtiene el total de las compras confirmadas (estado = 1) y una lista detallada 
+     * con información de cada compra, incluyendo el usuario que la realizó.
+     *
+     * @return array Arreglo asociativo con:
+     *               - 'total': Monto total de las compras formateado a 2 decimales.
+     *               - 'table': Lista de compras con sus respectivos datos y nombre del usuario.
      */
-    public function getReportExpenses(?int $expenseType = null, ?int $idSucursal = null): array
+    public function getAllPurchases(): array
     {
-        /** Construcción de condiciones dinámicas para sucursal y tipo de gasto */
-        $conditionSucursal  = $idSucursal ? "AND g.id_sucursal = {$idSucursal}" : "";
-        $conditionCategoria = $expenseType ? "AND g.id_tipo_gasto = {$expenseType}" : "";
+        $where = "c.fecha >= '{$this->startDate}' AND c.fecha <= '{$this->endDate}' AND c.estado = 1";
 
-        /** Total de gastos en el rango de fechas con filtros opcionales */
-        $totalWidget = $this->queryMySQL(
+        /** Total de compras */
+        $totalWidget = $this->queryMySQL("SELECT FORMAT(IFNULL(SUM(total), 0), 2) AS total_purchase FROM compras AS c WHERE $where");
+
+        /** Detalles de compras */
+        $purchases = $this->queryMySQL(
             "SELECT 
-                FORMAT(IFNULL(SUM(g.monto), 0.00), 2) AS total_expenses
+                c.id,
+                c.total,
+                c.fecha,
+                c.estado,
+                u.nombre AS comprador
             FROM 
-                gastos g
+                compras AS c
             INNER JOIN 
-                tipos_gasto tg ON g.id_tipo_gasto = tg.id
+                usuarios AS u 
+            ON 
+                c.creado_por = u.id
             WHERE 
-                g.fecha >= '{$this->startDate}' AND 
-                g.fecha <= '{$this->endDate}' AND 
-                g.estado = 1 
-                {$conditionSucursal} 
-                {$conditionCategoria}"
-        );
+                $where
+        ");
 
-        /** Tabla detallada de gastos en el rango de fechas con filtros opcionales */
-        $table = $this->queryMySQL(
-            "SELECT 
-                g.*,
-                tg.nombre AS concepto,
-                s.nombre AS sucursal
-            FROM 
-                gastos g
-            INNER JOIN 
-                tipos_gasto tg ON g.id_tipo_gasto = tg.id
-            INNER JOIN 
-                sucursales s ON g.id_sucursal = s.id
-            WHERE
-                g.fecha >= '{$this->startDate}' AND 
-                g.fecha <= '{$this->endDate}' AND 
-                g.estado = 1
-                {$conditionSucursal} 
-                {$conditionCategoria}
-            ORDER BY g.fecha ASC"
-        );
-
-        /** Retornar el reporte */
         return [
-            "total"    => $totalWidget[0]['total_expenses'],
-            "table"    => $table
+            "total" => $totalWidget[0]['total_purchase'] ?? "0.00",
+            "table" => $purchases,
         ];
     }
 
-    /** Genera un reporte de ventas en un rango de fechas, con opción de filtrar por sucursal, producto y tipo de venta.
+    /** Genera un reporte de ventas realizadas en un rango de fechas específico.
      *
-     * @param int|null $idSucursal  ID de la sucursal (opcional, si es null muestra todas).
-     * @param int|null $idProducto  ID del producto (opcional, si es null muestra todos).
-     * @param int|null $tipoVenta   Tipo de venta (opcional, si es null muestra todas; 
-     *                              1 - Mostrador, 2 - Repartidor, etc.).
-     * @return array Retorna el total de ventas y la tabla con el detalle de ventas agrupado.
-     */
-    public function getReportSales(?int $idSucursal = null, ?int $idProducto = null, ?int $tipoVenta = null): array
-    {}
-
-    /** Obtiene el detalle de ventas en un rango de fechas y con filtros opcionales.
-     * Los filtros se definen mediante el parámetro queryType:
-     *   - 1: Filtra por producto (se espera id_producto).
-     *   - 2: Filtra por sucursal (se espera id_sucursal).
-     *   - 3: Filtra por tipo de venta (se espera tipo_venta).
+     * Obtiene el total de las ventas confirmadas (estado = 1) y una lista detallada 
+     * con información de cada venta, incluyendo el usuario que la realizó.
      *
-     * @return array Lista de registros de ventas.
+     * @return array Arreglo asociativo con:
+     *               - 'total': Monto total de las ventas formateado a 2 decimales.
+     *               - 'table': Lista de ventas con sus respectivos datos y nombre del usuario.
      */
-    public function getSalesDetails(int $idSucursal, int $idProducto, int $tipoVenta): array
-    {
+    public function getAllSales(): array {
+        $where = "v.fecha >= '{$this->startDate}' AND v.fecha <= '{$this->endDate}' AND v.estado = 1";
 
+        /** Total de ventas */
+        $totalWidget = $this->queryMySQL("SELECT FORMAT(IFNULL(SUM(total_pagado), 0), 2) AS total_sales FROM ventas AS v WHERE $where");
+
+        /** Detalles de ventas */
+        $sales = $this->queryMySQL(
+            "SELECT 
+                v.id,
+                v.total_venta AS total,
+                v.tipo_venta,
+                v.estado_pago AS estatus,
+                v.fecha,
+                CONCAT(c.nombre, ' ', c.apellidos) AS cliente
+            FROM 
+                ventas AS v
+            INNER JOIN 
+                clientes AS c
+            ON 
+                v.id_cliente = c.id
+            WHERE 
+                $where
+        ");
+
+        return [
+            "total" => $totalWidget[0]['total_sales'] ?? "0.00",
+            "table" => $sales,
+        ];
     }
+
+    /** Genera un reporte de gastos realizadas en un rango de fechas específico.
+     *
+     * Obtiene el total de los gastos confirmadas (estado = 1) y una lista detallada 
+     * con información de cada gasto, incluyendo el usuario que la realizó.
+     *
+     * @return array Arreglo asociativo con:
+     *               - 'total': Monto total de los gastos formateado a 2 decimales.
+     *               - 'table': Lista de gastos con sus respectivos datos y nombre del usuario.
+     */
+    public function getAllExpenses(): array 
+    {
+        $where = "g.fecha >= '{$this->startDate}' AND g.fecha <= '{$this->endDate}' AND g.estado = 1";
+
+        /** Total de gastos */
+        $totalWidget = $this->queryMySQL("SELECT FORMAT(IFNULL(SUM(monto), 0), 2) AS total_expenses FROM gastos AS g WHERE $where");
+
+        /** Detalles de gastos */
+        $expenses = $this->queryMySQL(
+            "SELECT 
+                g.id,
+                g.monto,
+                g.fecha,
+                g.observaciones,
+                tg.nombre AS concepto,
+                u.nombre AS usuario
+            FROM 
+                gastos AS g
+            INNER JOIN 
+                tipos_gasto AS tg 
+            ON 
+                g.id_tipo_gasto = tg.id
+            INNER JOIN 
+                usuarios AS u
+            ON 
+                g.creado_por = u.id
+            WHERE 
+                $where
+        ");
+
+        return [
+            "total" => $totalWidget[0]['total_expenses'] ?? "0.00",
+            "table" => $expenses,
+        ];
+    }
+
 }

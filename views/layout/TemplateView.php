@@ -41,22 +41,22 @@ class TemplateView
 
     /** @var array $modulePermissions Identificador para el permiso del módulo */
     private array $modulePermissions = [
-        'Dashboard'    => 1,
-        'Categoría'    => 2,
-        'Marca'        => 3,
-        'Producto'     => 4,
-        'Compra'       => 5,
-        'Caja'         => 6,
-        'Venta'        => 7,
-        'VentaCredito' => 8,
-        'Devolución'   => 9,
-        'Gasto'        => 10,
-        'Cliente'      => 30,
-        'Usuario'      => 31,
-        'ReporteCompra'=> 32,
-        'ReporteVenta' => 33,
-        'ReporteGastos'=> 34,
-        'ReporteGeneral'=> 35,
+        'Dashboard'      => 1,
+        'Categoría'      => 2,
+        'Marca'          => 3,
+        'Producto'       => 4,
+        'Compra'         => 5,
+        'Caja'           => 6,
+        'Venta'          => 7,
+        'VentaCredito'   => 8,
+        'Devolución'     => 9,
+        'Gasto'          => 10,
+        'Cliente'        => 30,
+        'Usuario'        => 31,
+        'ReporteCompra'  => 32,
+        'ReporteVenta'   => 33,
+        'ReporteGastos'  => 34,
+        'ReporteGeneral' => 35,
     ];
 
     /** Obtenemos el permiso del módulo */
@@ -260,7 +260,7 @@ class TemplateView
                 <!-- # [ T I T L E ] # -->
                 <div class="row">
                     <div class="col-sm-12">
-                        <h5 class="view-title">
+                        <h5 class="view-title text-secondary">
                             <i class="fa-solid fa-chart-column me-1"></i>
                             <?= $this->title ?>
                         </h5>
@@ -270,22 +270,18 @@ class TemplateView
                 <!-- # [ S E A R C H ] # -->
                 <form class="validation" id="formReports" method="POST" action="" name="" novalidate="">
                     <div class="row justify-content-center">
-                        <div class="col-sm-12 col-md-3 text-center pe-0">
-                            <label class="mb-2" for="date">Selecciona un rango de fechas</label>
-                            <div class="position-relative input-icon">
-                                <input class="form-control" type="text" name="date" id="date" required>
-                                <span class="position-absolute top-50 translate-middle-y"><i class="fa-solid fa-calendar-days font-20"></i>
+                        <div class="col-sm-12 col-md-4 text-center">
+                            <label class="mb-2 font-16" for="date">Selecciona un rango de fechas</label>
+                            <div class="d-flex">
+                                <div class="flex-grow-1 position-relative input-icon">
+                                    <input class="form-control font-16" type="text" name="date" id="date" required>
+                                    <span class="position-absolute top-50 translate-middle-y"><i class="fa-solid fa-calendar-days font-20"></i></span>
+                                </div>
+                                <button type="submit" id="searchContainer" class="btn btn-success">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="col-sm-12 col-md-1 d-flex align-items-end ps-0">
-                            <button type="submit" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        </div>
-
-                        
-                        <div class="col-sm-12 col-md-1 text-md-start text-sm-center mt-sm-3 mt-md-0" id="searchContainer">
-                            <button type="submit" class="btn btn-success"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        </div>
-
                         <div class="col-sm-12 text-center mt-4" id="loadingContainer" style="display: none;">
                             <span class="spinner-border spinner-border-sm me-2 text-success" role="status" aria-hidden="true"></span>
                             Procesando información, por favor espere un momento...
@@ -294,20 +290,20 @@ class TemplateView
                 </form>
 
                 <!-- # [ C O N T E N T ] # -->
-                <div id="response" class="card radius-10 bg-transparent shadow-0 mt-4 d-none">
+                <div id="response" class="card radius-10 bg-transparent shadow-0 mt-2 d-none">
                     <div class="card-body">
                         <!-- # [  W I D G E T S  ] # -->
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 row-cols-xxl-4 mt-2 justify-content-center">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2 row-cols-xxl-3 mt-2 justify-content-center">
                             <!-- # [ W I D G E T   T O T A L ] # -->
                             <div class="col">
-                                <div class="card radius-10 view-bg mb-2">
-                                    <div class="card-body">
+                                <div class="card radius-10 bg-gradient-cosmic mb-2">
+                                    <div class="card-body px-4">
                                         <div class="d-flex align-items-center">
                                             <div class="me-auto">
-                                                <p class="mb-0 text-white font-16">Total</p>
-                                                <h4 class="my-1 text-white">$<span id="total">0.00</span></h4>
+                                                <p class="mb-0 text-white font-20">Total</p>
+                                                <h3 class="my-1 text-white">$<span id="total">0.00</span></h3>
                                             </div>
-                                            <div class="font-50 text-white">
+                                            <div class="font-60 text-white">
                                                 <i class="fa-solid fa-sack-dollar"></i>
                                             </div>
                                         </div>

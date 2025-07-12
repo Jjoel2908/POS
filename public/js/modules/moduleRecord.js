@@ -116,24 +116,6 @@ const clearForm = (modalId) => {
     $(`${modalId} form`).removeClass("was-validated");
 };
 
-/** Valida un formulario antes de enviarlo.
- * Si faltan campos obligatorios, muestra una alerta y evita el envío.
- *
- * @param {Event} event - El evento submit o click que dispara la validación.
- * @param {HTMLFormElement} form - El formulario que se va a validar.
- * @returns {boolean} - Retorna true si el formulario es válido, false si hay errores.
- */
-const validateForm = (event, form) => {
-    if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-        showAlert(false, "Debe completar la información obligatoria");
-        form.classList.add("was-validated");
-        return false;
-    }
-    return true;
-};
-
 /** Envía el formulario al servidor usando async/await y FormData.
  * Muestra una alerta con el resultado y ejecuta un callback opcional en caso de éxito.
  *
@@ -168,23 +150,6 @@ const submitForm = async (form, operation, view, callback, showAlertResponse = t
     } catch (error) {
         console.error("Error en la función submitForm del archivo moduleRecord:", error);
     }
-};
-
-/** Muestra una notificación en pantalla indicando el resultado de una acción.
- * Utiliza la librería Lobibox para mostrar mensajes tipo toast.
- *
- * @param {boolean} success - Indica si la operación fue exitosa (true) o fallida (false).
- * @param {string} message - Mensaje que se mostrará al usuario.
- */
-const showAlert = (success, message) => {
-    Lobibox.notify(success ? "success" : "error", {
-        pauseDelayOnHover: true,
-        size: "mini",
-        icon: success ? "bx bx-check-circle" : "bx bx-x-circle",
-        position: "bottom right",
-        msg: `<p class="my-1">${message}</p>`,
-        sound: false,
-    });
 };
 
 /** Carga datos en una tabla DataTable de manera dinámica.

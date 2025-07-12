@@ -4,39 +4,115 @@ const TextCancel = '<i class="bx bx-arrow-back me-1"></i> No, Salir';
 const TextBack = '<i class="bx bx-arrow-back me-1"></i> Regresar';
 const colorColumns = "#7128a3";
 
+/** Inicializa Select2 en todos los elementos con la clase 'select'.
+ * Configura el placeholder, permite limpiar la selección y ajusta el ancho al 100%.
+ * Si el elemento está dentro de un modal, ajusta el dropdownParent para que se muestre correctamente.
+ */
 $(document).ready(function () {
-  $(".select").each(function () {
-    var $select = $(this);
-    var $modal = $select.closest(".modal");
+    $(".select").each(function () {
+        var $select = $(this);
+        var $modal = $select.closest(".modal");
 
-    var placeholderText = "Selecciona una opción";
+        var placeholderText = "Selecciona una opción";
 
-    /** Configuración base */
-    var config = {
-      placeholder: placeholderText,
-      allowClear: true,
-      width: "100%",
-    };
+        /** Configuración base */
+        var config = {
+            placeholder: placeholderText,
+            allowClear: true,
+            width: "100%",
+        };
 
-    if ($modal.length) {
-      config.dropdownParent = $modal;
-    }
+        if ($modal.length) {
+            config.dropdownParent = $modal;
+        }
 
-    /** Inicializar Select2 */
-    $select.select2(config);
-  });
+        /** Inicializar Select2 */
+        $select.select2(config);
+    });
 });
 
-/** Formato de tabla
+/** Convierte una fecha en formato 'DD/MM/YYYY' a texto legible.
+ * @param {string} dateStr - Fecha en formato 'DD/MM/YYYY'
+ * @returns {string} Fecha en formato legible, o string vacío si no se puede convertir.
+ */
+const formatDateForTitle = (dateStr) => {
+    if (!dateStr) return "";
+
+    try {
+        const parsedDate = parseFechaDMY(dateStr);
+        return getFechaActualLetras(parsedDate); // e.g., "1 de Julio de 2025"
+    } catch (e) {
+        return "";
+    }
+};
+
+/** Genera un título de modal según el módulo y la fecha.
+ * @param {string} module - Nombre del módulo (DetalleCompra, DetalleVenta, ArqueoCaja, etc.)
+ * @param {string|null} formattedDate - Fecha ya formateada para el título.
+ * @returns {string} Título para el modal.
+ */
+const getTitleByModuleAndDate = (module, formattedDate = "") => {
+    switch (module) {
+        case "DetalleCompra":
+            return "Detalles de Compra del " + formattedDate;
+        case "DetalleVenta":
+            return "Detalles de Venta del " + formattedDate;
+        case "ArqueoCaja":
+            return "Arqueo de Caja";
+        case "AbonosVentaCredito":
+            return "Pagos Realizados";
+        default:
+            return `Detalles de ${module}${formattedDate ? " del " + formattedDate : ""}`;
+    }
+};
+
+/** Muestra una notificación en pantalla indicando el resultado de una acción.
+ * Utiliza la librería Lobibox para mostrar mensajes tipo toast.
+ *
+ * @param {boolean} success - Indica si la operación fue exitosa (true) o fallida (false).
+ * @param {string} message - Mensaje que se mostrará al usuario.
+ */
+const showAlert = (success, message) => {
+    Lobibox.notify(success ? "success" : "error", {
+        pauseDelayOnHover: true,
+        size: "mini",
+        icon: success ? "bx bx-check-circle" : "bx bx-x-circle",
+        position: "bottom right",
+        msg: `<p class="my-1">${message}</p>`,
+        sound: false,
+    });
+};
+
+/** Valida un formulario antes de enviarlo.
+ * Si faltan campos obligatorios, muestra una alerta y evita el envío.
+ *
+ * @param {Event} event - El evento submit o click que dispara la validación.
+ * @param {HTMLFormElement} form - El formulario que se va a validar.
+ * @returns {boolean} - Retorna true si el formulario es válido, false si hay errores.
+ */
+const validateForm = (event, form) => {
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        showAlert(false, "Debe completar la información obligatoria");
+        form.classList.add("was-validated");
+        return false;
+    }
+    return true;
+};
+
+/** Formato de tabla.
  * @param {string} idTable Identificador de la tabla a imprimir (.class, #id)
  * @param {object} content Configuración a aplicar a la tabla asi como el contenido (const initTable)
  */
 const showTable = (idTable, content) => {
-  $(idTable).css("width", "100%").html("").empty().DataTable(content);
+    $(idTable).css("width", "100%").html("").empty().DataTable(content);
 };
 
-/**
- * Inicialización de tabla con ( DataTable )
+/** Inicializa una tabla con configuración predeterminada.
+ * Esta función devuelve un objeto de configuración que se puede usar con DataTables.
+ * Incluye opciones para paginación, búsqueda, botones de exportación y personalización de idioma.
+ * @returns {object} Objeto de configuración para DataTables.
  */
 const initTable = () => {
   return {
@@ -330,7 +406,7 @@ const initTable = () => {
 
           doc.content = [
             {
-              text: module,
+              text: moduleReport,
               style: "tableTitle",
               margin: [0, 0, 0, 10], // Espaciado antes de la tabla
             },
@@ -357,6 +433,10 @@ const initTable = () => {
   };
 };
 
+/** Función para validar la entrada de un campo de entrada HTML.
+ * Permite únicamente números enteros, eliminando letras y caracteres especiales.
+ * @param {Event} event - El evento de entrada asociado al campo numérico.
+ */
 const validateInt = (event) => {
   // Obtenemos el valor actual del campo de entrada
   const valor = event.target.value;
@@ -490,38 +570,3 @@ function formatCurrency(value) {
       }).format(value)
     : "PENDIENTE";
 }
-
-/** Convierte una fecha en formato 'DD/MM/YYYY' a texto legible.
- * @param {string} dateStr - Fecha en formato 'DD/MM/YYYY'
- * @returns {string} Fecha en formato legible, o string vacío si no se puede convertir.
- */
-const formatDateForTitle = (dateStr) => {
-    if (!dateStr) return "";
-
-    try {
-        const parsedDate = parseFechaDMY(dateStr);
-        return getFechaActualLetras(parsedDate); // e.g., "1 de Julio de 2025"
-    } catch (e) {
-        return "";
-    }
-};
-
-/** Genera un título de modal según el módulo y la fecha.
- * @param {string} module - Nombre del módulo (DetalleCompra, DetalleVenta, ArqueoCaja, etc.)
- * @param {string|null} formattedDate - Fecha ya formateada para el título.
- * @returns {string} Título para el modal.
- */
-const getTitleByModuleAndDate = (module, formattedDate = "") => {
-    switch (module) {
-        case "DetalleCompra":
-            return "Detalles de Compra del " + formattedDate;
-        case "DetalleVenta":
-            return "Detalles de Venta del " + formattedDate;
-        case "ArqueoCaja":
-            return "Arqueo de Caja";
-        case "AbonosVentaCredito":
-            return "Pagos Realizados";
-        default:
-            return `Detalles de ${module}${formattedDate ? " del " + formattedDate : ""}`;
-    }
-};
