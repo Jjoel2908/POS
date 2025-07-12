@@ -10,31 +10,27 @@ $operation  = $_POST['operation'] ?? null;
 $id         = $_POST['id'] ?? null;
 $idSucursal = $_POST['id_sucursal'] ?? $_SESSION['sucursal'];
 
-/** Verificamos que se haya enviado el módulo */
-if ($module === null || $operation === null)
-    exit;
-
 /** Mapeo de módulos con sus controladores */
 $controllers = [
     'Login'               => 'LoginController.php',
+    'Cotizacion'          => 'QuoteController.php',
+    'DetalleCotizacion'   => 'QuoteDetailsController.php',
     'Dashboard'           => 'DashboardController.php',
     'Categoría'           => 'CategoryController.php',
     'Marca'               => 'BrandController.php',
     'Producto'            => 'ProductController.php',
-    'Cliente'             => 'CustomerController.php',
     'Compra'              => 'PurchaseController.php',
     'DetalleCompra'       => 'PurchaseDetailsController.php',
-    'ArqueoCaja'          => 'CashboxCountController.php',
     'Caja'                => 'CashboxController.php',
+    'ArqueoCaja'          => 'CashboxCountController.php',
     'Venta'               => 'SaleController.php',
+    'DetalleVenta'        => 'SaleDetailsController.php',
     'VentaCredito'        => 'CreditSaleController.php',
     'AbonosVentaCredito'  => 'CreditSalePaymentController.php',
-    'DetalleVenta'        => 'SaleDetailsController.php',
-    'Usuario'             => 'UserController.php',
     'Gasto'               => 'ExpenseController.php',
     'TipoGasto'           => 'ExpenseTypeController.php',
-    'Cotizacion'          => 'QuoteController.php',
-    'DetalleCotizacion'   => 'QuoteDetailsController.php',
+    'Cliente'             => 'CustomerController.php',
+    'Usuario'             => 'UserController.php',
     'ReporteCompra'       => 'ReportPurchaseController.php',
     'ReporteVenta'        => 'ReportSaleController.php',
     'ReporteGastos'       => 'ReportExpenseController.php',
@@ -43,7 +39,7 @@ $controllers = [
 ];
 
 /** Verificamos si el módulo existe en la lista */
-if (!isset($controllers[$module]))
+if ($module === null || $operation === null || !isset($controllers[$module]))
     exit;
 
 /** Eventos realizados por el usuario */
