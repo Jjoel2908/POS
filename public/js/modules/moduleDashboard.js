@@ -1,9 +1,5 @@
 const urlController = "../../../controllers/";
 
-$(() => {
-   fetchTopSellingProducts();
-});
-
 const fetchTopSellingProducts = async () => {
    try {
       /** Creamos un objeto FormData para enviar la solicitud */
