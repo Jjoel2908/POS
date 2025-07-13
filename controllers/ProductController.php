@@ -226,9 +226,6 @@ class ProductController
         $formatted_products = [];
         if (!empty($products)) {
             foreach ($products as $product) {
-
-                if ($product['stock'] == 0) continue;
-
                 /** @var string $img - Nombre de la imagen (desde la base de datos). */
                 $img = $product['imagen'] ?? 'default.png';
 

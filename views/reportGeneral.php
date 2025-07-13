@@ -54,13 +54,13 @@ require_once 'layout/header.php';
 
                 <!-- # [C H A R T   J S ] # -->
                 <div class="row justify-content-between">
-                    <div id="container-expenses-type" class="col-sm-12 col-lg-4 pe-0">
+                    <div id="container-expenses-type" class="col-sm-12 col-lg-6 pe-0">
                         <div class="card radius-10">
                             <div class="card-body">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <p class="mb-0 font-16 fw-bold mt-1 text-center">Gastos por Concepto</p>
                                 </div>
-                                <div id="container-expenses-chart" class="chart-container-1 mt-4 d-none">
+                                <div id="container-expenses-chart" class="chart-container-0 mt-4 d-none">
                                     <canvas id="chart-expenses-type"></canvas>
                                 </div>
                                 <div class="text-center font-16 text-danger d-none" id="message-expenses-type"></div>
@@ -68,20 +68,19 @@ require_once 'layout/header.php';
                         </div>
                     </div>
 
-                    <div id="container-products-type" class="col-sm-12 col-lg-8 pe-0">
+                    <div id="container-products-type" class="col-sm-12 col-lg-6 pe-0">
                         <div class="card radius-10">
                             <div class="card-body">
                                 <div class="d-flex align-items-center justify-content-center">
                                     <p class="mb-0 font-16 fw-bold mt-1 text-center">5 Productos Más Vendidos</p>
                                 </div>
-                                <div id="container-top-products-chart" class="chart-container-1 mt-4 d-none">
+                                <div id="container-top-products-chart" class="chart-container-0 mt-4 d-none">
                                     <canvas id="chart-top-products"></canvas>
                                 </div>
                                 <div class="text-center font-16 text-danger d-none" id="message-top-products"></div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

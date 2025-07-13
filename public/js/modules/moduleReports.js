@@ -6,7 +6,6 @@ const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Monto", "Su
 const columnsCenterTable = ["Folio", "Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estatus", "Tipo de Venta"];
 
 $(() => {
-
     /**  D A T E   F I L T E R  */
     $("#date").daterangepicker({
         locale: {
@@ -172,8 +171,8 @@ const loadTableInView = async (tableId, data) => {
  * @property {number} data.venta_neta - Venta neta.
  */
 const loadReportGeneralInView = async (data) => {
-    const container = document.getElementById("response-widgets");
-    container.innerHTML = '';
+    const container           = document.getElementById("response-widgets");
+          container.innerHTML = '';
 
     try {
         const widgets = [
@@ -355,7 +354,7 @@ const renderTopProducts = async (productos) => {
         }
 
         window.topProductsChart = new Chart(ctx, {
-            type: "bar",
+            type: "doughnut",
             data: {
                 labels,
                 datasets: [{
@@ -385,11 +384,11 @@ const renderTopProducts = async (productos) => {
             }
         });
 
-        $("#message-top-products").addClass('d-none');
+        $("#message-top-products").addClass('d-none').removeClass('mt-4');
         $("#container-top-products-chart").removeClass('d-none');
     } else {
         $("#message-top-products").html("No hay productos vendidos en el periodo");
-        $("#message-top-products").removeClass('d-none');
+        $("#message-top-products").removeClass('d-none').addClass('mt-4');
         $("#container-top-products-chart").addClass('d-none');
     }
 };
