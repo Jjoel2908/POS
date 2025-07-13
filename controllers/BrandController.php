@@ -9,13 +9,13 @@ class BrandController
     private $idSucursal;
 
     private $messages = [
-        "save_success" => "Marca registrada correctamente.",
-        "save_failed" => "Error al registrar la marca.",
+        "save_success"   => "Marca registrada correctamente.",
+        "save_failed"    => "Error al registrar la marca.",
         "update_success" => "Marca actualizada correctamente.",
-        "update_failed" => "Error al actualizar la marca.",
+        "update_failed"  => "Error al actualizar la marca.",
         "delete_success" => "Marca eliminada correctamente.",
-        "delete_failed" => "Error al eliminar la marca.",
-        "required" => "Debe completar la información obligatoria."
+        "delete_failed"  => "Error al eliminar la marca.",
+        "required"       => "Debe completar la información obligatoria."
     ];
 
     public function __construct($id = null, $idSucursal = null)
@@ -105,7 +105,7 @@ class BrandController
                 $date  = date("d/m/Y", strtotime($day));
 
                 $estado = $row['estado'] 
-                    ? "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Activo</span>" 
+                    ? "<span class=\"badge bg-success font-14 px-3 fw-normal\">Activo</span>" 
                     : "";
                     
                 $btn = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Marca', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";

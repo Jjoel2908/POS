@@ -1,9 +1,10 @@
 :root {
-  --main: #2a2185;
-  --white: #fafafa;
-  --gray: #eeeeee;
-  --black1: #222;
-  --black2: #999;
+  --main     : #ffc107;
+  --white    : #fafafa;
+  --gray     : #eeeeee;
+  --black1   : #222;
+  --black2   : #999;
+  --secondary: #6c757d;
 }
 
 body {
@@ -15,18 +16,18 @@ body {
 }
 
 .simplebar-content-wrapper {
-  background-color: var(--main);
+  background-color: #fafafa;
 }
 
-.sidebar-wrapper {
+/* .sidebar-wrapper {
   background-color: var(--main);
-}
+} */
 
-.sidebar-wrapper .metismenu ul {
+/* .sidebar-wrapper .metismenu ul {
   background-color: var(--main);
   color: var(--white);
   border: none;
-}
+} */
 
 .topbar {
   border: none !important;
@@ -54,25 +55,28 @@ body {
   color: #fff !important;
 }
 
-.logo-text,
+/* .logo-text,
 .sidebar-wrapper .metismenu a,
 .sidebar-wrapper .metismenu a .parent-icon,
 .sidebar-wrapper .metismenu a .menu-title,
 .toggle-icon,
 .user-info .user-name {
-  color: var(--white);
-}
-
-.sidebar-wrapper .metismenu .mm-active > a,
-.sidebar-wrapper .metismenu a:active,
-.sidebar-wrapper .metismenu a:hover {
-  text-decoration: none;
-  color: var(--main) !important; 
-}
+  color: var(--secondary);
+} */
 
 .metismenu .has-arrow:after {
   color: var(--main);
 }
+
+.sidebar-wrapper .metismenu .mm-active > a,
+.sidebar-wrapper .metismenu a:active,
+.sidebar-wrapper .metismenu a:focus,
+.sidebar-wrapper .metismenu a:hover {
+     color: var(--secondary);
+    text-decoration: none;
+    background-color: rgba(255, 193, 7, 0.4); 
+}
+
 
 /* [ -------------------------------------------------- ] */
 /* [ ----------- M O D A L  D E   V E N T A ----------- ] */
@@ -224,7 +228,7 @@ button.btn.btn-secondary {
 
 .view-table >thead {
   background-color: var(--main);
-  color: var(--white);
+  color: var(--black1);
 }
 
 .view-table > thead > tr > th {
@@ -330,7 +334,7 @@ label {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    border: 1px solid #2a2185;
+    border: 1px solid #ffc107;
   }
 
   .nav-link {

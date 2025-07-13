@@ -128,7 +128,7 @@ class CashboxController
                 $isClose = $row['abierta'] == 0;
                 $estado  = $isOpen
                     ? "<span class=\"badge bg-success font-14 px-3 fw-normal cursor-pointer\" onclick=\"loadRegisteredDetails('ArqueoCaja', '{$row['id']}')\">Abierta</span>"
-                    : "<span class=\"badge bg-primary font-14 px-3 fw-normal\">Cerrada</span>";
+                    : "<span class=\"badge bg-dark font-14 px-3 fw-normal\">Cerrada</span>";
 
                 $btn  = "";
                 if (!$hasOpenByCurrentUser && $isClose)
