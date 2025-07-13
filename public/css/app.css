@@ -554,25 +554,36 @@ button.btn.btn-secondary.buttons-pdf.buttons-html5:hover {
   border-radius: 10px;
 }
 
-.widgets-icons-2 {
-  width: 56px;
-  height: 56px;
+.widgets-icons-1 {
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #ededed;
-  font-size: 27px;
+  font-size: 28px;
+  border-radius: 10px;
+}
+
+.widgets-icons-2 {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ededed;
+  font-size: 34px;
   border-radius: 10px;
 }
 
 .widgets-icons-3 {
-  width: 72px;
-  height: 72px;
+  width: 82px;
+  height: 82px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #ededed;
-  font-size: 32px;
+  font-size: 38px;
   border-radius: 10px;
 }
 

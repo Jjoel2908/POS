@@ -1,5 +1,4 @@
 $(() => {
-   const formdata = new FormData();
    const droplists = [
       { label: 'Marca', action: "droplist", target: '#id_marca' },
       { label: 'Producto', action: "droplistPresentations", target: '#id_presentacion' },
@@ -7,6 +6,8 @@ $(() => {
    ];
 
    droplists.forEach(({ label, action, target }) => {
+      const formdata = new FormData();
+   
       submitForm(formdata, action, label, (data) => {
          $(target).html(data);
       }, false);

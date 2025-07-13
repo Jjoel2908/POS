@@ -81,7 +81,8 @@ class ReportProcessor extends Connection
                 c.creado_por = u.id
             WHERE 
                 $where
-        ");
+        "
+        );
 
         return [
             "total" => $totalWidget[0]['total_purchase'] ?? "0.00",
@@ -98,11 +99,12 @@ class ReportProcessor extends Connection
      *               - 'total': Monto total de las ventas formateado a 2 decimales.
      *               - 'table': Lista de ventas con sus respectivos datos y nombre del usuario.
      */
-    public function getAllSales(): array {
+    public function getAllSales(): array
+    {
         $where = "v.fecha >= '{$this->startDate}' AND v.fecha <= '{$this->endDate}' AND v.estado = 1";
 
         /** Total de ventas */
-        $totalWidget = $this->queryMySQL("SELECT FORMAT(IFNULL(SUM(total_pagado), 0), 2) AS total_sales FROM ventas AS v WHERE $where");
+        $totalWidget = $this->queryMySQL("SELECT FORMAT(IFNULL(SUM(total_venta), 0), 2) AS total_sales FROM ventas AS v WHERE $where");
 
         /** Detalles de ventas */
         $sales = $this->queryMySQL(
@@ -121,7 +123,8 @@ class ReportProcessor extends Connection
                 v.id_cliente = c.id
             WHERE 
                 $where
-        ");
+        "
+        );
 
         return [
             "total" => $totalWidget[0]['total_sales'] ?? "0.00",
@@ -138,7 +141,7 @@ class ReportProcessor extends Connection
      *               - 'total': Monto total de los gastos formateado a 2 decimales.
      *               - 'table': Lista de gastos con sus respectivos datos y nombre del usuario.
      */
-    public function getAllExpenses(): array 
+    public function getAllExpenses(): array
     {
         $where = "g.fecha >= '{$this->startDate}' AND g.fecha <= '{$this->endDate}' AND g.estado = 1";
 
@@ -166,7 +169,8 @@ class ReportProcessor extends Connection
                 g.creado_por = u.id
             WHERE 
                 $where
-        ");
+        "
+        );
 
         return [
             "total" => $totalWidget[0]['total_expenses'] ?? "0.00",
@@ -174,4 +178,99 @@ class ReportProcessor extends Connection
         ];
     }
 
+    /** Genera un resumen general de las compras, ventas y gastos en un rango de fechas específico.
+     *
+     * Calcula el total de compras, ventas al contado, ventas a crédito, gastos y la venta neta.
+     * La venta neta se calcula como la suma de las ventas menos los gastos.
+     *
+     * @return array Arreglo asociativo con:
+     *               - 'total_compras': Total de compras formateado a 2 decimales.
+     *               - 'total_ventas_contado': Total de ventas al contado formateado a 2 decimales.
+     *               - 'total_ventas_credito': Total de ventas a crédito formateado a 2 decimales.
+     *               - 'total_pendiente_cobro': Total pendiente de cobro por ventas a crédito formateado a 2 decimales.
+     *               - 'total_gastos': Total de gastos formateado a 2 decimales.
+     *               - 'venta_neta': Venta neta calculada y formateada a 2 decimales.
+     */
+    public function getGeneralSummary(): array
+    {
+        $whereCompras = "c.fecha >= '{$this->startDate}' AND c.fecha <= '{$this->endDate}' AND c.estado = 1";
+        $whereVentas  = "v.fecha >= '{$this->startDate}' AND v.fecha <= '{$this->endDate}' AND v.estado = 1";
+        $whereGastos  = "g.fecha >= '{$this->startDate}' AND g.fecha <= '{$this->endDate}' AND g.estado = 1";
+
+        /** Total de compras */
+        $compras = $this->queryMySQL(
+            "SELECT FORMAT(IFNULL(SUM(c.total), 0), 2) AS total_compras
+            FROM compras AS c
+            WHERE $whereCompras
+        ");
+
+        /** Ventas de contado */
+        $ventasContado = $this->queryMySQL(
+            "SELECT FORMAT(IFNULL(SUM(v.total_venta), 0), 2) AS total_ventas_contado
+            FROM ventas AS v
+            WHERE $whereVentas AND v.tipo_venta = 1
+        ");
+
+        /** Ventas a crédito y pendientes */
+        $ventasCredito = $this->queryMySQL(
+            "SELECT 
+                FORMAT(IFNULL(SUM(v.total_venta), 0), 2) AS total_ventas_credito,
+                FORMAT(IFNULL(SUM(v.total_venta - v.total_pagado), 0), 2) AS total_pendiente_cobro
+            FROM ventas AS v
+            WHERE $whereVentas AND v.tipo_venta = 2
+        ");
+
+        /** Total de gastos */
+        $gastos = $this->queryMySQL(
+            "SELECT FORMAT(IFNULL(SUM(g.monto), 0), 2) AS total_gastos
+            FROM gastos AS g
+            WHERE $whereGastos
+        ");
+
+        /** Gastos por tipo de gasto */
+        $gastosPorTipo = $this->queryMySQL(
+            "SELECT 
+                tg.nombre AS tipo,
+                SUM(g.monto) AS total
+            FROM gastos AS g
+            INNER JOIN tipos_gasto AS tg ON g.id_tipo_gasto = tg.id
+            WHERE $whereGastos
+            GROUP BY g.id_tipo_gasto, tg.nombre
+            ORDER BY total DESC
+        ");
+
+        /** Productos más vendidos */
+        $topProductos = $this->queryMySQL(
+            "SELECT 
+                p.nombre AS producto,
+                SUM(dv.cantidad) AS total_vendido
+            FROM detalle_venta dv
+            INNER JOIN ventas v ON dv.id_venta = v.id
+            INNER JOIN productos p ON dv.id_producto = p.id
+            WHERE 
+                v.fecha >= '{$this->startDate}' 
+                AND v.fecha <= '{$this->endDate}' 
+                AND v.estado = 1
+            GROUP BY dv.id_producto, p.nombre
+            ORDER BY total_vendido DESC
+            LIMIT 5
+        ");
+
+        /** Conversión a flotantes para cálculo de venta neta */
+        $ventaNeta = (
+            floatval(str_replace(',', '', $ventasContado[0]['total_ventas_contado'] ?? 0)) +
+            floatval(str_replace(',', '', $ventasCredito[0]['total_ventas_credito'] ?? 0))
+        ) - floatval(str_replace(',', '', $gastos[0]['total_gastos'] ?? 0));
+
+        return [
+            "total_compras"         => $compras[0]['total_compras'] ?? "0.00",
+            "total_ventas_contado"  => $ventasContado[0]['total_ventas_contado'] ?? "0.00",
+            "total_ventas_credito"  => $ventasCredito[0]['total_ventas_credito'] ?? "0.00",
+            "total_pendiente_cobro" => $ventasCredito[0]['total_pendiente_cobro'] ?? "0.00",
+            "total_gastos"          => $gastos[0]['total_gastos'] ?? "0.00",
+            "venta_neta"            => number_format($ventaNeta, 2),
+            "gastos_por_tipo"       => $gastosPorTipo,
+            "top_productos"         => $topProductos,
+        ];
+    }
 }

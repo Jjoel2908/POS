@@ -255,7 +255,7 @@ class TemplateView
     ?>
 
         <div id="container-report" class="card bg-transparent shadow-0 radius-10" data-module="<?= $this->module ?>">
-            <div class="card-body mt-2">
+            <div class="card-body">
 
                 <!-- # [ T I T L E ] # -->
                 <div class="row">
