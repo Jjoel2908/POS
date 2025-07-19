@@ -49,8 +49,8 @@ class ProductController
         ];
 
         /** Si el usuario adjunta una imagen al producto la guardamos y recuperamos su path */
-        $oldImage = $this->model::sanitizeInput('current_image', 'image');
-        $data['imagen'] = $this->model->saveImage($oldImage);
+        // $oldImage = $this->model::sanitizeInput('current_image', 'image');
+        // $data['imagen'] = $this->model->saveImage($oldImage);
 
         if (!$this->id) {
             /** Valida que no exista un registro similar al entrante */
@@ -173,7 +173,7 @@ class ProductController
             $imgUrl = "../media/products/$img";
 
             /** @var string $imgTag - Etiqueta HTML <img> para mostrar la imagen. */
-            $imgTag = "<img src='$imgUrl' alt='img' width='240' height='240'>";
+            $imgTag = "<img class='testimage' src='$imgUrl' alt='imagen de producto' width='240' height='240'>";
 
             /** Cantidad de producto */
             $stock = $row['stock'] . ' ' . ($row['stock'] == 1 ? 'ud.' : 'uds.');
@@ -195,7 +195,7 @@ class ProductController
 
             /** Agregamos la fila al array de datos */
             $data[] = [
-                "imagen"      => $row['imagen'] ? $imgTag : "-",
+                "imagen"      => $imgTag,
                 "descripcion" => $descripcion,
                 "acciones"    => $btn
             ];

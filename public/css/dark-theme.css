@@ -5,9 +5,13 @@ html.dark-theme body {
 	color: #e4e5e6;
 	background-color: #1e1e1e
 }
+
+html.dark-theme .view-table >thead {
+	color: #ffffff
+}
 html.dark-theme .text-option{
 	color: #ffffff!important
- }
+}
 html.dark-theme .h1, html.dark-theme .h2, html.dark-theme .h3, html.dark-theme .h4, html.dark-theme .h5, html.dark-theme .h6, html.dark-theme h1, html.dark-theme h2, html.dark-theme h3, html.dark-theme h4, html.dark-theme h5, html.dark-theme h6 {
 	color: #e4e5e6
 }

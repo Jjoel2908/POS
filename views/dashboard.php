@@ -142,7 +142,7 @@ $metrics = [
 
    <div class="col-sm-12 col-lg-4 mb-3">
       <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-1">
-         <div class="col">
+         <div class="col pe-0">
             <div class="card bg-gradient-moonlit mb-0 radius-10">
                <div class="card-header pt-3">
                   <p class="m-0 text-white font-18 text-center py-2">Estadísticas Operativas</p>

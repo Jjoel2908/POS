@@ -244,7 +244,7 @@ const loadReportGeneralInView = async (data) => {
  */
 const createWidgetCard = ({ titulo, valor, icono, bgColor = 'light-success', textColor = 'text-success' }) => {
     return `
-        <div class="col">
+        <div class="col pe-0">
             <div class="card radius-10">
                 <div class="card-body">
                 <div class="text-center">
@@ -298,9 +298,9 @@ const expensesPerType = async (expenses) => {
             data: {
                 labels,
                 datasets: [{
-                data,
-                backgroundColor: colors,
-                hoverBackgroundColor: colors
+                    data,
+                    backgroundColor: colors,
+                    hoverBackgroundColor: colors
                 }]
             },
             options: {
@@ -365,20 +365,22 @@ const renderTopProducts = async (productos) => {
                 }]
             },
             options: {
-                indexAxis: 'y',
+                maintainAspectRatio: false,
                 plugins: {
-                legend: { display: false },
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.label}: ${context.raw} unidades`;
+                            const value = context.parsed;
+                            return `${context.label}: $${value.toLocaleString("es-MX", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                            })}`;
                         }
                     }
-                }
-                },
-                scales: {
-                x: {
-                    beginAtZero: true
                 }
                 }
             }
