@@ -62,7 +62,8 @@ const updateProduct = async (currentModule, idProduct) => {
  */
 const duplicateProduct = async (currentModule, idProduct) => {
    await updateRegister(currentModule, idProduct);
-   $('#modalTitle').html('Nueva Variante');
+   $('#modalTitle').html('Duplicar Producto');
    $('#id').val('');
    $('#codigo').val('').prop('readonly', false);
+   $(`#btnSave`).html(`<i class="fa-regular fa-floppy-disk me-1"></i> Duplicar`);
 }
