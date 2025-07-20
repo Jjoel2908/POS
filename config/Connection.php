@@ -327,7 +327,7 @@ class Connection
                 if ($value === '' || $value === '.')
                     return 0.00;
 
-                return number_format((float)$value, 2, '.', '');
+                return (float) $value;
             case 'date':
                 /** Quitar cualquier carácter que no sea dígito o guion */
                 $value = preg_replace('/[^0-9\-\/]/', '', $value);

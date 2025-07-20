@@ -5,6 +5,6 @@
                 <h5 class="modal-title" id="modalTitle"></h5>
             </div>  
 
-            <form class="validation" id="<?= $formId ?>" method="POST" action="" name="" novalidate=""  data-module="<?= $module ?>">
+            <form class="validation" id="<?= $formId ?>" method="POST" action="" name="" novalidate=""  data-module="<?= $module ?>" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="row px-2">

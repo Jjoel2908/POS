@@ -49,8 +49,8 @@ class ProductController
         ];
 
         /** Si el usuario adjunta una imagen al producto la guardamos y recuperamos su path */
-        // $oldImage = $this->model::sanitizeInput('current_image', 'image');
-        // $data['imagen'] = $this->model->saveImage($oldImage);
+        $oldImage = $this->model::sanitizeInput('current_image', 'image');
+        $data['imagen'] = $this->model->saveImage($oldImage);
 
         if (!$this->id) {
             /** Valida que no exista un registro similar al entrante */
