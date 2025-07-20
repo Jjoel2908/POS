@@ -23,4 +23,24 @@ class ActionController extends Connection
 
         self::insert($this->table, $data);
     }
+
+    public function createRecord(
+        string $module,
+        string $operation,
+        array $data = []
+    )
+    {
+        $sucursalId = filter_var($_SESSION['sucursal'] ?? $_POST['id_sucursal'], FILTER_VALIDATE_INT);
+        $sucursalId = ($sucursalId !== false) ? $sucursalId : 0;
+
+        /** Información a registrar o actualizar */
+        $info = [
+            'id_sucursal' => $sucursalId,
+            'modulo'      => $module,
+            'accion'      => $operation,
+            'data'        => json_encode($data)
+        ];
+
+        self::insert($this->table, $info);
+    }
 }
