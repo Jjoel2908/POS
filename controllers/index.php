@@ -43,11 +43,11 @@ if ($module === null || $operation === null || !isset($controllers[$module]))
     exit;
 
 /** Eventos realizados por el usuario */
-require_once 'ActionController.php';
-$Action = new ActionController();
-if (in_array($operation, ["login", "save", "update", "delete", "updatePassword", "updatePermissions"])) {
-    $Action->save();
-}
+// require_once 'ActionController.php';
+// $Action = new ActionController();
+// if (in_array($operation, ["login", "save", "update", "delete", "updatePassword", "updatePermissions"])) {
+//     $Action->save();
+// }
 
 /** Cargamos el controlador correspondiente */
 require_once $controllers[$module];
