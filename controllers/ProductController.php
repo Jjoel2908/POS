@@ -30,7 +30,7 @@ class ProductController
     public function save()
     {
         try {
-            // 1. Validación de campos requeridos
+            /** Valida campos requeridos */
             $validateData = ['nombre', 'codigo', 'id_marca', 'precio_compra', 'precio_venta'];
             if (!$this->model::validateData($validateData, $_POST)) {
                 echo json_encode(['success' => false, 'message' => $this->messages['required']]);
@@ -39,7 +39,7 @@ class ProductController
 
             $code = $this->model::sanitizeInput('codigo', 'text');
 
-            // 2. Datos a guardar
+            /** Información a registrar o actualizar */
             $data = [
                 'nombre'          => $this->model::sanitizeInput('nombre', 'text'),
                 'modelo'          => $this->model::sanitizeInput('modelo', 'text'),
@@ -50,26 +50,24 @@ class ProductController
                 'precio_venta'    => $this->model::sanitizeInput('precio_venta', 'float')
             ];
 
-            // 3. Guardar imagen si está presente
+            /** Guardar imagen si está presente */
             if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE) {
                 $oldImage = $this->model::sanitizeInput('current_image', 'image');
                 $data['imagen'] = $this->model->saveImage($oldImage);
-
-                // Validación extra por si la imagen falla al guardarse
-                if (!$data['imagen']) {
-                    echo json_encode(['success' => false, 'message' => 'Error al subir la imagen.']);
-                    return;
-                }
             }
 
-            // 4. Insertar nuevo registro
+            /** Insertar nuevo registro */
             if (!$this->id) {
+                /** Valida que no exista un registro similar al entrante */
                 if ($this->model::exists($this->table, 'codigo', $code)) {
                     echo json_encode(['success' => false, 'message' => "El código $code ya existe"]);
                     return;
                 }
 
+                /** Agregamos sucursal */
                 $data['id_sucursal'] = $this->idSucursal;
+
+                /** Agregamos el código del producto */
                 $data['codigo'] = $code;
 
                 $save = $this->model::insert($this->table, $data);
@@ -80,7 +78,7 @@ class ProductController
                         : ['success' => false, 'message' => $this->messages['save_failed']]
                 );
             }
-            // 5. Actualizar registro existente
+            /** Actualizar registro existente */
             else {
                 $save = $this->model::update($this->table, $this->id, $data);
                 echo json_encode(
@@ -92,13 +90,8 @@ class ProductController
 
         } catch (Exception $e) {
             $Action = new ActionController();
-            $Action->createRecord(
-                'Error al guardar producto',
-                'Error en el controlador de productos: ' . $e->getMessage(),
-                $_POST
-            );
-            error_log('Error en save(): ' . $e->getMessage());
-            echo json_encode(['success' => false, 'message' => 'Error interno: ' . $e->getMessage()]);
+            $Action->createRecord('Producto', 'Error en el controlador de productos: ' . $e->getMessage(), $_POST);
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
