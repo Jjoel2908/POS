@@ -62,4 +62,32 @@ class SaleDetails extends Connection
             creado_por = $idUser"
       );
    }
+
+     public static function getSaleDetailsBySaleId(int $idSale): array
+   {
+      return self::queryMySQL(
+         "SELECT 
+            id, 
+            id_producto,
+            cantidad
+         FROM 
+            detalle_venta
+         WHERE 
+            estado = 1 
+         AND 
+            id_venta = $idSale");
+   }
+
+   public static function updateSaleDetailStatus(mysqli $conexion, int $idSale): bool
+   {
+      return self::executeQueryWithTransaction(
+         $conexion,
+          "UPDATE 
+            detalle_venta
+         SET 
+            estado = 0
+         WHERE
+            id_venta = $idSale"
+      );
+   }
 }

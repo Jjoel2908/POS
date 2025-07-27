@@ -6,7 +6,10 @@ class Purchase extends Connection
 {
    public function __construct() {}
 
-
+   /** Obtiene las últimas 5 compras registradas
+    *
+    * @return array - Lista de compras con detalles
+    */
    public function dataTable(): array
    {
       return $this->queryMySQL(
@@ -24,10 +27,17 @@ class Purchase extends Connection
             c.estado = 1 
          ORDER BY 
             c.id DESC 
-         LIMIT 5");
+         LIMIT 5"
+      );
    }
 
-   /** Actualizamos las compras que estan pendientes con respecto al usuario */
+   /** Actualiza los detalles de compra pendientes
+    *
+    * @param mysqli $conexion - Conexión a la base de datos
+    * @param int $idPurchase - ID de la compra a actualizar
+    * @param int $idUser - ID del usuario que genera la compra
+    * @return bool - Resultado de la operación
+    */
    public function updatePurchaseDetails(mysqli $conexion, int $idPurchase, int $idUser): bool
    {
       return $conexion->query(
@@ -45,6 +55,13 @@ class Purchase extends Connection
       );
    }
 
+   /** Actualiza el stock de un producto
+    *
+    * @param mysqli $conexion - Conexión a la base de datos
+    * @param int $idProduct - ID del producto a actualizar
+    * @param int $quantity - Cantidad a sumar al stock
+    * @return bool - Resultado de la operación
+    */
    public function updateProductStock(mysqli $conexion, int $idProduct, int $quantity): bool
    {
       return $this->executeQueryWithTransaction(
@@ -53,6 +70,26 @@ class Purchase extends Connection
             productos
          SET 
             stock = stock + $quantity
+         WHERE 
+            id = $idProduct"
+      );
+   }
+   
+   /** Actualiza el stock de un producto al eliminar una compra
+    *
+    * @param mysqli $conexion - Conexión a la base de datos
+    * @param int $idProduct - ID del producto a actualizar
+    * @param int $quantity - Cantidad a restar del stock
+    * @return bool - Resultado de la operación
+    */
+   public function updateProductStockOnDelete(mysqli $conexion, int $idProduct, int $quantity): bool
+   {
+      return $this->executeQueryWithTransaction(
+         $conexion,
+         "UPDATE 
+            productos
+         SET 
+            stock = stock - $quantity
          WHERE 
             id = $idProduct"
       );
@@ -86,8 +123,7 @@ class Purchase extends Connection
             throw new Exception('Error al registrar la compra');
 
          /** Obtenemos los productos pendientes en detalle_compra */
-         $PurchaseDetails = new PurchaseDetails();
-         $details         = $PurchaseDetails->getPurchaseDetails($idUser);
+         $details = PurchaseDetails::getPurchaseDetails($idUser);
 
          if (empty($details))
             throw new Exception('No hay productos pendientes para registrar la compra');
@@ -97,7 +133,6 @@ class Purchase extends Connection
 
          if (!$updateDetails)
             throw new Exception('Error al actualizar los detalles de compra');
-
 
          /** Actualizar stock en productos */
          foreach ($details as $detail) {
@@ -114,6 +149,68 @@ class Purchase extends Connection
          $conexion->rollback();
          $conexion->close();
          return false;
+      }
+   }
+
+   /** Actualiza el estado de una compra a inactiva
+    *
+    * @param mysqli $conexion - Conexión a la base de datos
+    * @param int $idPurchase - ID de la compra a actualizar
+    * @return bool - Resultado de la operación
+    */
+   public function updatePurchaseStatus(mysqli $conexion, int $idPurchase): bool
+   {
+      return $conexion->query(
+         "UPDATE 
+            compras 
+         SET 
+            estado = 0 
+         WHERE 
+            id = $idPurchase"
+      );
+   }
+
+   /** Elimina una compra y sus detalles
+    *
+    * @param int $idPurchase - ID de la compra a eliminar
+    * @param array $details - Detalles de la compra a eliminar
+    * @return bool - Resultado de la operación
+    */
+   public function deletePurchase(int $idPurchase, array $details): bool
+   {
+      if (empty($idPurchase) || !filter_var($idPurchase, FILTER_VALIDATE_INT))
+         return false;
+
+      $conexion = self::conectionMySQL();
+      $conexion->begin_transaction();
+
+      try {
+         /** Actualizamos el estado de la compra */
+         $updatePurchase = $this->updatePurchaseStatus($conexion, $idPurchase);
+
+         if (!$updatePurchase)
+            throw new Exception('Error al actualizar el estado de la compra');
+
+         $updateDetails = PurchaseDetails::updatePurchaseDetailStatus($conexion, $idPurchase);
+
+         if (!$updateDetails)
+            throw new Exception('Error al actualizar los detalles de compra');
+
+         /** Actualizar stock en productos */
+         foreach ($details as $detail) {
+            $updateStock = $this->updateProductStockOnDelete($conexion, $detail['id_producto'], $detail['cantidad']);
+
+            if (!$updateStock)
+               throw new Exception('Error al actualizar el stock del producto ID: ' . $detail['id_producto']);
+         }
+
+         $conexion->commit();
+         return true;
+      } catch (Exception $e) {
+         $conexion->rollback();
+         return false;
+      } finally {
+         $conexion->close();
       }
    }
 }

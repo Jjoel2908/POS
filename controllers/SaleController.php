@@ -79,6 +79,32 @@ class SaleController
         );
     }
 
+    public function delete()
+    {
+        $responseError = json_encode(['success' => false, 'message' => $this->messages['delete_failed']]);
+        /** Recuperamos información de la venta */
+        $recoverRegister = $this->model->select($this->table, $this->id);
+        if (empty($recoverRegister) || $recoverRegister['tipo_venta'] == $this->model::CREDITO || $recoverRegister['estado_pago'] != $this->model::PAGADO) {
+            echo json_encode(['success' => false, 'message' => "No se puede eliminar la venta."]);
+            return;
+        }
+        
+        /** Obtenemos los productos en detalle_compra */
+        $details = SaleDetails::getSaleDetailsBySaleId($this->id);
+        if (empty($details)) {
+            echo $responseError;
+            return;
+        }
+        
+        $delete = $this->model->deleteSale($this->id, $details);
+        if (!$delete) {
+            echo $responseError;
+            return;
+        }
+
+        echo json_encode(['success' => true, 'message' => $this->messages['delete_success']]);
+    }
+
     public function dataTable()
     {
         $response = $this->model->dataTable();

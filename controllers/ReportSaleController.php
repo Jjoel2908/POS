@@ -21,7 +21,9 @@ class ReportSaleController
                 $date             = date("d/m/Y", strtotime($day));
 
                 /** Botones */
-                $btn = "<button type=\"button\" class=\"btn btn-warning text-white font-18 mx-1\" onclick=\"loadRegisteredDetails('DetalleVenta', '{$row['id']}', '{$date}')\"><i class=\"fa-solid fa-folder-open\"></i></button>";
+                $btn = "<button type=\"button\" class=\"btn btn-inverse-warning font-18 mx-1\" onclick=\"loadRegisteredDetails('DetalleVenta', '{$row['id']}', '{$date}')\"><i class=\"fa-solid fa-folder-open\"></i></button>";
+                $btn .= "<button type=\"button\" class=\"btn btn-inverse-danger font-18 mx-1\" onclick=\"deleteRegister('Venta', '{$row['id']}')\"><i class=\"fa-solid fa-trash\"></i></button>";
+                
                 
                 /** Formateamos el total */
                 $total = "<span class=\"fw-bold\">$" . number_format($row['total'], 2) . "</span>";

@@ -6,6 +6,15 @@ require_once '../models/CashboxCount.php';
 
 class Sale extends Connection
 {
+    /** Tipos de venta */
+    const CONTADO = 1; // Venta al contado
+    const CREDITO = 2; // Venta a crédito
+
+    /** Estados de pago */
+    const PAGADO = 1;    // Venta pagada completamente
+    const PARCIAL = 2;   // Venta pagada parcialmente
+    const PENDIENTE = 3; // Venta pendiente de pago
+    
     /** Tipos de venta disponibles en el sistema */
     public static $SALE_TYPE = [
         1 => 'Contado',  // Pago inmediato en el momento de la venta
@@ -27,6 +36,10 @@ class Sale extends Connection
 
     public function __construct() {}
 
+    /** Obtiene las últimas 5 ventas registradas
+     *
+     * @return array - Lista de ventas con detalles
+     */
     public function dataTable(): array
     {
         return $this->queryMySQL(
@@ -51,6 +64,11 @@ class Sale extends Connection
         );
     }
 
+    /** Verifica si el carrito de un usuario está vacío
+     *
+     * @param int $userId - ID del usuario a verificar
+     * @return array - Detalles del carrito del usuario
+     */
     public function isCartEmpty(int $userId): array
     {
         $SaleDetails = new SaleDetails();
@@ -58,6 +76,11 @@ class Sale extends Connection
         return $details;
     }
 
+    /** Calcula el total de una venta a partir de los detalles
+     *
+     * @param array $details - Detalles de la venta con cantidad y precio
+     * @return float - Total calculado de la venta
+     */
     public function calculateSaleTotal(array $details): float
     {
         $total = 0;
@@ -68,7 +91,13 @@ class Sale extends Connection
         return number_format(floatval($total), 2, '.', '');
     }
 
-    /** Actualizamos las detalles de venta que estan pendientes con respecto al usuario */
+    /** Actualiza los detalles de venta pendientes
+     *
+     * @param mysqli $conexion - Conexión a la base de datos
+     * @param int $saleId - ID de la venta a actualizar
+     * @param int $userId - ID del usuario que genera la venta
+     * @return bool - Resultado de la operación
+     */
     public function updateSaleDetails(mysqli $conexion, int $saleId, int $userId): bool
     {
         return $conexion->query(
@@ -86,6 +115,13 @@ class Sale extends Connection
         );
     }
 
+    /** Actualiza el stock de un producto al momento de registrar una venta
+     *
+     * @param mysqli $conexion - Conexión a la base de datos
+     * @param int $idProduct - ID del producto a actualizar
+     * @param int $quantity - Cantidad a restar del stock
+     * @return bool - Resultado de la operación
+     */
     public function updateProductStock(mysqli $conexion, int $idProduct, int $quantity): bool
     {
         return $this->executeQueryWithTransaction(
@@ -168,4 +204,80 @@ class Sale extends Connection
             return false;
         }
     }
+
+    /** Actualiza el estado de una venta a inactiva
+     *
+     * @param mysqli $conexion - Conexión a la base de datos
+     * @param int $idSale - ID de la venta a actualizar
+     * @return bool - Resultado de la operación
+     */
+    public function updateSaleStatus(mysqli $conexion, int $idSale): bool
+    {
+        return $conexion->query(
+            "UPDATE 
+                ventas 
+            SET 
+                estado = 0 
+            WHERE 
+                id = $idSale"
+        );
+    }
+
+    /** Actualiza el stock de un producto al eliminar una venta
+     *
+     * @param mysqli $conexion - Conexión a la base de datos
+     * @param int $idProduct - ID del producto a actualizar
+     * @param int $quantity - Cantidad a sumar al stock
+     * @return bool - Resultado de la operación
+     */
+    public function updateProductStockOnDelete(mysqli $conexion, int $idProduct, int $quantity): bool
+    {
+        return $this->executeQueryWithTransaction(
+            $conexion,
+            "UPDATE 
+                productos
+            SET 
+                stock = stock + $quantity
+            WHERE 
+                id = $idProduct"
+        );
+    }
+
+    public function deleteSale(int $idSale, array $details): bool
+    {
+        if (empty($idSale) || !filter_var($idSale, FILTER_VALIDATE_INT))
+            return false;
+
+        $conexion = self::conectionMySQL();
+        $conexion->begin_transaction();
+
+        try {
+            /** Actualizamos el estado de la venta */
+            $updatePurchase = $this->updateSaleStatus($conexion, $idSale);
+
+            if (!$updatePurchase)
+                throw new Exception('Error al actualizar el estado de la venta');
+
+            $updateDetails = SaleDetails::updateSaleDetailStatus($conexion, $idSale);
+
+            if (!$updateDetails)
+                throw new Exception('Error al actualizar los detalles de venta');
+
+            /** Actualizar stock en productos */
+            foreach ($details as $detail) {
+                $updateStock = $this->updateProductStockOnDelete($conexion, $detail['id_producto'], $detail['cantidad']);
+
+                if (!$updateStock)
+                throw new Exception('Error al actualizar el stock del producto ID: ' . $detail['id_producto']);
+            }
+
+            $conexion->commit();
+            return true;
+        } catch (Exception $e) {
+            $conexion->rollback();
+            return false;
+        } finally {
+            $conexion->close();
+        }
+        }
 }

@@ -334,6 +334,7 @@ class TemplateView
         <?php require_once 'layout/footer.php'; ?>
 
         <!-- # [ S C R I P T ] # -->
+        <script src="../public/js/modules/moduleRecord.js"></script>
         <script src="../public/js/modules/moduleReports.js"></script>
         <?php if (!empty($this->moduleScript)): ?>
             <script src="../public/js/modules/<?= $this->moduleScript ?>.js"></script>

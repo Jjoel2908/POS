@@ -55,6 +55,25 @@ class PurchaseController
         );
     }
 
+    public function delete()
+    {
+        /** Obtenemos los productos en detalle_compra */
+        $details = PurchaseDetails::getPurchaseDetailsByPurchaseId($this->id);
+
+        if (empty($details)) {
+            echo json_encode(['success' => false, 'message' => $this->messages['empty']]);
+            return;
+        }
+        
+        $delete = $this->model->deletePurchase($this->id, $details);
+
+        echo json_encode(
+            $delete
+                ? ['success' => true, 'message' => $this->messages['delete_success']]
+                : ['success' => false, 'message' => $this->messages['delete_failed']]
+        );
+    }
+
     public function dataTable()
     {
         $response = $this->model->dataTable();

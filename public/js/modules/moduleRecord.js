@@ -3,13 +3,20 @@ const currentModule = $(".card").data("module");
 const creditSale = 2;
 let modalId;
 
-const columnsEndTable = ["Precio Compra", "Precio Venta", "Monto", "Monto Inicial", "Monto Final", "Precio", "Subtotal", "Total", "Total Venta", "Total Pagado", "Deuda Pendiente", "compra", "venta"];
-const columnsCenterTable = ["Fecha de Creación", "Fecha de Alta", "Fecha Creación", "Fecha Vencimiento", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
+/** Lista de módulos que NO deben cargar la tabla automáticamente */
+const excludedModules = ["ReporteCompra", "ReporteVenta", "ReporteGastos", "ReporteGeneral"];
+const columnsEndTable    = ["Precio Compra", "Precio Venta", "Monto", "Monto Inicial", "Monto Final", "Precio", "Subtotal", "Total", "Total Venta", "Total Pagado", "Deuda Pendiente", "compra", "venta"];
+const columnsCenterTable = ["Folio", "Fecha de Creación", "Fecha de Alta", "Fecha Creación", "Fecha Vencimiento", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
 
 $(() => {
-    loadModuleTable(currentModule);
+    /**  Solo cargar la tabla si el módulo actual NO está en la lista de excluidos */
+    if (!excludedModules.includes(currentModule))
+        loadModuleTable(currentModule);
 
     $("form").submit(async function (event) {
+        if (excludedModules.includes(currentModule))
+            return;
+
         event.preventDefault();
 
         if (validateForm(event, this)) {
@@ -343,7 +350,7 @@ const updateRegister = async (currentModule, id, idModal = "") => {
  * @param {number} id - ID del registro que se desea eliminar.
  * @param {string} nombre - Nombre del registro para mostrar en la alerta.
  */
-const deleteRegister = async (currentModule, id, nombre) => {
+const deleteRegister = async (currentModule, id, nombre = "") => {
     try {
         if (currentModule === "DetalleCompra" || currentModule === "DetalleVenta") {
             await processDelete(currentModule, id);
@@ -351,7 +358,7 @@ const deleteRegister = async (currentModule, id, nombre) => {
         }
 
         /** Determina si el texto es "la" o "el" dependiendo del módulo */
-        let text = ["Categoría", "Marca", "Caja"].includes(currentModule) ? "la" : "el";
+        let text = ["Categoría", "Marca", "Caja", "Compra", "Venta"].includes(currentModule) ? "la" : "el";
 
         Swal.fire({
             title: '<h3 class="mt-3">Eliminar ' + currentModule + "</h3>",

@@ -1,10 +1,3 @@
-const urlController = "../../../controllers/";
-const moduleReport = $(".card").data("module");
-let modalId;
-
-const columnsEndTable = ["Precio Compra", "Precio Venta", "Precio", "Monto", "Subtotal", "Total"];
-const columnsCenterTable = ["Folio", "Fecha de Creación", "Fecha de Alta", "Fecha Inicio", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Código", "Cantidad", "Monto Inicial", "Acciones", "Estatus", "Tipo de Venta"];
-
 $(() => {
     /**  D A T E   F I L T E R  */
     $("#date").daterangepicker({
@@ -37,9 +30,9 @@ $(() => {
                 $("#loadingContainer").show(); /** Muestra el botón de carga */
 
                 /** Cargamos la información */
-                loadDataTable("#module-table-report", moduleReport);
+                loadDataTableReport("#module-table-report", currentModule);
             } catch (error) {
-                console.log("Ocurrió un error al generar el reporte en el módulo " + moduleReport);
+                console.log("Ocurrió un error al generar el reporte en el módulo " + currentModule);
             } finally {
                 /** Volver a mostrar el botón de búsqueda y ocultar el de carga */
                 $("#loadingContainer").hide();
@@ -56,7 +49,7 @@ $(() => {
  * @param {string} module - Nombre del módulo para la solicitud al controlador.
  * @param {int} registerId - Identificador si se desea buscar registros de algo en particular.
  */
-const loadDataTable = async (tableId, module, registerId = null) => {
+const loadDataTableReport = async (tableId, module, registerId = null) => {
     try {
         /** Creamos un objeto FormData para enviar la solicitud */
         let formData = new FormData();
@@ -89,28 +82,6 @@ const loadDataTable = async (tableId, module, registerId = null) => {
     } catch (error) {
         showAlert(false, "Ocurrió un error al cargar los datos. Por favor, inténtalo de nuevo más tarde.");
     }
-};
-
-/** Carga y muestra los detalles de una compra/venta ya registrada en el sistema.
- * Muestra los detalles en un modal si se pasa un ID de registro.
- *
- * @param {string} currentModule - Nombre del módulo desde donde se llama la función.
- * @param {number|null} registerId - ID del registro a cargar (opcional).
- * @param {string|null} date - Fecha en formato 'DD/MM/YYYY' (opcional).
- * @param {string} modalSelector - Selector del modal a mostrar (por defecto '#modalViewDetails').
- */
-const loadRegisteredDetails = async (currentModule, registerId = null, date = null, modalSelector = "#modalViewDetails", tableSelector = "#table-details") => {
-    const formattedDate = formatDateForTitle(date);
-    const title = getTitleByModuleAndDate(currentModule, formattedDate);
-
-    /** Asignamos el título para el modal */
-    $(`${modalSelector} #modalTitle`).html(title);
-
-    /** Cargamos la información */
-    loadDataTable(tableSelector, currentModule, registerId);
-
-    /** Mostramos el modal */
-    $(modalSelector).modal("toggle");
 };
 
 /** Inicializa una tabla DataTable con configuración básica.
@@ -394,3 +365,17 @@ const renderTopProducts = async (productos) => {
         $("#container-top-products-chart").addClass('d-none');
     }
 };
+
+/** Ejecuta una acción adicional complementaria a un proceso principal.
+ *
+ * Esta función se utiliza para realizar tareas secundarias que deben llevarse a cabo
+ * después (o como consecuencia) de una acción principal, como actualizar la interfaz,
+ * mostrar mensajes, realizar validaciones extra o disparar eventos personalizados.
+ *
+ * Su propósito es mantener el código modular y evitar mezclar responsabilidades dentro
+ * de la lógica principal.
+ */
+const runAdditionalStep = () => {
+    /** Cargamos la información */
+    loadDataTableReport("#module-table-report", currentModule);
+}

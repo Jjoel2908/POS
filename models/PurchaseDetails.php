@@ -45,8 +45,8 @@ class PurchaseDetails extends Connection
       return $this->queryMySQL("UPDATE detalle_compra SET cantidad = cantidad + $quantity WHERE id = $idPurchase");
    }
 
-   public function getPurchaseDetails(int $idUser): array {
-      return $this->queryMySQL(
+   public static function getPurchaseDetails(int $idUser): array {
+      return self::queryMySQL(
          "SELECT 
             id, 
             id_producto,
@@ -60,5 +60,34 @@ class PurchaseDetails extends Connection
             id_compra IS NULL
          AND
             creado_por = $idUser");
+   }
+
+   public static function getPurchaseDetailsByPurchaseId(int $idPurchase): array
+   {
+      return self::queryMySQL(
+         "SELECT 
+            id, 
+            id_producto,
+            precio,
+            cantidad
+         FROM 
+            detalle_compra 
+         WHERE 
+            estado = 1 
+         AND 
+            id_compra = $idPurchase");
+   }
+
+   public static function updatePurchaseDetailStatus(mysqli $conexion, int $idPurchase): bool
+   {
+      return self::executeQueryWithTransaction(
+         $conexion,
+          "UPDATE 
+            detalle_compra 
+         SET 
+            estado = 0
+         WHERE
+            id_compra = $idPurchase"
+      );
    }
 }
