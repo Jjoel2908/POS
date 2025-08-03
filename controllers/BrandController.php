@@ -105,7 +105,7 @@ class BrandController
                 $date  = date("d/m/Y", strtotime($day));
 
                 $estado = $row['estado'] 
-                    ? "<span class=\"badge bg-success font-14 px-3 fw-normal\">Activo</span>" 
+                    ? "<span class=\"badge btn-inverse-success font-15 px-3 fw-normal\">Activo</span>" 
                     : "";
                     
                 $btn = "<button type=\"button\" class=\"btn btn-inverse-primary mx-1\" onclick=\"updateRegister('Marca', '{$row['id']}')\"><i class=\"bx bx-edit-alt m-0\"></i></button>";

@@ -6,9 +6,22 @@ html.dark-theme body {
 	background-color: #1e1e1e
 }
 
+html.dark-theme .btn-inverse-dark {
+   	color: #e4e5e6 !important;
+}
+
+html.dark-theme .view-table td {
+  border-bottom: 1px solid var(--gray) !important;
+}
+
 html.dark-theme .view-table >thead {
 	color: #ffffff
 }
+
+html.dark-theme .view-table > thead > tr > th {
+	background-color: #171717 !important;
+}
+
 html.dark-theme .text-option{
 	color: #ffffff!important
 }
@@ -72,9 +85,9 @@ html.dark-theme .mobile-toggle-menu {
 html.dark-theme .btn-close {
 	filter: invert(1) grayscale(100%) brightness(200%)
 }
-html.dark-theme .logo-icon {
+/* html.dark-theme .logo-icon {
 	filter: invert(1) grayscale(100%) brightness(200%)
-}
+} */
 html.dark-theme .toggle-icon {
 	color: #e7e9ec
 }
@@ -778,20 +791,26 @@ html.dark-theme .text-primary {
 }
 
 html.dark-theme .btn-inverse-secondary {
-	color: #fff;
+	color: #fff !important;
 	background-color: rgb(47, 53, 58);
 	border-color: rgb(209, 234, 255);
 }
 
 html.dark-theme .btn-inverse-primary {
-	color: #fff;
+	color: #fff !important;
 	background-color: rgba(0, 140, 255, 0.80);
 	border-color: rgb(209, 234, 255);
 }
 
 html.dark-theme .btn-inverse-success {
-	color: #fff;
-	background-color: rgba(21, 202, 32, 0.80);
+	color: #fff !important;
+	background-color: #15ca20;
+	border-color: rgb(209, 234, 255);
+}
+
+html.dark-theme .btn-inverse-warning {
+	color: #000 !important;
+	background-color: var(--main);
 	border-color: rgb(209, 234, 255);
 }
 

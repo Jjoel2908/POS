@@ -129,7 +129,7 @@ class TemplateView
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="d-flex justify-content-end">
-                                <button class="btn btn-warning radius-30 px-4 fs-14" onclick="<?= $this->addAction ?>">
+                                <button class="btn btn-warning radius-30 px-4 py-2 fs-14" onclick="<?= $this->addAction ?>">
                                     <i class="<?= $this->addIcon ?> me-1"></i>
                                     Agregar <?= $this->addLabel ?>
                                 </button>
@@ -161,7 +161,7 @@ class TemplateView
 
                 <div id="table-data" class="row d-none">
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered view-table" id="<?= $this->tableId ?>"></table>
+                        <table class="table view-table" id="<?= $this->tableId ?>"></table>
                     </div>
                 </div>
 
@@ -316,7 +316,7 @@ class TemplateView
                         <div class="row mb-2">
                             <div class="col-sm-12 col-md-12">
                                 <div class="table-responsive">
-                                    <table id="module-table-report" class="table table-striped table-bordered view-table"></table>
+                                    <table id="module-table-report" class="table view-table"></table>
                                 </div>
                             </div>
                         </div>

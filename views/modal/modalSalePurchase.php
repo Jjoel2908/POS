@@ -1,5 +1,5 @@
 <!-- Formulario -->
-<div class="card radius-10 border-start border-0 border-4 border-warning">
+<div class="card radius-10 border-start border-0 border-4 border-success">
     <div class="card-header">
         <div class="d-flex align-items-center justify-content-center py-1">
             <h5 class="mb-0 pt-1"><?= $title ?></h5>

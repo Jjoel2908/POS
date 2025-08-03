@@ -34,15 +34,26 @@ define("DB_ENCODE", "utf8");
  * Nombre del Proyecto
  * Esta constante define el nombre del proyecto o aplicación.
  */
-define("WEB_NAME", "POS");
+define("WEB_NAME", "GASTALON JR.");
 
 
 /** 
  * Información para los encabezados de los PDF generados 
  */
-define("PDF_HEADER_IMAGE", "../public/images/logo.jpg");
-define("PDF_HEADER_COMPANY", "SIRI CONSULTING");
-define("PDF_HEADER_LOCATION", "Calle 12 Poniente #980");
-define("PDF_HEADER_PHONE", "+129839324234");
+define("PDF_HEADER_IMAGE", "../public/images/gastalon.png");
+define("PDF_HEADER_COMPANY", "Gastalon JR.");
+define("PDF_HEADER_LOCATION", "Calle 12 Poniente Reforma #980");
+define("PDF_HEADER_PHONE", "244 123 4567");
+
+
+/** 
+ * Clave secreta para generar tokens
+ * Esta constante define una clave secreta utilizada para generar tokens de seguridad.
+ */
+define('SECRET_KEY', 'QxT7@w!rP$3vNz9Lc^FbYzA6e%K0hLmJ#8Xz*oD!cPqR1tVuW$5gNsMjZ@bCfE2');
+
+/** Permisos */
+define('PERMISSION_REPORT_PURCHASE', 32);
+define('PERMISSION_REPORT_SALE', 33);
 
 ?>

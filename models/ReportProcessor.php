@@ -24,15 +24,15 @@ class ReportProcessor extends Connection
 
     /** Colores por tipo de venta */
     public static $SALE_TYPE_COLORS = [
-        1 => 'bg-success',         // Contado
-        2 => 'bg-info text-black'  // Crédito
+        1 => 'btn-inverse-success', // Contado
+        2 => 'btn-inverse-info'     // Crédito
     ];
 
     /** Colores por estado de pago */
     public static $PAYMENT_STATUS_COLORS = [
-        1 => 'bg-success',             // Pagado
-        2 => 'bg-warning text-dark',   // Parcial
-        3 => 'bg-danger'               // Pendiente
+        1 => 'btn-inverse-success',             // Pagado
+        2 => 'btn-inverse-warning',             // Parcial
+        3 => 'btn-inverse-danger'               // Pendiente
     ];
 
     /** Constructor que inicializa las fechas de inicio y fin del reporte.

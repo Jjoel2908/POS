@@ -91,4 +91,5 @@ require_once 'layout/header.php';
 <?php require_once 'layout/footer.php'; ?>
 
 <!-- # [ S C R I P T ] # -->
+<script src="../public/js/modules/moduleRecord.js"></script>
 <script src="../public/js/modules/moduleReports.js"></script>

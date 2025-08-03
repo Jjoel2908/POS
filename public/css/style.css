@@ -72,9 +72,10 @@ body {
 .sidebar-wrapper .metismenu a:active,
 .sidebar-wrapper .metismenu a:focus,
 .sidebar-wrapper .metismenu a:hover {
-     color: var(--secondary);
-    text-decoration: none;
-    background-color: rgba(255, 193, 7, 0.2); 
+  border-right: 2.8px solid var(--main) !important;
+  color: var(--main) !important;
+  text-decoration: none;
+  background-color: rgba(255, 193, 7, 0.1); 
 }
 
 
@@ -196,15 +197,29 @@ td.text-start.dtr-control {
 /* [ ------------------------------------- ] */
 /* [ --------- D A T A T A B L E --------- ] */
 /* [ ------------------------------------- ] */
-tbody > tr > td {
+
+.view-table td {
+  border-bottom: 6px solid var(--gray) !important;
+}
+
+/* .view-table th {
+  border-bottom: 6px solid var(--gray) !important;
+} */
+
+.view-table {
+  border-color: var(--gray) !important;
+}
+
+/* tbody > tr > td {
     background-color: #fff !important;
     vertical-align: middle;
     text-align: start !important;
-}
+} */
 
 .top {
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
+  align-items: center;
   margin: 28px 0 14px 0;
 }
 
@@ -232,8 +247,12 @@ button.btn.btn-secondary:hover {
    color: #4C5258
 }
 
+/* div.dt-buttons {
+  margin-left: 28px !important;
+} */
+
 .view-table >thead {
-  background-color: var(--white);
+  background-color: var(--main) !important;
   color: var(--black1);
 }
 
@@ -253,17 +272,17 @@ button.btn.btn-secondary:hover {
 }
 
 .page-link {
-  color: var(--main);
+  color: var(--black2);
 }
 
 .page-link:hover {
-  color: var(--main);
-  background-color: #e9ecef;
-  border-color: #dee2e6;
+  color: var(--white);
+  background-color: var(--main);
+  border-color: var(--main);
 }
 
 .pace .pace-progress {
-  background-color: greenyellow !important;
+  background-color: var(--main) !important;
 }
 
 .pace .pace-activity {
@@ -275,8 +294,8 @@ button.btn.btn-secondary:hover {
     width: 20px;
     height: 20px;
     border: solid 3px transparent;
-    border-top-color: greenyellow !important;
-    border-left-color: greenyellow !important;
+    border-top-color: var(--main) !important;
+    border-left-color: var(--main) !important;
     border-radius: 10px;
     -webkit-animation: pace-spinner .4s linear infinite;
     -moz-animation: pace-spinner .4s linear infinite;

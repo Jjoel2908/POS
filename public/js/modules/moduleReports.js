@@ -94,7 +94,7 @@ const loadTableInView = async (tableId, data) => {
     if (data.length === 0) {
         $('#response').addClass('d-none');
         $('#container-report').addClass('bg-transparent shadow-0');
-        $('#container-report').removeClass('border-start border-end border-0 border-3 border-primary');
+        $('#container-report').removeClass('border-start border-0 border-3 border-warning');
         return showAlert(false, "El sistema no encontró resultados para los filtros aplicados.");
     }
 
@@ -108,6 +108,7 @@ const loadTableInView = async (tableId, data) => {
     let content         = initTable();
         content.columns = columns;
         content.data    = dataTable;
+        content.buttons = [];
 
     /** Aplica alineaciones dinámicas a las filas */
     content.createdRow = (row, rowData) => {
@@ -127,7 +128,7 @@ const loadTableInView = async (tableId, data) => {
     /** Actualizamos el total en el widget */
     data?.total ? $('#total').html(data.total) : "";
     $('#container-report').removeClass('bg-transparent shadow-0');
-    $('#container-report').addClass('border-start border-end border-0 border-3 border-primary');
+    $('#container-report').addClass('border-start border-0 border-3 border-warning');
     $('#response').removeClass('d-none');
 }
 

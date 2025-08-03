@@ -186,7 +186,7 @@ class ProductController
             $imgUrl = "../media/products/$img";
 
             /** @var string $imgTag - Etiqueta HTML <img> para mostrar la imagen. */
-            $imgTag = "<img class='testimage' src='$imgUrl' alt='imagen de producto' width='240' height='240'>";
+            $imgTag = "<img src='$imgUrl' alt='imagen de producto' width='240' height='240'>";
 
             /** Cantidad de producto */
             $stock = $row['stock'] . ' ' . ($row['stock'] == 1 ? 'ud.' : 'uds.');

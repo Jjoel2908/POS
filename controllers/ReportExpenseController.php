@@ -28,7 +28,6 @@ class ReportExpenseController
                     "Folio"             => $row['id'],
                     "Concepto"          => $row['concepto'],
                     "Fecha de Creación" => $date,
-                    "Hora"              => $time,
                     "Observaciones"     => $row['observaciones'],
                     "Monto"             => $monto,
                     "Creado Por"        => $row['usuario']
