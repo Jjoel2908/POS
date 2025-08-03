@@ -6,7 +6,7 @@ let modalId;
 /** Lista de módulos que NO deben cargar la tabla automáticamente */
 const excludedModules = ["ReporteCompra", "ReporteVenta", "ReporteGastos", "ReporteGeneral"];
 const columnsEndTable    = ["Precio Compra", "Precio Venta", "Monto", "Monto Inicial", "Monto Final", "Precio", "Subtotal", "Total", "Total Venta", "Total Pagado", "Deuda Pendiente", "compra", "venta"];
-const columnsCenterTable = ["Folio", "Fecha de Creación", "Fecha de Alta", "Fecha Creación", "Fecha Vencimiento", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones"];
+const columnsCenterTable = ["Folio", "Fecha de Creación", "Fecha de Alta", "Fecha Creación", "Fecha Vencimiento", "Fecha Inicio", "Fecha de Actualización", "Fecha", "Hora Inicio", "Hora", "Teléfono", "Cantidad", "Acciones", "Estado", "cantidad", "color", "talla", "imagen", "acciones", "Tipo de Venta", "Estatus"];
 
 $(() => {
     /**  Solo cargar la tabla si el módulo actual NO está en la lista de excluidos */

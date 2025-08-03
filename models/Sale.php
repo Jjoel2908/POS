@@ -243,7 +243,14 @@ class Sale extends Connection
         );
     }
 
-    public function deleteSale(int $idSale, array $details): bool
+    /** Elimina una venta y actualiza el stock de productos
+     *
+     * @param int $idSale - ID de la venta a eliminar
+     * @param array $sale - Detalles de la venta a eliminar
+     * @param array $details - Detalles de los productos vendidos
+     * @return bool - Resultado de la operación
+     */
+    public function deleteSale(int $idSale, array $sale, array $details): bool
     {
         if (empty($idSale) || !filter_var($idSale, FILTER_VALIDATE_INT))
             return false;
@@ -268,12 +275,18 @@ class Sale extends Connection
                 $updateStock = $this->updateProductStockOnDelete($conexion, $detail['id_producto'], $detail['cantidad']);
 
                 if (!$updateStock)
-                throw new Exception('Error al actualizar el stock del producto ID: ' . $detail['id_producto']);
+                    throw new Exception('Error al actualizar el stock del producto ID: ' . $detail['id_producto']);
             }
+
+            /** Actualizar total de caja activa */
+            $updateCashbox = CashboxCount::updateSaleTotalOnDelete($conexion, $sale['id_caja'], $sale['total_pagado'], $sale['fecha']);
+            if (!$updateCashbox)
+                throw new Exception('Error al actualizar la caja');
 
             $conexion->commit();
             return true;
         } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
             $conexion->rollback();
             return false;
         } finally {

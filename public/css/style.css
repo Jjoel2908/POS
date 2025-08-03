@@ -220,18 +220,20 @@ button.btn.btn-secondary.buttons-pdf.buttons-html5 {
 
 /** Botones de acción DATATABLE */
 button.btn.btn-secondary {
-  background-color: var(--main) !important;
-  font-size: 17px !important;
-  border: none;
+   background-image: linear-gradient(to top, #F2F2F2, #dcdcdc, #c6c6c6);
+   font-size: 17px !important;
+   border: none;
+   transition: background-image 0.3s ease;
+   color: #4C5258
 }
 
-/* button.btn.btn-secondary.buttons-colvis:hover {
-   background-color: #4586bc;
-   border-color: #3180c5;
-} */
+button.btn.btn-secondary:hover {
+   background-image: linear-gradient(to top, #dcdcdc, #c6c6c6, #b0b0b0);
+   color: #4C5258
+}
 
 .view-table >thead {
-  background-color: var(--main);
+  background-color: var(--white);
   color: var(--black1);
 }
 

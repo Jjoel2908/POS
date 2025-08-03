@@ -258,7 +258,7 @@ class TemplateView
             <div class="card-body">
 
                 <!-- # [ T I T L E ] # -->
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-sm-12">
                         <h5 class="view-title text-secondary">
                             <i class="fa-solid fa-chart-column me-1"></i>
@@ -316,7 +316,7 @@ class TemplateView
                         <div class="row mb-2">
                             <div class="col-sm-12 col-md-12">
                                 <div class="table-responsive">
-                                    <table id="module-table-report" class="table table-striped view-table"></table>
+                                    <table id="module-table-report" class="table table-striped table-bordered view-table"></table>
                                 </div>
                             </div>
                         </div>

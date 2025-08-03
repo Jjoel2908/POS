@@ -95,8 +95,15 @@ class SaleController
             echo $responseError;
             return;
         }
+
+        /** Obtenemos los detalles de la venta */
+        $recoverRegister = $this->model->select("ventas", $this->id);
+        if (empty($recoverRegister)) {
+            echo $responseError;
+            return;
+        }
         
-        $delete = $this->model->deleteSale($this->id, $details);
+        $delete = $this->model->deleteSale($this->id, $recoverRegister, $details);
         if (!$delete) {
             echo $responseError;
             return;

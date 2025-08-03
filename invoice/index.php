@@ -11,6 +11,7 @@ date_default_timezone_set('America/Mexico_City');
 /** Lista blanca de módulos válidos */
 $validModules = [
     'Compra',
+    'Venta'
 ];
 
 /** Limpiamos los datos enviamos por GET */
@@ -42,22 +43,8 @@ try {
     /** Crear un objeto Invoice usando el módulo y el ID */
     $Invoice = new Invoice($module, $id);
 
-    /** Obtener los datos de la factura */
-    $data = $Invoice->getData();
-
-    /** Creación del objeto TCPDF */
-    $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-    /** Seteamos el margen del header */
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 20, PDF_MARGIN_RIGHT);
-
-    /** Configuración del documento PDF */
-    $pdf->SetTitle('Comprobante de Compra');
-    $pdf->SetFont('helvetica', '', 14);
-
-    $pdf->AddPage();
-    $pdf->Ln(6);
-
+    /** Generar el PDF de la factura */
+    $Invoice->generatePDF();
 } catch (Exception $e) {
     die("Ocurrió un error al obtener los datos");
 }
